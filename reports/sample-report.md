@@ -1,0 +1,37 @@
+# Market Signal Experiment Report
+
+## Strategy Config
+
+- **short_window**: 20
+- **long_window**: 50
+- **symbol**: QQQ_LIKE
+- **fee_bps**: 10.0000
+
+## Backtest Summary
+
+- **Start date**: 2024-01-02
+- **End date**: 2024-01-11
+- **Starting equity**: 1.0000
+- **Ending equity**: 1.0000
+- **Backtest total return**: 0.00%
+- **Exposure changes**: 0
+
+## Metrics
+
+- **total_return**: 0.00%
+- **annualized_return**: 0.00%
+- **max_drawdown**: 0.00%
+- **volatility**: 0.00%
+- **sharpe_like**: 0.0000
+- **win_rate**: 0.00%
+
+## Risk Notes
+
+- Signals use close-price moving averages only.
+- Filtered to symbol: QQQ_LIKE.
+
+## Backtest Caveats
+
+- Backtest results are hypothetical and do not guarantee future performance.
+- Signals are evaluated using historical data and may be affected by data quality, survivorship bias, and parameter overfitting.
+- Reported returns are model outputs before taxes, market impact, and any costs not explicitly included in the backtest.

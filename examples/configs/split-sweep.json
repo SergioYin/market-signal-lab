@@ -1,0 +1,13 @@
+{
+  "csv_path": "examples/data/sample_tqqq_qld_like.csv",
+  "symbol": "QQQ_LIKE",
+  "sweep": true,
+  "short_windows": [1, 2],
+  "long_windows": [2, 3],
+  "fee_bps": 10.0,
+  "split_ratio": 0.5,
+  "top_n": 3,
+  "output": "reports/sample-sweep-split.md",
+  "json_output": "reports/sample-sweep-split.json",
+  "html_output": "reports/sample-sweep-split.html"
+}

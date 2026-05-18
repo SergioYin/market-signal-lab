@@ -43,6 +43,20 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
   --output reports/sample-sweep-split.md
 ```
 
+The same split-sweep workflow can be run from the bundled JSON config:
+
+```bash
+market-signal-lab --config examples/configs/split-sweep.json
+```
+
+CLI flags override config values when explicitly supplied:
+
+```bash
+market-signal-lab --config examples/configs/split-sweep.json \
+  --top-n 1 \
+  --output reports/my-split-sweep.md
+```
+
 When a sweep uses `--split-ratio` or `--split-cutoff`, the sweep output includes
 `train_total_return` and `test_total_return` columns for train/test comparison.
 These fields are research diagnostics for checking how historical rankings differ
@@ -157,7 +171,7 @@ Planned improvements (not guaranteed):
 
 - More strategy templates beyond moving-average crossover.
 - Expanded risk and slippage modeling controls.
-- Config-first and JSON/YAML experiment definitions.
+- More reusable JSON config examples for repeatable experiments.
 - Better report visuals and summary exports.
 - Cleaner CLI UX for batch runs and symbol sweeps.
 
@@ -168,5 +182,9 @@ Before using any findings, read:
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
 - [Data Provenance](docs/data-provenance.md)
+- [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.4.0 Release Notes](docs/release-notes-v0.4.0.md)
+- [v0.4.0 Release Checklist](docs/release-v0.4.0.md)
+- [v0.3.0 Release Notes](docs/release-notes-v0.3.0.md)
 - [v0.3.0 Release Checklist](docs/release-v0.3.0.md)

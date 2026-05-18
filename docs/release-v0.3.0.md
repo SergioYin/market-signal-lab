@@ -61,6 +61,5 @@ Review generated diffs before publishing to confirm that artifact changes are in
 
 - More strategy templates beyond moving-average crossovers.
 - Expanded transaction cost, slippage, and risk modeling controls.
-- Config-first experiment definitions for repeatable sweep runs.
 - Cleaner batch-run ergonomics for multiple symbols and parameter sets.
 - Better report visualizations and summary exports.

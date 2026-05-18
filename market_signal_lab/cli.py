@@ -38,10 +38,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
+        args = _resolve_args(args, parser)
         report, json_payload, manifest_payload = (
             _run_sweep(args) if args.sweep else _run_backtest(args)
         )
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, ArgumentTypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
@@ -67,7 +68,17 @@ def _build_parser() -> ArgumentParser:
         prog="market-signal-lab",
         description="Generate a moving-average crossover report from OHLC CSV data.",
     )
-    parser.add_argument("csv_path", type=Path, help="Path to a CSV file of OHLC data.")
+    parser.add_argument(
+        "csv_path",
+        type=Path,
+        nargs="?",
+        help="Path to a CSV file of OHLC data.",
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        help="Optional JSON config file. CLI flags override config values.",
+    )
     parser.add_argument(
         "--symbol",
         help="Filter by symbol when the input CSV contains a symbol column.",
@@ -75,19 +86,19 @@ def _build_parser() -> ArgumentParser:
     parser.add_argument(
         "--short-window",
         type=int,
-        default=20,
+        default=None,
         help="Short moving-average window (default: 20).",
     )
     parser.add_argument(
         "--long-window",
         type=int,
-        default=50,
+        default=None,
         help="Long moving-average window (default: 50).",
     )
     parser.add_argument(
         "--fee-bps",
         type=float,
-        default=0.0,
+        default=None,
         help="Round-trip fee in basis points (default: 0.0).",
     )
     parser.add_argument(
@@ -113,18 +124,19 @@ def _build_parser() -> ArgumentParser:
     parser.add_argument(
         "--sweep",
         action="store_true",
+        default=None,
         help="Run a moving-average parameter sweep instead of a single report.",
     )
     parser.add_argument(
         "--short-windows",
         type=_parse_integer_list,
-        default=(10, 20, 50),
+        default=None,
         help="Comma-separated short-window values for --sweep (default: 10,20,50).",
     )
     parser.add_argument(
         "--long-windows",
         type=_parse_integer_list,
-        default=(50, 100, 200),
+        default=None,
         help="Comma-separated long-window values for --sweep (default: 50,100,200).",
     )
     parser.add_argument(
@@ -149,6 +161,121 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     return parser
+
+
+def _resolve_args(args: Namespace, parser: ArgumentParser) -> Namespace:
+    config_values = _load_config(args.config) if args.config else {}
+    if args.split_ratio is not None:
+        config_values.pop("split_cutoff", None)
+    if args.split_cutoff is not None:
+        config_values.pop("split_ratio", None)
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        value = getattr(args, key)
+        if value is None and key in config_values:
+            value = config_values[key]
+        if value is None:
+            value = default
+        setattr(resolved, key, value)
+
+    resolved.config = args.config
+    if resolved.csv_path is None:
+        parser.error("the following arguments are required: csv_path")
+    if resolved.split_ratio is not None and resolved.split_cutoff is not None:
+        parser.error("argument --split-cutoff: not allowed with argument --split-ratio")
+
+    return resolved
+
+
+def _default_args() -> dict[str, Any]:
+    return {
+        "csv_path": None,
+        "symbol": None,
+        "short_window": 20,
+        "long_window": 50,
+        "fee_bps": 0.0,
+        "output": None,
+        "json_output": None,
+        "html_output": None,
+        "manifest_output": None,
+        "sweep": False,
+        "short_windows": (10, 20, 50),
+        "long_windows": (50, 100, 200),
+        "top_n": None,
+        "split_ratio": None,
+        "split_cutoff": None,
+    }
+
+
+def _load_config(path: Path) -> dict[str, Any]:
+    try:
+        raw = json.loads(path.read_text(), parse_constant=_reject_json_constant)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON config {path}: {exc.msg}") from exc
+
+    if not isinstance(raw, dict):
+        raise ValueError("Config file must contain a JSON object")
+
+    allowed_keys = set(_default_args())
+    unknown_keys = sorted(set(raw) - allowed_keys)
+    if unknown_keys:
+        keys = ", ".join(unknown_keys)
+        raise ValueError(f"Unknown config option(s): {keys}")
+
+    return {
+        key: _coerce_config_value(key, value)
+        for key, value in raw.items()
+        if value is not None
+    }
+
+
+def _reject_json_constant(value: str) -> None:
+    raise ValueError(f"Invalid JSON constant: {value}")
+
+
+def _coerce_config_value(key: str, value: Any) -> Any:
+    if key in {"csv_path", "output", "json_output", "html_output", "manifest_output"}:
+        if not isinstance(value, str):
+            raise ValueError(f"Config option {key!r} must be a string path")
+        return Path(value)
+    if key in {"symbol", "split_cutoff"}:
+        if not isinstance(value, str):
+            raise ValueError(f"Config option {key!r} must be a string")
+        return value
+    if key in {"short_window", "long_window", "top_n"}:
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ValueError(f"Config option {key!r} must be an integer")
+        return value
+    if key == "fee_bps":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise ValueError("Config option 'fee_bps' must be numeric")
+        return float(value)
+    if key == "sweep":
+        if not isinstance(value, bool):
+            raise ValueError("Config option 'sweep' must be a boolean")
+        return value
+    if key in {"short_windows", "long_windows"}:
+        return _coerce_config_integer_list(key, value)
+    if key == "split_ratio":
+        if not isinstance(value, int | float) or isinstance(value, bool):
+            raise ValueError("Config option 'split_ratio' must be numeric")
+        return _parse_split_ratio(str(value))
+
+    raise ValueError(f"Unsupported config option: {key}")
+
+
+def _coerce_config_integer_list(key: str, value: Any) -> tuple[int, ...]:
+    if isinstance(value, str):
+        return _parse_integer_list(value)
+    if not isinstance(value, list):
+        raise ValueError(f"Config option {key!r} must be a list of integers")
+    if not value:
+        raise ValueError(f"Config option {key!r} must not be empty")
+    if not all(isinstance(item, int) and not isinstance(item, bool) for item in value):
+        raise ValueError(f"Config option {key!r} must be a list of integers")
+
+    return tuple(value)
 
 
 def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

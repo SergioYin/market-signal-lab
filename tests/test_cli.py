@@ -194,6 +194,271 @@ def test_cli_backtest_outputs_validation_split_metadata(tmp_path: Path) -> None:
     }
 
 
+def test_cli_loads_backtest_config_file(tmp_path: Path) -> None:
+    csv_path = tmp_path / "bars.csv"
+    json_path = tmp_path / "backtest-report.json"
+    csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "AAA,2024-01-01,100,101,99,100\n"
+        "AAA,2024-01-02,101,102,100,101\n"
+        "AAA,2024-01-03,101,103,100,102\n"
+        "AAA,2024-01-04,102,104,101,103\n"
+    )
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "csv_path": str(csv_path),
+                "symbol": "AAA",
+                "short_window": 2,
+                "long_window": 3,
+                "fee_bps": 1.5,
+                "json_output": str(json_path),
+            }
+        )
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "Market Signal Experiment Report" in result.stdout
+    payload = json.loads(json_path.read_text())
+    assert payload["strategy_config"] == {
+        "short_window": 2,
+        "long_window": 3,
+        "symbol": "AAA",
+        "fee_bps": 1.5,
+    }
+
+
+def test_cli_flags_override_config_values(tmp_path: Path) -> None:
+    config_output = tmp_path / "config-sweep.md"
+    override_output = tmp_path / "override-sweep.md"
+    json_path = tmp_path / "sweep-report.json"
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "csv_path": str(SAMPLE_DATA),
+                "symbol": "QQQ_LIKE",
+                "sweep": True,
+                "short_windows": [1, 2],
+                "long_windows": [2, 3],
+                "top_n": 3,
+                "split_ratio": 0.5,
+                "output": str(config_output),
+                "json_output": str(json_path),
+            }
+        )
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+            "--top-n",
+            "1",
+            "--output",
+            str(override_output),
+            "--split-cutoff",
+            "2024-01-08",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert not config_output.exists()
+    report = override_output.read_text()
+    assert report.count("\n| 1 |") == 1
+    assert "\n| 2 |" not in report
+    payload = json.loads(json_path.read_text())
+    assert payload["sweep_config"]["top_n"] == 1
+    assert payload["validation_split"]["method"] == "cutoff"
+    assert payload["validation_split"]["split_cutoff"] == "2024-01-08"
+    assert len(payload["ranked_results"]) == 1
+
+
+def test_cli_positional_csv_path_overrides_config_csv_path(tmp_path: Path) -> None:
+    config_csv_path = tmp_path / "config-bars.csv"
+    override_csv_path = tmp_path / "override-bars.csv"
+    json_path = tmp_path / "backtest-report.json"
+    config_csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "CONFIG,2024-01-01,100,101,99,100\n"
+        "CONFIG,2024-01-02,101,102,100,101\n"
+        "CONFIG,2024-01-03,101,103,100,102\n"
+    )
+    override_csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "OVERRIDE,2024-01-01,100,101,99,100\n"
+        "OVERRIDE,2024-01-02,101,102,100,101\n"
+        "OVERRIDE,2024-01-03,101,103,100,102\n"
+    )
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "csv_path": str(config_csv_path),
+                "symbol": "OVERRIDE",
+                "short_window": 1,
+                "long_window": 2,
+                "json_output": str(json_path),
+            }
+        )
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(override_csv_path),
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(json_path.read_text())
+    assert payload["strategy_config"]["symbol"] == "OVERRIDE"
+    assert payload["row_count"] == 3
+
+
+def test_cli_rejects_non_standard_json_config_constant(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text('{"csv_path": "bars.csv", "fee_bps": NaN}')
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "Invalid JSON constant: NaN" in result.stderr
+
+
+def test_cli_rejects_invalid_config_type(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps({"csv_path": 123}))
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "Config option 'csv_path' must be a string path" in result.stderr
+
+
+def test_cli_rejects_non_object_config(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(["csv_path", str(SAMPLE_DATA)]))
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "Config file must contain a JSON object" in result.stderr
+
+
+def test_cli_rejects_unknown_config_key(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps({"csv_path": str(SAMPLE_DATA), "broker_order": "buy"})
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "Unknown config option(s): broker_order" in result.stderr
+
+
+def test_cli_rejects_config_split_ratio_and_cutoff(tmp_path: Path) -> None:
+    config_path = tmp_path / "config.json"
+    config_path.write_text(
+        json.dumps(
+            {
+                "csv_path": str(SAMPLE_DATA),
+                "split_ratio": 0.5,
+                "split_cutoff": "2024-01-08",
+            }
+        )
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            str(config_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "not allowed with argument" in result.stderr
+
+
 def test_cli_writes_markdown_manifest(tmp_path: Path) -> None:
     csv_path = tmp_path / "bars.csv"
     report_path = tmp_path / "backtest-report.md"

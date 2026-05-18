@@ -13,11 +13,18 @@ def test_render_experiment_report_contains_backtest_caveats() -> None:
             "long_window": 50,
         },
         backtest_curve=_curve(),
-        metrics={"total_return": 0.10, "sharpe_like": 1.25},
+        metrics={
+            "total_return": 0.10,
+            "buy_and_hold_total_return": 0.05,
+            "strategy_minus_buy_and_hold_return": 0.05,
+            "sharpe_like": 1.25,
+        },
         risk_notes=["Uses daily closing prices."],
     )
 
     assert "## Backtest Caveats" in report
+    assert "- **Buy-and-hold total return**: 5.00%" in report
+    assert "- **Strategy minus buy-and-hold return**: 5.00%" in report
     assert "Backtest results are hypothetical" in report
     assert "future performance" in report
     assert "survivorship bias" in report

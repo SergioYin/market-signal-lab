@@ -295,8 +295,14 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
     )
 
     strategy_returns = [record.strategy_return for record in backtest_curve[1:]]
+    buy_and_hold_returns = [record.market_return for record in backtest_curve[1:]]
+    strategy_total_return = total_return(strategy_returns)
+    buy_and_hold_total_return = total_return(buy_and_hold_returns)
     metrics = {
-        "total_return": total_return(strategy_returns),
+        "total_return": strategy_total_return,
+        "buy_and_hold_total_return": buy_and_hold_total_return,
+        "strategy_minus_buy_and_hold_return": strategy_total_return
+        - buy_and_hold_total_return,
         "annualized_return": annualized_return(strategy_returns),
         "max_drawdown": max_drawdown(strategy_returns),
         "volatility": volatility(strategy_returns),

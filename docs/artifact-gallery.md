@@ -8,9 +8,9 @@ The bundled sample data is synthetic and intentionally small. The generated numb
 
 ## Report Artifacts
 
-`reports/sample-report.md` is the human-readable Markdown backtest report. It shows the moving-average strategy configuration, backtest date range, starting and ending equity, exposure changes, summary metrics, risk notes, and backtest caveats.
+`reports/sample-report.md` is the human-readable Markdown backtest report. It shows the moving-average strategy configuration, backtest date range, starting and ending equity, exposure changes, summary metrics, same-period buy-and-hold comparison fields, risk notes, and backtest caveats.
 
-`reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, and row count. Use this format when another script, notebook, or test needs structured output.
+`reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, and row count. The single-backtest metric keys include `buy_and_hold_total_return` and `strategy_minus_buy_and_hold_return` as historical comparison diagnostics only. Use this format when another script, notebook, or test needs structured output.
 
 `reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
 

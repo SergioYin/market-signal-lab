@@ -9,6 +9,16 @@ from typing import Any
 from market_signal_lab.backtest import EquityCurveRecord
 
 LEVERAGED_ETF_SYMBOLS = frozenset({"TQQQ", "QLD"})
+METRIC_LABELS = {
+    "total_return": "Strategy total return",
+    "buy_and_hold_total_return": "Buy-and-hold total return",
+    "strategy_minus_buy_and_hold_return": "Strategy minus buy-and-hold return",
+    "annualized_return": "Annualized return",
+    "max_drawdown": "Max drawdown",
+    "volatility": "Volatility",
+    "sharpe_like": "Sharpe-like score",
+    "win_rate": "Win rate",
+}
 
 
 def render_experiment_report(
@@ -122,7 +132,7 @@ def _render_metrics(metrics: Mapping[str, float]) -> list[str]:
         return ["- No metrics provided."]
 
     return [
-        f"- **{key}**: {_format_metric(key, value)}"
+        f"- **{_metric_label(key)}**: {_format_metric(key, value)}"
         for key, value in metrics.items()
     ]
 
@@ -190,6 +200,10 @@ def _format_metric(key: str, value: float) -> str:
         return _format_percent(value)
 
     return f"{value:.4f}"
+
+
+def _metric_label(key: str) -> str:
+    return METRIC_LABELS.get(key, key)
 
 
 def _format_percent(value: float) -> str:

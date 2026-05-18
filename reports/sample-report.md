@@ -18,12 +18,14 @@
 
 ## Metrics
 
-- **total_return**: 0.00%
-- **annualized_return**: 0.00%
-- **max_drawdown**: 0.00%
-- **volatility**: 0.00%
-- **sharpe_like**: 0.0000
-- **win_rate**: 0.00%
+- **Strategy total return**: 0.00%
+- **Buy-and-hold total return**: 1.69%
+- **Strategy minus buy-and-hold return**: -1.69%
+- **Annualized return**: 0.00%
+- **Max drawdown**: 0.00%
+- **Volatility**: 0.00%
+- **Sharpe-like score**: 0.0000
+- **Win rate**: 0.00%
 
 ## Risk Notes
 

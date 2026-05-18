@@ -1,6 +1,6 @@
 # Market Signal Lab
 
-Market Signal Lab is a public sandbox for transparent trading-signal research. It helps users run reproducible moving-average crossover backtests on OHLC data, inspect risk metrics, and generate Markdown, JSON, HTML, and manifest artifacts for review.
+Market Signal Lab is a public sandbox for transparent trading-signal research. It helps users run reproducible moving-average crossover backtests on OHLC data, compare a strategy against a same-period buy-and-hold baseline, inspect risk metrics, and generate Markdown, JSON, HTML, and manifest artifacts for review.
 
 ## What you get in 60 seconds
 
@@ -73,6 +73,12 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
   --json-output reports/sample-report.json
 ```
 
+Single backtest reports include `buy_and_hold_total_return` and
+`strategy_minus_buy_and_hold_return` metrics. These compare the strategy result
+with a simple same-period buy-and-hold baseline over the supplied CSV. They are
+historical research diagnostics only, not advice to buy, hold, sell, or follow
+the strategy.
+
 Manifest:
 
 ```bash
@@ -94,6 +100,7 @@ Market Signal Lab is for research and learning. It does not connect to brokers, 
 - Provide a small, explainable workflow for signal research and backtesting.
 - Keep experiments deterministic and scriptable so results can be reproduced.
 - Make assumptions explicit through generated experiment reports.
+- Compare strategy results with a simple buy-and-hold baseline for context.
 
 ## Target users
 
@@ -162,6 +169,7 @@ This project intentionally stays narrow:
 - It currently uses a single strategy family: moving-average crossover signals.
 - It is built around CSV-based OHLC input and does not fetch market data automatically.
 - Performance metrics are educational and diagnostic, not investment advice.
+- Buy-and-hold benchmark metrics are historical diagnostics, not recommendations.
 - Train/test sweep comparisons are research diagnostics, not predictions.
 - Outputs are reproducible artifacts for analysis, not execution signals for live systems.
 
@@ -184,6 +192,8 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.5.0 Release Notes](docs/release-notes-v0.5.0.md)
+- [v0.5.0 Release Checklist](docs/release-v0.5.0.md)
 - [v0.4.0 Release Notes](docs/release-notes-v0.4.0.md)
 - [v0.4.0 Release Checklist](docs/release-v0.4.0.md)
 - [v0.3.0 Release Notes](docs/release-notes-v0.3.0.md)

@@ -43,6 +43,8 @@ def test_cli_generates_moving_average_backtest_report(tmp_path: Path) -> None:
 
     assert result.returncode == 0
     assert "Market Signal Experiment Report" in result.stdout
+    assert "- **Buy-and-hold total return**: 4.00%" in result.stdout
+    assert "- **Strategy minus buy-and-hold return**: -2.04%" in result.stdout
     assert "## Strategy Config" in result.stdout
     assert "## Metrics" in result.stdout
     assert "symbol: AAA" in result.stdout
@@ -89,12 +91,22 @@ def test_cli_writes_backtest_json_report(tmp_path: Path) -> None:
     }
     assert set(payload["metrics"]) == {
         "total_return",
+        "buy_and_hold_total_return",
+        "strategy_minus_buy_and_hold_return",
         "annualized_return",
         "max_drawdown",
         "volatility",
         "sharpe_like",
         "win_rate",
     }
+    assert abs(payload["metrics"]["buy_and_hold_total_return"] - 0.03) < 1e-12
+    assert (
+        abs(
+            payload["metrics"]["strategy_minus_buy_and_hold_return"]
+            + 0.02019607843137261
+        )
+        < 1e-12
+    )
     assert payload["first_date"] == "2024-01-01"
     assert payload["last_date"] == "2024-01-04"
     assert payload["row_count"] == 4

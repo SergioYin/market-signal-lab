@@ -24,9 +24,13 @@ from market_signal_lab.metrics import (
 )
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
 from market_signal_lab.report import render_experiment_report
-from market_signal_lab.split import split_train_test
+from market_signal_lab.split import TrainTestSplit, split_train_test
 from market_signal_lab.strategies import moving_average_crossover_strategy
-from market_signal_lab.sweep import render_sweep_report, run_moving_average_sweep
+from market_signal_lab.sweep import (
+    SweepResult,
+    render_sweep_report,
+    run_moving_average_sweep,
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -149,7 +153,8 @@ def _build_parser() -> ArgumentParser:
 
 def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
     bars = _load_bars(Path(args.csv_path), symbol=args.symbol)
-    validation_split = _build_validation_split_metadata(args, bars)
+    split = _build_validation_split(args, bars)
+    validation_split = _build_validation_split_metadata(args, split)
     signals = moving_average_crossover_strategy(
         bars,
         short_window=args.short_window,
@@ -213,13 +218,16 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
 
 def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
     bars = _load_bars(Path(args.csv_path), symbol=args.symbol)
-    validation_split = _build_validation_split_metadata(args, bars)
+    split = _build_validation_split(args, bars)
+    validation_split = _build_validation_split_metadata(args, split)
     results = run_moving_average_sweep(
         bars=bars,
         short_windows=args.short_windows,
         long_windows=args.long_windows,
         fee_bps=args.fee_bps,
         top_n=args.top_n,
+        train_bars=split.train if split is not None else None,
+        test_bars=split.test if split is not None else None,
     )
     report = render_sweep_report(results, validation_split=validation_split)
     sweep_config: dict[str, Any] = {
@@ -234,14 +242,7 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
     json_payload = {
         "sweep_config": sweep_config,
         "ranked_results": [
-            {
-                "rank": rank,
-                "windows": {
-                    "short_window": result.short_window,
-                    "long_window": result.long_window,
-                },
-                "metrics": result.metrics,
-            }
+            _serialize_sweep_result(rank, result)
             for rank, result in enumerate(results, start=1)
         ],
     }
@@ -264,18 +265,44 @@ def _compact_json(payload: dict[str, Any]) -> str:
     return json.dumps(payload, separators=(",", ":")) + "\n"
 
 
-def _build_validation_split_metadata(
+def _serialize_sweep_result(rank: int, result: SweepResult) -> dict[str, Any]:
+    row: dict[str, Any] = {
+        "rank": rank,
+        "windows": {
+            "short_window": result.short_window,
+            "long_window": result.long_window,
+        },
+        "metrics": result.metrics,
+    }
+    if result.train_metrics is not None:
+        row["train_metrics"] = result.train_metrics
+    if result.test_metrics is not None:
+        row["test_metrics"] = result.test_metrics
+
+    return row
+
+
+def _build_validation_split(
     args: Namespace,
     bars: Sequence[PriceBar],
-) -> dict[str, Any] | None:
+) -> TrainTestSplit | None:
     if args.split_ratio is None and args.split_cutoff is None:
         return None
 
-    split = split_train_test(
+    return split_train_test(
         bars,
         train_ratio=args.split_ratio,
         cutoff_date=args.split_cutoff,
     )
+
+
+def _build_validation_split_metadata(
+    args: Namespace,
+    split: TrainTestSplit | None,
+) -> dict[str, Any] | None:
+    if split is None:
+        return None
+
     metadata: dict[str, Any] = {
         "train": _partition_metadata(split.train),
         "test": _partition_metadata(split.test),

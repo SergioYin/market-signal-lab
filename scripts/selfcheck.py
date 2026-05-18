@@ -13,6 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORTS_DIR = REPO_ROOT / "reports"
 CSV_PATH = Path("examples/data/sample_tqqq_qld_like.csv")
 SAMPLE_ARTIFACTS = (
+    Path("reports/index.html"),
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
     Path("reports/sample-report.html"),
@@ -20,7 +21,46 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-sweep.md"),
     Path("reports/sample-sweep.json"),
     Path("reports/sample-sweep.html"),
+    Path("reports/sample-sweep-split.md"),
+    Path("reports/sample-sweep-split.json"),
+    Path("reports/sample-sweep-split.html"),
 )
+
+GALLERY_HTML = """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market Signal Lab Sample Reports</title>
+</head>
+<body>
+  <h1>Market Signal Lab Sample Reports</h1>
+  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data. They are research-only, not investment advice, not recommendations, and not evidence of future performance.</p>
+  <h2>Single Backtest</h2>
+  <ul>
+    <li><a href="sample-report.html">HTML report</a></li>
+    <li><a href="sample-report.md">Markdown report</a></li>
+    <li><a href="sample-report.json">JSON report</a></li>
+  </ul>
+  <h2>Parameter Sweep</h2>
+  <ul>
+    <li><a href="sample-sweep.html">HTML sweep</a></li>
+    <li><a href="sample-sweep.md">Markdown sweep</a></li>
+    <li><a href="sample-sweep.json">JSON sweep</a></li>
+  </ul>
+  <h2>Split Sweep</h2>
+  <ul>
+    <li><a href="sample-sweep-split.html">HTML split sweep</a></li>
+    <li><a href="sample-sweep-split.md">Markdown split sweep</a></li>
+    <li><a href="sample-sweep-split.json">JSON split sweep</a></li>
+  </ul>
+  <h2>Reproduction</h2>
+  <ul>
+    <li><a href="sample-manifest.md">Sample manifest</a></li>
+  </ul>
+</body>
+</html>
+"""
 
 
 def run_compileall() -> bool:
@@ -54,7 +94,39 @@ def run_sample_artifact_generation() -> bool:
     print("3) Generating sample artifacts...")
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    commands = [
+    for command in _sample_artifact_commands():
+        result = subprocess.run(
+            command,
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            print("Sample artifact generation failed")
+            if result.stdout:
+                print(result.stdout)
+            if result.stderr:
+                print(result.stderr, file=sys.stderr)
+            return False
+
+    (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
+
+    for artifact in SAMPLE_ARTIFACTS:
+        path = REPO_ROOT / artifact
+        if not path.exists():
+            print(f"Missing sample artifact: {artifact}")
+            return False
+        if path.stat().st_size == 0:
+            print(f"Empty sample artifact: {artifact}")
+            return False
+
+    print("Created sample report gallery, report, manifest, sweep, split sweep, and HTML artifacts.")
+    return True
+
+
+def _sample_artifact_commands() -> list[list[str]]:
+    return [
         [
             sys.executable,
             "-m",
@@ -100,35 +172,32 @@ def run_sample_artifact_generation() -> bool:
             "--html-output",
             "reports/sample-sweep.html",
         ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(CSV_PATH),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "1,2",
+            "--long-windows",
+            "2,3",
+            "--fee-bps",
+            "10.0",
+            "--top-n",
+            "3",
+            "--split-ratio",
+            "0.5",
+            "--output",
+            "reports/sample-sweep-split.md",
+            "--json-output",
+            "reports/sample-sweep-split.json",
+            "--html-output",
+            "reports/sample-sweep-split.html",
+        ],
     ]
-
-    for command in commands:
-        result = subprocess.run(
-            command,
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            print("Sample artifact generation failed")
-            if result.stdout:
-                print(result.stdout)
-            if result.stderr:
-                print(result.stderr, file=sys.stderr)
-            return False
-
-    for artifact in SAMPLE_ARTIFACTS:
-        path = REPO_ROOT / artifact
-        if not path.exists():
-            print(f"Missing sample artifact: {artifact}")
-            return False
-        if path.stat().st_size == 0:
-            print(f"Empty sample artifact: {artifact}")
-            return False
-
-    print("Created sample report, manifest, sweep, and HTML artifacts.")
-    return True
 
 
 def main() -> int:

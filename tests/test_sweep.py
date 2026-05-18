@@ -34,6 +34,29 @@ def test_run_moving_average_sweep_ranks_by_total_return() -> None:
         (1, 2),
         (1, 3),
     ]
+    assert ranked[0].train_metrics is None
+    assert ranked[0].test_metrics is None
+
+
+def test_run_moving_average_sweep_includes_split_metrics_when_supplied() -> None:
+    bars = _bars([100, 101, 102, 103, 104, 105])
+
+    ranked = run_moving_average_sweep(
+        bars,
+        short_windows=(1,),
+        long_windows=(2,),
+        train_bars=bars[:3],
+        test_bars=bars[3:],
+    )
+
+    assert len(ranked) == 1
+    result = ranked[0]
+    assert result.train_metrics is not None
+    assert result.test_metrics is not None
+    assert set(result.train_metrics) == set(result.metrics)
+    assert set(result.test_metrics) == set(result.metrics)
+    assert "total_return" in result.train_metrics
+    assert "total_return" in result.test_metrics
 
 
 def test_rank_sweep_results_uses_max_drawdown_as_tie_breaker() -> None:
@@ -88,6 +111,40 @@ def test_render_sweep_report_contains_research_caveat_and_table() -> None:
     assert "| 1 | 2 | 8 | 25.10% | 11.80% | -7.25% | 19.44% | 0.6071 | 53.60% |" in report
 
 
+def test_render_sweep_report_with_split_contains_comparison_columns() -> None:
+    report = render_sweep_report(
+        [
+            _sweep_result(
+                short_window=2,
+                long_window=8,
+                total_return=0.251,
+                train_total_return=0.331,
+                test_total_return=-0.042,
+            )
+        ],
+        validation_split={
+            "train": {
+                "first_date": "2024-01-01",
+                "last_date": "2024-01-03",
+                "row_count": 3,
+            },
+            "test": {
+                "first_date": "2024-01-04",
+                "last_date": "2024-01-06",
+                "row_count": 3,
+            },
+        },
+    )
+
+    assert "parameter overfitting" in report
+    assert (
+        "| rank | short_window | long_window | total_return | "
+        "train_total_return | test_total_return | annualized_return | "
+        "max_drawdown | volatility | sharpe_like | win_rate |"
+    ) in report
+    assert "| 1 | 2 | 8 | 25.10% | 33.10% | -4.20%" in report
+
+
 def test_render_sweep_report_uses_input_order_for_rank() -> None:
     report = render_sweep_report(
         [
@@ -119,19 +176,48 @@ def _sweep_result(
     volatility: float = 0.0,
     sharpe_like: float = 0.0,
     win_rate: float = 0.0,
+    train_total_return: float | None = None,
+    test_total_return: float | None = None,
 ) -> SweepResult:
+    train_metrics = None
+    if train_total_return is not None:
+        train_metrics = _metrics(total_return=train_total_return)
+    test_metrics = None
+    if test_total_return is not None:
+        test_metrics = _metrics(total_return=test_total_return)
+
     return SweepResult(
         short_window=short_window,
         long_window=long_window,
-        metrics={
-            "total_return": total_return,
-            "annualized_return": annualized_return,
-            "max_drawdown": max_drawdown,
-            "volatility": volatility,
-            "sharpe_like": sharpe_like,
-            "win_rate": win_rate,
-        },
+        metrics=_metrics(
+            total_return=total_return,
+            annualized_return=annualized_return,
+            max_drawdown=max_drawdown,
+            volatility=volatility,
+            sharpe_like=sharpe_like,
+            win_rate=win_rate,
+        ),
+        train_metrics=train_metrics,
+        test_metrics=test_metrics,
     )
+
+
+def _metrics(
+    total_return: float,
+    annualized_return: float = 0.0,
+    max_drawdown: float = 0.0,
+    volatility: float = 0.0,
+    sharpe_like: float = 0.0,
+    win_rate: float = 0.0,
+) -> dict[str, float]:
+    return {
+        "total_return": total_return,
+        "annualized_return": annualized_return,
+        "max_drawdown": max_drawdown,
+        "volatility": volatility,
+        "sharpe_like": sharpe_like,
+        "win_rate": win_rate,
+    }
 
 
 def _bars(closes: list[float]) -> list[PriceBar]:

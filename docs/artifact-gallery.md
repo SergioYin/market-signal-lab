@@ -2,7 +2,9 @@
 
 Market Signal Lab includes generated sample artifacts in `reports/` so new users can inspect the outputs before running their own data. These files are research artifacts only. They are not trading advice, recommendations, forecasts, or instructions to buy or sell anything.
 
-The bundled sample data is synthetic and intentionally small. The generated numbers are useful for checking report structure and reproducibility, not for making market claims.
+The bundled sample data is synthetic and intentionally small. The generated numbers are useful for checking report structure and reproducibility, not for making market claims. See [Data Provenance](data-provenance.md) for the source and placeholder-symbol details.
+
+`reports/index.html` is a static no-JavaScript gallery that links to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page.
 
 ## Report Artifacts
 
@@ -20,13 +22,17 @@ The bundled sample data is synthetic and intentionally small. The generated numb
 
 `reports/sample-sweep.html` is an HTML wrapper around the Markdown sweep report. It provides a browser-viewable version of the same ranked table.
 
+Sweep runs can also include train/test comparison metadata by passing `--split-ratio` or `--split-cutoff`. In that mode, the ranked table and JSON results include `train_total_return` and `test_total_return` diagnostics for each window pair when those partitions can be evaluated. These values compare historical partitions inside the supplied dataset; they are not forecasts, recommendations, or evidence of future performance.
+
+`reports/sample-sweep-split.md`, `reports/sample-sweep-split.json`, and `reports/sample-sweep-split.html` are generated from the bundled sample CSV with `--sweep --short-windows 1,2 --long-windows 2,3 --split-ratio 0.5`. The small windows and even split are intentional for the eight-row fixture so the train/test comparison columns show non-zero diagnostics in the checked-in sample artifact set.
+
 ### Why Sweep Rankings Are Not Predictions
 
 A sweep ranking says, "within this historical sample, using these settings, this row sorted higher by the ranking rule." It does not say the same settings will work tomorrow.
 
 For beginners, think of a sweep like checking which shoes were fastest on one short practice route. The result can describe that route, on that day, under those conditions. It does not prove those shoes will be fastest on every route or in future weather. In market research, this gap is larger because prices change, regimes shift, costs vary, and testing many parameter combinations can accidentally reward settings that fit noise.
 
-Use sweep rankings as a starting point for questioning a strategy, not as a prediction engine.
+Use sweep rankings and train/test comparison fields as a starting point for questioning a strategy, not as a prediction engine.
 
 ## Manifest Artifact
 
@@ -53,9 +59,13 @@ After it finishes, the expected generated files are:
 - `reports/sample-report.md`
 - `reports/sample-report.json`
 - `reports/sample-report.html`
+- `reports/index.html`
 - `reports/sample-sweep.md`
 - `reports/sample-sweep.json`
 - `reports/sample-sweep.html`
+- `reports/sample-sweep-split.md`
+- `reports/sample-sweep-split.json`
+- `reports/sample-sweep-split.html`
 - `reports/sample-manifest.md`
 
 Because selfcheck rewrites these files, review the generated diff before committing changes.

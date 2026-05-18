@@ -1,0 +1,8 @@
+# v0.3.0 Release Notes
+
+- Train/test sweep metrics: parameter sweeps can now report `train_total_return` and `test_total_return` when run with `--split-ratio` or `--split-cutoff`; the public split sample ranks `(2, 3)` first with `1.51%` total return, `1.80%` train return, and `-1.64%` test return.
+- Split-sweep sample artifacts: checked-in examples are available as [`sample-sweep-split.md`](../reports/sample-sweep-split.md), [`sample-sweep-split.json`](../reports/sample-sweep-split.json), and [`sample-sweep-split.html`](../reports/sample-sweep-split.html), generated from the bundled synthetic CSV with a 50/50 validation split.
+- Static reports gallery: [`reports/index.html`](../reports/index.html) links the public single-backtest, sweep, split-sweep, and manifest artifacts with relative paths and no external assets.
+- Data provenance: bundled sample rows are synthetic, deterministic example data with placeholder `_LIKE` symbols; Market Signal Lab reads local CSV files and does not fetch broker, exchange, vendor, fund-provider, or live market data. See [Data Provenance](data-provenance.md).
+- Verification commands: run `pytest`, `python scripts/selfcheck.py`, or regenerate the split sample with `market-signal-lab examples/data/sample_tqqq_qld_like.csv --symbol QQQ_LIKE --sweep --short-windows 1,2 --long-windows 2,3 --split-ratio 0.5 --top-n 3 --output reports/sample-sweep-split.md`.
+- Research boundary: all reports, sweep rankings, and train/test comparisons are historical research diagnostics only; they are not investment advice, trading recommendations, forecasts, or live execution signals.

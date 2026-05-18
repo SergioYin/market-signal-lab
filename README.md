@@ -30,6 +30,25 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
   --output reports/sample-sweep.md
 ```
 
+Sweep report with train/test comparison diagnostics:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --sweep \
+  --short-windows 1,2 \
+  --long-windows 2,3 \
+  --split-ratio 0.5 \
+  --top-n 3 \
+  --output reports/sample-sweep-split.md
+```
+
+When a sweep uses `--split-ratio` or `--split-cutoff`, the sweep output includes
+`train_total_return` and `test_total_return` columns for train/test comparison.
+These fields are research diagnostics for checking how historical rankings differ
+across two partitions. They are not predictions, forecasts, recommendations, or
+evidence of future performance.
+
 JSON export:
 
 ```bash
@@ -129,6 +148,7 @@ This project intentionally stays narrow:
 - It currently uses a single strategy family: moving-average crossover signals.
 - It is built around CSV-based OHLC input and does not fetch market data automatically.
 - Performance metrics are educational and diagnostic, not investment advice.
+- Train/test sweep comparisons are research diagnostics, not predictions.
 - Outputs are reproducible artifacts for analysis, not execution signals for live systems.
 
 ## Roadmap
@@ -147,4 +167,6 @@ Before using any findings, read:
 
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
+- [Data Provenance](docs/data-provenance.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.3.0 Release Checklist](docs/release-v0.3.0.md)

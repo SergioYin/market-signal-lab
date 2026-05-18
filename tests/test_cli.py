@@ -353,6 +353,8 @@ def test_cli_writes_sweep_json_report(tmp_path: Path) -> None:
         "windows",
         "metrics",
     }.issubset(payload["ranked_results"][0])
+    assert "train_metrics" not in payload["ranked_results"][0]
+    assert "test_metrics" not in payload["ranked_results"][0]
     assert set(payload["ranked_results"][0]["windows"]) == {
         "short_window",
         "long_window",
@@ -436,6 +438,9 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
     report = output_path.read_text()
     assert "## Validation split" in report
     assert "not a trading recommendation" in report
+    assert "train_total_return" in report
+    assert "test_total_return" in report
+    assert "parameter overfitting" in report
     payload = json.loads(json_path.read_text())
     assert payload["validation_split"] == {
         "train": {
@@ -453,6 +458,11 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
         "method": "cutoff",
         "split_cutoff": "2024-01-08",
     }
+    first_result = payload["ranked_results"][0]
+    assert "train_metrics" in first_result
+    assert "test_metrics" in first_result
+    assert set(first_result["train_metrics"]) == set(first_result["metrics"])
+    assert set(first_result["test_metrics"]) == set(first_result["metrics"])
 
 
 def test_cli_rejects_mutually_exclusive_validation_split_flags() -> None:

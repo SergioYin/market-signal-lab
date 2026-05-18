@@ -37,6 +37,26 @@ SWEEP_REPORT_COLUMNS = (
     "win_rate",
 )
 
+SWEEP_REPORT_SPLIT_COLUMNS = (
+    "rank",
+    "short_window",
+    "long_window",
+    "total_return",
+    "train_total_return",
+    "test_total_return",
+    "annualized_return",
+    "max_drawdown",
+    "volatility",
+    "sharpe_like",
+    "win_rate",
+)
+
+SWEEP_OVERFIT_CAVEAT = (
+    "Train/test columns are a comparison aid for historical research only; a "
+    "large train/test gap can be a sign of parameter overfitting and is not a "
+    "trading recommendation."
+)
+
 
 @dataclass(frozen=True)
 class SweepResult:
@@ -45,6 +65,8 @@ class SweepResult:
     short_window: int
     long_window: int
     metrics: dict[str, float]
+    train_metrics: dict[str, float] | None = None
+    test_metrics: dict[str, float] | None = None
 
     @property
     def total_return(self) -> float:
@@ -80,11 +102,15 @@ def run_moving_average_sweep(
     fee_bps: float = 0.0,
     initial_equity: float = 1.0,
     top_n: int | None = None,
+    train_bars: Sequence[PriceBar] | None = None,
+    test_bars: Sequence[PriceBar] | None = None,
 ) -> list[SweepResult]:
     """Evaluate moving-average configurations and return ranked research results."""
 
     if top_n is not None and top_n < 1:
         raise ValueError("top_n must be at least 1 when set")
+    if (train_bars is None) != (test_bars is None):
+        raise ValueError("train_bars and test_bars must be provided together")
 
     grid = moving_average_parameter_grid(short_windows, long_windows)
     if not grid:
@@ -97,6 +123,8 @@ def run_moving_average_sweep(
             long_window=long_window,
             fee_bps=fee_bps,
             initial_equity=initial_equity,
+            train_bars=train_bars,
+            test_bars=test_bars,
         )
         for short_window, long_window in grid
     ]
@@ -135,15 +163,29 @@ def render_sweep_report(
         f"> {SWEEP_REPORT_CAVEAT}",
         "",
         *render_validation_split_note(validation_split),
-        "| " + " | ".join(SWEEP_REPORT_COLUMNS) + " |",
-        "| " + " | ".join("---" for _ in SWEEP_REPORT_COLUMNS) + " |",
     ]
+    if validation_split is not None:
+        lines.extend([f"> {SWEEP_OVERFIT_CAVEAT}", ""])
+
+    columns = _sweep_report_columns(validation_split)
+    lines.extend(
+        [
+            "| " + " | ".join(columns) + " |",
+            "| " + " | ".join("---" for _ in columns) + " |",
+        ]
+    )
 
     for rank, result in enumerate(results, start=1):
-        lines.append(_render_sweep_result_row(rank, result))
+        lines.append(
+            _render_sweep_result_row(
+                rank,
+                result,
+                include_split_columns=validation_split is not None,
+            )
+        )
 
     if not results:
-        lines.append("| - | - | - | - | - | - | - | - | - |")
+        lines.append("| " + " | ".join("-" for _ in columns) + " |")
 
     return "\n".join(lines) + "\n"
 
@@ -154,7 +196,51 @@ def _evaluate_pair(
     long_window: int,
     fee_bps: float,
     initial_equity: float,
+    train_bars: Sequence[PriceBar] | None = None,
+    test_bars: Sequence[PriceBar] | None = None,
 ) -> SweepResult:
+    return SweepResult(
+        short_window=short_window,
+        long_window=long_window,
+        metrics=_evaluate_metrics(
+            bars=bars,
+            short_window=short_window,
+            long_window=long_window,
+            fee_bps=fee_bps,
+            initial_equity=initial_equity,
+        ),
+        train_metrics=(
+            _evaluate_metrics(
+                bars=train_bars,
+                short_window=short_window,
+                long_window=long_window,
+                fee_bps=fee_bps,
+                initial_equity=initial_equity,
+            )
+            if train_bars is not None
+            else None
+        ),
+        test_metrics=(
+            _evaluate_metrics(
+                bars=test_bars,
+                short_window=short_window,
+                long_window=long_window,
+                fee_bps=fee_bps,
+                initial_equity=initial_equity,
+            )
+            if test_bars is not None
+            else None
+        ),
+    )
+
+
+def _evaluate_metrics(
+    bars: Sequence[PriceBar],
+    short_window: int,
+    long_window: int,
+    fee_bps: float,
+    initial_equity: float,
+) -> dict[str, float]:
     signals = moving_average_crossover_strategy(
         bars,
         short_window=short_window,
@@ -168,35 +254,65 @@ def _evaluate_pair(
         initial_equity=initial_equity,
     )
     strategy_returns = [record.strategy_return for record in curve[1:]]
-
-    return SweepResult(
-        short_window=short_window,
-        long_window=long_window,
-        metrics={
-            "total_return": total_return(strategy_returns),
-            "max_drawdown": max_drawdown(strategy_returns),
-            "annualized_return": annualized_return(strategy_returns),
-            "volatility": volatility(strategy_returns),
-            "sharpe_like": sharpe_like(strategy_returns),
-            "win_rate": win_rate_from_returns(strategy_returns),
-        },
-    )
+    return {
+        "total_return": total_return(strategy_returns),
+        "max_drawdown": max_drawdown(strategy_returns),
+        "annualized_return": annualized_return(strategy_returns),
+        "volatility": volatility(strategy_returns),
+        "sharpe_like": sharpe_like(strategy_returns),
+        "win_rate": win_rate_from_returns(strategy_returns),
+    }
 
 
-def _render_sweep_result_row(rank: int, result: SweepResult) -> str:
-    values = (
-        str(rank),
-        str(result.short_window),
-        str(result.long_window),
-        format_sweep_percentage(result.metrics["total_return"]),
-        format_sweep_percentage(result.metrics["annualized_return"]),
-        format_sweep_percentage(result.metrics["max_drawdown"]),
-        format_sweep_percentage(result.metrics["volatility"]),
-        format_sweep_number(result.metrics["sharpe_like"]),
-        format_sweep_percentage(result.metrics["win_rate"]),
-    )
+def _sweep_report_columns(
+    validation_split: Mapping[str, Any] | None,
+) -> tuple[str, ...]:
+    if validation_split is None:
+        return SWEEP_REPORT_COLUMNS
+    return SWEEP_REPORT_SPLIT_COLUMNS
+
+
+def _render_sweep_result_row(
+    rank: int,
+    result: SweepResult,
+    *,
+    include_split_columns: bool,
+) -> str:
+    values: tuple[str, ...]
+    if not include_split_columns:
+        values = (
+            str(rank),
+            str(result.short_window),
+            str(result.long_window),
+            format_sweep_percentage(result.metrics["total_return"]),
+            format_sweep_percentage(result.metrics["annualized_return"]),
+            format_sweep_percentage(result.metrics["max_drawdown"]),
+            format_sweep_percentage(result.metrics["volatility"]),
+            format_sweep_number(result.metrics["sharpe_like"]),
+            format_sweep_percentage(result.metrics["win_rate"]),
+        )
+    else:
+        values = (
+            str(rank),
+            str(result.short_window),
+            str(result.long_window),
+            format_sweep_percentage(result.metrics["total_return"]),
+            _format_optional_total_return(result.train_metrics),
+            _format_optional_total_return(result.test_metrics),
+            format_sweep_percentage(result.metrics["annualized_return"]),
+            format_sweep_percentage(result.metrics["max_drawdown"]),
+            format_sweep_percentage(result.metrics["volatility"]),
+            format_sweep_number(result.metrics["sharpe_like"]),
+            format_sweep_percentage(result.metrics["win_rate"]),
+        )
 
     return "| " + " | ".join(values) + " |"
+
+
+def _format_optional_total_return(metrics: Mapping[str, float] | None) -> str:
+    if metrics is None:
+        return "-"
+    return format_sweep_percentage(metrics["total_return"])
 
 
 def _normalize_window_values(values: Sequence[int]) -> list[int]:

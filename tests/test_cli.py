@@ -9,6 +9,24 @@ from pathlib import Path
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
 
 
+def test_cli_prints_version_without_requiring_csv_path() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--version",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == "market-signal-lab 0.6.0\n"
+    assert result.stderr == ""
+
+
 def test_cli_generates_moving_average_backtest_report(tmp_path: Path) -> None:
     csv_path = tmp_path / "bars.csv"
     csv_path.write_text(

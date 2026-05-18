@@ -127,6 +127,12 @@ Run help:
 market-signal-lab --help
 ```
 
+Print the installed CLI version:
+
+```bash
+market-signal-lab --version
+```
+
 Offline sample command (uses the repository's bundled sample CSV):
 
 ```bash
@@ -193,6 +199,8 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.6.0 Release Notes](docs/release-notes-v0.6.0.md)
+- [v0.6.0 Release Checklist](docs/release-v0.6.0.md)
 - [v0.5.0 Release Notes](docs/release-notes-v0.5.0.md)
 - [v0.5.0 Release Checklist](docs/release-v0.5.0.md)
 - [v0.4.0 Release Notes](docs/release-notes-v0.4.0.md)

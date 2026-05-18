@@ -11,6 +11,7 @@ import json
 import sys
 from typing import Any
 
+from market_signal_lab import __version__
 from market_signal_lab.backtest import backtest_long_cash
 from market_signal_lab.data import REQUIRED_COLUMNS, PriceBar, load_ohlc_csv
 from market_signal_lab.html import render_html_report
@@ -67,6 +68,11 @@ def _build_parser() -> ArgumentParser:
     parser = ArgumentParser(
         prog="market-signal-lab",
         description="Generate a moving-average crossover report from OHLC CSV data.",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
         "csv_path",

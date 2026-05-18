@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
+
+
+SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
 
 
 def test_cli_generates_moving_average_backtest_report(tmp_path: Path) -> None:
@@ -42,3 +46,490 @@ def test_cli_generates_moving_average_backtest_report(tmp_path: Path) -> None:
     assert "## Strategy Config" in result.stdout
     assert "## Metrics" in result.stdout
     assert "symbol: AAA" in result.stdout
+
+
+def test_cli_writes_backtest_json_report(tmp_path: Path) -> None:
+    csv_path = tmp_path / "bars.csv"
+    json_path = tmp_path / "backtest-report.json"
+    csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "AAA,2024-01-01,100,101,99,100\n"
+        "AAA,2024-01-02,101,102,100,101\n"
+        "AAA,2024-01-03,101,103,100,102\n"
+        "AAA,2024-01-04,102,104,101,103\n"
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(csv_path),
+            "--symbol",
+            "AAA",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "Market Signal Experiment Report" in result.stdout
+    payload = json.loads(json_path.read_text())
+    assert payload["strategy_config"] == {
+        "short_window": 2,
+        "long_window": 3,
+        "symbol": "AAA",
+    }
+    assert set(payload["metrics"]) == {
+        "total_return",
+        "annualized_return",
+        "max_drawdown",
+        "volatility",
+        "sharpe_like",
+        "win_rate",
+    }
+    assert payload["first_date"] == "2024-01-01"
+    assert payload["last_date"] == "2024-01-04"
+    assert payload["row_count"] == 4
+
+
+def test_cli_writes_backtest_html_report(tmp_path: Path) -> None:
+    csv_path = tmp_path / "bars.csv"
+    html_path = tmp_path / "backtest-report.html"
+    csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "AAA,2024-01-01,100,101,99,100\n"
+        "AAA,2024-01-02,101,102,100,101\n"
+        "AAA,2024-01-03,101,103,100,102\n"
+        "AAA,2024-01-04,102,104,101,103\n"
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(csv_path),
+            "--symbol",
+            "AAA",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--html-output",
+            str(html_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "Market Signal Experiment Report" in result.stdout
+    html = html_path.read_text()
+    assert "<!doctype html>" in html
+    assert "<pre># Market Signal Experiment Report" in html
+    assert "Research-only" in html
+
+
+def test_cli_backtest_outputs_validation_split_metadata(tmp_path: Path) -> None:
+    csv_path = tmp_path / "bars.csv"
+    json_path = tmp_path / "backtest-report.json"
+    csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "AAA,2024-01-01,100,101,99,100\n"
+        "AAA,2024-01-02,101,102,100,101\n"
+        "AAA,2024-01-03,101,103,100,102\n"
+        "AAA,2024-01-04,102,104,101,103\n"
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(csv_path),
+            "--symbol",
+            "AAA",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--split-ratio",
+            "0.5",
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "## Validation split" in result.stdout
+    assert "Research metadata only" in result.stdout
+    payload = json.loads(json_path.read_text())
+    assert payload["validation_split"] == {
+        "train": {
+            "first_date": "2024-01-01",
+            "last_date": "2024-01-02",
+            "row_count": 2,
+        },
+        "test": {
+            "first_date": "2024-01-03",
+            "last_date": "2024-01-04",
+            "row_count": 2,
+        },
+        "research_only": True,
+        "note": "Validation split metadata is not a trading recommendation.",
+        "method": "ratio",
+        "split_ratio": 0.5,
+    }
+
+
+def test_cli_writes_markdown_manifest(tmp_path: Path) -> None:
+    csv_path = tmp_path / "bars.csv"
+    report_path = tmp_path / "backtest-report.md"
+    manifest_path = tmp_path / "manifest.md"
+    csv_path.write_text(
+        "symbol,date,open,high,low,close\n"
+        "AAA,2024-01-01,100,101,99,100\n"
+        "AAA,2024-01-02,101,102,100,101\n"
+        "AAA,2024-01-03,101,103,100,102\n"
+        "AAA,2024-01-04,102,104,101,103\n"
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(csv_path),
+            "--symbol",
+            "AAA",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--fee-bps",
+            "1.5",
+            "--output",
+            str(report_path),
+            "--manifest-output",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    manifest = manifest_path.read_text()
+    assert "# Experiment Manifest" in manifest
+    assert f"- **input_path**: {csv_path}" in manifest
+    assert "- **symbol**: AAA" in manifest
+    assert "- **mode**: backtest" in manifest
+    assert "## strategy_config" in manifest
+    assert "- **short_window**: 2" in manifest
+    assert "- **long_window**: 3" in manifest
+    assert "- **fee_bps**: 1.5000" in manifest
+    assert "## output_paths" in manifest
+    assert f"- **manifest**: {manifest_path}" in manifest
+    assert f"- **markdown_report**: {report_path}" in manifest
+    assert "- **research_only**: true" in manifest
+
+
+def test_cli_sweep_prints_markdown_report_to_stdout() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--top-n",
+            "2",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "# Moving Average Sweep Report" in result.stdout
+    assert "Research-only" in result.stdout
+    assert "| rank | short_window | long_window | total_return |" in result.stdout
+    assert result.stdout.count("\n| 1 |") == 1
+    assert result.stdout.count("\n| 2 |") == 1
+
+
+def test_cli_sweep_writes_markdown_report_to_output_file(tmp_path: Path) -> None:
+    output_path = tmp_path / "sweep-report.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "TQQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--top-n",
+            "1",
+            "--output",
+            str(output_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    report = output_path.read_text()
+    assert "# Moving Average Sweep Report" in report
+    assert "| rank | short_window | long_window | total_return |" in report
+    assert report.count("\n| 1 |") == 1
+    assert "\n| 2 |" not in report
+
+
+def test_cli_writes_sweep_json_report(tmp_path: Path) -> None:
+    json_path = tmp_path / "sweep-report.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--top-n",
+            "2",
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "# Moving Average Sweep Report" in result.stdout
+    payload = json.loads(json_path.read_text())
+    assert payload["sweep_config"] == {
+        "short_windows": [2, 3],
+        "long_windows": [4, 5],
+        "fee_bps": 0.0,
+        "top_n": 2,
+        "symbol": "QQQ_LIKE",
+    }
+    assert [result["rank"] for result in payload["ranked_results"]] == [1, 2]
+    assert {
+        "windows",
+        "metrics",
+    }.issubset(payload["ranked_results"][0])
+    assert set(payload["ranked_results"][0]["windows"]) == {
+        "short_window",
+        "long_window",
+    }
+    assert set(payload["ranked_results"][0]["metrics"]) == {
+        "total_return",
+        "annualized_return",
+        "max_drawdown",
+        "volatility",
+        "sharpe_like",
+        "win_rate",
+    }
+
+
+def test_cli_writes_sweep_html_report(tmp_path: Path) -> None:
+    html_path = tmp_path / "sweep-report.html"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--top-n",
+            "1",
+            "--html-output",
+            str(html_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "# Moving Average Sweep Report" in result.stdout
+    html = html_path.read_text()
+    assert "<pre># Moving Average Sweep Report" in html
+    assert "| rank | short_window | long_window | total_return |" in html
+    assert "Research-only" in html
+
+
+def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
+    output_path = tmp_path / "sweep-report.md"
+    json_path = tmp_path / "sweep-report.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--top-n",
+            "2",
+            "--split-cutoff",
+            "2024-01-08",
+            "--output",
+            str(output_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    report = output_path.read_text()
+    assert "## Validation split" in report
+    assert "not a trading recommendation" in report
+    payload = json.loads(json_path.read_text())
+    assert payload["validation_split"] == {
+        "train": {
+            "first_date": "2024-01-02",
+            "last_date": "2024-01-05",
+            "row_count": 4,
+        },
+        "test": {
+            "first_date": "2024-01-08",
+            "last_date": "2024-01-11",
+            "row_count": 4,
+        },
+        "research_only": True,
+        "note": "Validation split metadata is not a trading recommendation.",
+        "method": "cutoff",
+        "split_cutoff": "2024-01-08",
+    }
+
+
+def test_cli_rejects_mutually_exclusive_validation_split_flags() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--split-ratio",
+            "0.5",
+            "--split-cutoff",
+            "2024-01-08",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "not allowed with argument" in result.stderr
+
+
+def test_cli_rejects_invalid_sweep_window_flag() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--sweep",
+            "--short-windows",
+            "2,,3",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "list values must be comma-separated integers" in result.stderr
+
+
+def test_cli_rejects_invalid_top_n_flag() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--sweep",
+            "--top-n",
+            "0",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "top_n must be at least 1 when set" in result.stderr
+
+
+def test_cli_rejects_invalid_split_ratio_flag() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--split-ratio",
+            "1.0",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "split ratio must be greater than 0 and less than 1" in result.stderr

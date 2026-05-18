@@ -1,6 +1,60 @@
 # Market Signal Lab
 
-Market Signal Lab is a public sandbox for transparent trading-signal research. It helps users run reproducible moving-average crossover backtests on OHLC data, inspect risk metrics, and generate Markdown reports for review.
+Market Signal Lab is a public sandbox for transparent trading-signal research. It helps users run reproducible moving-average crossover backtests on OHLC data, inspect risk metrics, and generate Markdown, JSON, HTML, and manifest artifacts for review.
+
+## What you get in 60 seconds
+
+After installing, use the bundled sample CSV to create the main research artifacts:
+
+Normal report:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --short-window 20 \
+  --long-window 50 \
+  --fee-bps 10.0 \
+  --output reports/sample-report.md
+```
+
+Sweep report:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --sweep \
+  --short-windows 10,20 \
+  --long-windows 50,100 \
+  --fee-bps 10.0 \
+  --top-n 3 \
+  --output reports/sample-sweep.md
+```
+
+JSON export:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --short-window 20 \
+  --long-window 50 \
+  --json-output reports/sample-report.json
+```
+
+Manifest:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --short-window 20 \
+  --long-window 50 \
+  --output reports/sample-report.md \
+  --json-output reports/sample-report.json \
+  --manifest-output reports/sample-manifest.md
+```
+
+## Not a trading bot
+
+Market Signal Lab is for research and learning. It does not connect to brokers, place trades, or tell you what to buy or sell. Leveraged ETF examples can move faster than broad market funds and may lose value quickly, especially over longer holding periods or choppy markets. Treat every result as a historical experiment, not a live trading instruction.
 
 ## Purpose
 
@@ -93,3 +147,4 @@ Before using any findings, read:
 
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
+- [Artifact Gallery](docs/artifact-gallery.md)

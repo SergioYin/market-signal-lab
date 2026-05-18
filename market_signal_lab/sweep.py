@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import Any
 
 from market_signal_lab.backtest import backtest_long_cash
 from market_signal_lab.data import PriceBar
@@ -15,7 +16,26 @@ from market_signal_lab.metrics import (
     volatility,
     win_rate_from_returns,
 )
+from market_signal_lab.report import render_validation_split_note
 from market_signal_lab.strategies import moving_average_crossover_strategy
+
+
+SWEEP_REPORT_CAVEAT = (
+    "Research-only: this sweep is a historical parameter screen, not investment "
+    "advice, not a recommendation, and not evidence of future performance."
+)
+
+SWEEP_REPORT_COLUMNS = (
+    "rank",
+    "short_window",
+    "long_window",
+    "total_return",
+    "annualized_return",
+    "max_drawdown",
+    "volatility",
+    "sharpe_like",
+    "win_rate",
+)
 
 
 @dataclass(frozen=True)
@@ -91,6 +111,43 @@ def rank_sweep_results(results: Sequence[SweepResult]) -> list[SweepResult]:
     return sorted(results, key=lambda result: (result.total_return, result.max_drawdown), reverse=True)
 
 
+def format_sweep_percentage(value: float) -> str:
+    """Format a decimal metric as a percentage for sweep reports."""
+
+    return f"{value * 100:.2f}%"
+
+
+def format_sweep_number(value: float) -> str:
+    """Format a plain numeric metric for sweep reports."""
+
+    return f"{value:.4f}"
+
+
+def render_sweep_report(
+    results: Sequence[SweepResult],
+    validation_split: Mapping[str, Any] | None = None,
+) -> str:
+    """Render ranked moving-average sweep results as a Markdown report."""
+
+    lines = [
+        "# Moving Average Sweep Report",
+        "",
+        f"> {SWEEP_REPORT_CAVEAT}",
+        "",
+        *render_validation_split_note(validation_split),
+        "| " + " | ".join(SWEEP_REPORT_COLUMNS) + " |",
+        "| " + " | ".join("---" for _ in SWEEP_REPORT_COLUMNS) + " |",
+    ]
+
+    for rank, result in enumerate(results, start=1):
+        lines.append(_render_sweep_result_row(rank, result))
+
+    if not results:
+        lines.append("| - | - | - | - | - | - | - | - | - |")
+
+    return "\n".join(lines) + "\n"
+
+
 def _evaluate_pair(
     bars: Sequence[PriceBar],
     short_window: int,
@@ -124,6 +181,22 @@ def _evaluate_pair(
             "win_rate": win_rate_from_returns(strategy_returns),
         },
     )
+
+
+def _render_sweep_result_row(rank: int, result: SweepResult) -> str:
+    values = (
+        str(rank),
+        str(result.short_window),
+        str(result.long_window),
+        format_sweep_percentage(result.metrics["total_return"]),
+        format_sweep_percentage(result.metrics["annualized_return"]),
+        format_sweep_percentage(result.metrics["max_drawdown"]),
+        format_sweep_percentage(result.metrics["volatility"]),
+        format_sweep_number(result.metrics["sharpe_like"]),
+        format_sweep_percentage(result.metrics["win_rate"]),
+    )
+
+    return "| " + " | ".join(values) + " |"
 
 
 def _normalize_window_values(values: Sequence[int]) -> list[int]:

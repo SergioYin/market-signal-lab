@@ -16,6 +16,7 @@ def render_experiment_report(
     backtest_curve: Sequence[EquityCurveRecord],
     metrics: Mapping[str, float],
     risk_notes: Sequence[str] = (),
+    validation_split: Mapping[str, Any] | None = None,
 ) -> str:
     """Render a Markdown report for one strategy/backtest experiment."""
 
@@ -34,6 +35,7 @@ def render_experiment_report(
         "",
         *_render_metrics(metrics),
         "",
+        *render_validation_split_note(validation_split),
         "## Risk Notes",
         "",
         *_render_risk_notes(strategy_config, risk_notes),
@@ -52,6 +54,35 @@ def render_experiment_report(
     ]
 
     return "\n".join(lines) + "\n"
+
+
+def render_validation_split_note(
+    validation_split: Mapping[str, Any] | None,
+) -> list[str]:
+    """Render a concise Markdown validation split note."""
+
+    if validation_split is None:
+        return []
+
+    train = validation_split["train"]
+    test = validation_split["test"]
+    return [
+        "## Validation split",
+        "",
+        (
+            "- Research metadata only; this split is not a trading "
+            "recommendation."
+        ),
+        (
+            f"- Train: {train['first_date']} to {train['last_date']} "
+            f"({train['row_count']} rows)."
+        ),
+        (
+            f"- Test: {test['first_date']} to {test['last_date']} "
+            f"({test['row_count']} rows)."
+        ),
+        "",
+    ]
 
 
 def _render_mapping(values: Mapping[str, Any]) -> list[str]:

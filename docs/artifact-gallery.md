@@ -1,0 +1,61 @@
+# Artifact Gallery
+
+Market Signal Lab includes generated sample artifacts in `reports/` so new users can inspect the outputs before running their own data. These files are research artifacts only. They are not trading advice, recommendations, forecasts, or instructions to buy or sell anything.
+
+The bundled sample data is synthetic and intentionally small. The generated numbers are useful for checking report structure and reproducibility, not for making market claims.
+
+## Report Artifacts
+
+`reports/sample-report.md` is the human-readable Markdown backtest report. It shows the moving-average strategy configuration, backtest date range, starting and ending equity, exposure changes, summary metrics, risk notes, and backtest caveats.
+
+`reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, and row count. Use this format when another script, notebook, or test needs structured output.
+
+`reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
+
+## Sweep Artifacts
+
+`reports/sample-sweep.md` is the human-readable parameter sweep report. It ranks several moving-average window pairs from the bundled sample data and prints the top rows as a Markdown table.
+
+`reports/sample-sweep.json` is the machine-readable sweep output. It records the sweep configuration and an ordered `ranked_results` list with each window pair and its metrics.
+
+`reports/sample-sweep.html` is an HTML wrapper around the Markdown sweep report. It provides a browser-viewable version of the same ranked table.
+
+### Why Sweep Rankings Are Not Predictions
+
+A sweep ranking says, "within this historical sample, using these settings, this row sorted higher by the ranking rule." It does not say the same settings will work tomorrow.
+
+For beginners, think of a sweep like checking which shoes were fastest on one short practice route. The result can describe that route, on that day, under those conditions. It does not prove those shoes will be fastest on every route or in future weather. In market research, this gap is larger because prices change, regimes shift, costs vary, and testing many parameter combinations can accidentally reward settings that fit noise.
+
+Use sweep rankings as a starting point for questioning a strategy, not as a prediction engine.
+
+## Manifest Artifact
+
+`reports/sample-manifest.md` records how the single-report artifact set was produced. It includes the input path, symbol, run mode, strategy configuration, output paths, fee setting, and `research_only: true`.
+
+The manifest is intended to make reproduction easier: if a report is shared without context, the manifest gives reviewers a compact record of the inputs and outputs behind it.
+
+## Regenerating The Samples
+
+Run the project selfcheck from the repository root:
+
+```bash
+python scripts/selfcheck.py
+```
+
+The selfcheck performs three checks:
+
+1. Compiles the package and tests to catch syntax issues.
+2. Runs the test suite with `pytest`.
+3. Regenerates the sample report, manifest, sweep, JSON, and HTML artifacts under `reports/`.
+
+After it finishes, the expected generated files are:
+
+- `reports/sample-report.md`
+- `reports/sample-report.json`
+- `reports/sample-report.html`
+- `reports/sample-sweep.md`
+- `reports/sample-sweep.json`
+- `reports/sample-sweep.html`
+- `reports/sample-manifest.md`
+
+Because selfcheck rewrites these files, review the generated diff before committing changes.

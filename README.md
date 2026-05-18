@@ -188,6 +188,7 @@ Planned improvements (not guaranteed):
 Before using any findings, read:
 
 - [Risk Boundaries](docs/risk-boundaries.md)
+- [Metric Guide](docs/metric-guide.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)

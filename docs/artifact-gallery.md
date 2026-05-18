@@ -4,6 +4,8 @@ Market Signal Lab includes generated sample artifacts in `reports/` so new users
 
 The bundled sample data is synthetic and intentionally small. The generated numbers are useful for checking report structure and reproducibility, not for making market claims. See [Data Provenance](data-provenance.md) for the source and placeholder-symbol details.
 
+For plain-language definitions of report metrics, including buy-and-hold comparisons, max drawdown, volatility, Sharpe-like score, and leveraged ETF path-dependency caveats, see the [Metric Guide](metric-guide.md).
+
 `reports/index.html` is a static no-JavaScript gallery that links to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page.
 
 ## Report Artifacts

@@ -50,11 +50,12 @@ Run the project selfcheck from the repository root:
 python scripts/selfcheck.py
 ```
 
-The selfcheck performs three checks:
+The selfcheck performs four checks:
 
 1. Compiles the package and tests to catch syntax issues.
 2. Runs the test suite with `pytest`.
-3. Regenerates the sample report, manifest, sweep, JSON, and HTML artifacts under `reports/`.
+3. Validates local Markdown links in README and docs.
+4. Regenerates the sample report, manifest, sweep, JSON, and HTML artifacts under `reports/`.
 
 After it finishes, the expected generated files are:
 

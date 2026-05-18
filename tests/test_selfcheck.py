@@ -42,6 +42,61 @@ def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
     assert "reports/sample-sweep-split.html" in split_command
 
 
+def test_docs_link_sources_include_canonical_docs_map() -> None:
+    assert Path("docs/index.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v0.7.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v0.7.0.md") in selfcheck.DOC_LINK_SOURCES
+
+
+def test_docs_link_check_accepts_repo_local_links(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (tmp_path / "README.md").write_text(
+        "[Docs](docs/index.md)\n[External](https://example.com)\n",
+        encoding="utf-8",
+    )
+    (docs_dir / "index.md").write_text(
+        "[Risk](risk-boundaries.md)\n[Root](../README.md)\n[Anchor](#start-here)\n",
+        encoding="utf-8",
+    )
+    (docs_dir / "risk-boundaries.md").write_text("# Risk\n", encoding="utf-8")
+
+    issues = selfcheck.find_markdown_link_issues(
+        tmp_path,
+        (Path("README.md"), Path("docs/index.md")),
+    )
+
+    assert issues == []
+
+
+def test_docs_link_check_reports_broken_local_links(tmp_path: Path) -> None:
+    docs_dir = tmp_path / "docs"
+    docs_dir.mkdir()
+    (docs_dir / "index.md").write_text(
+        "[Missing](missing.md)\n"
+        "```markdown\n"
+        "[Ignored](also-missing.md)\n"
+        "```\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_markdown_link_issues(tmp_path, (Path("docs/index.md"),))
+
+    assert issues == ["docs/index.md: broken link to missing.md"]
+
+
+def test_canonical_docs_map_links_every_docs_markdown_file() -> None:
+    docs_index = Path("docs/index.md").read_text(encoding="utf-8")
+    linked_docs = {
+        Path(target.split("#", 1)[0])
+        for target in selfcheck.MARKDOWN_LINK_RE.findall(docs_index)
+        if target.endswith(".md")
+    }
+    expected_docs = {path.name for path in Path("docs").glob("*.md")} - {"index.md"}
+
+    assert expected_docs.issubset({path.name for path in linked_docs})
+
+
 def test_split_sweep_sample_artifact_has_non_zero_diagnostics(tmp_path: Path) -> None:
     command = _split_sweep_command()
     output_paths = {

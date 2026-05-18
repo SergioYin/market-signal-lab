@@ -5,13 +5,35 @@ from __future__ import annotations
 
 from pathlib import Path
 import compileall
+import re
 import subprocess
 import sys
+from urllib.parse import unquote
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORTS_DIR = REPO_ROOT / "reports"
 CSV_PATH = Path("examples/data/sample_tqqq_qld_like.csv")
+DOC_LINK_SOURCES = (
+    Path("README.md"),
+    Path("docs/index.md"),
+    Path("docs/artifact-gallery.md"),
+    Path("docs/config-files.md"),
+    Path("docs/data-provenance.md"),
+    Path("docs/example-data.md"),
+    Path("docs/metric-guide.md"),
+    Path("docs/release-notes-v0.3.0.md"),
+    Path("docs/release-notes-v0.4.0.md"),
+    Path("docs/release-notes-v0.5.0.md"),
+    Path("docs/release-notes-v0.6.0.md"),
+    Path("docs/release-notes-v0.7.0.md"),
+    Path("docs/release-v0.3.0.md"),
+    Path("docs/release-v0.4.0.md"),
+    Path("docs/release-v0.5.0.md"),
+    Path("docs/release-v0.6.0.md"),
+    Path("docs/release-v0.7.0.md"),
+    Path("docs/risk-boundaries.md"),
+)
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
@@ -63,6 +85,10 @@ GALLERY_HTML = """<!doctype html>
 """
 
 
+MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+FENCED_BLOCK_RE = re.compile(r"(^|\n)```.*?(\n```|$)", re.DOTALL)
+
+
 def run_compileall() -> bool:
     print("1) Running Python compilation check...")
     # Compile the library and tests to catch syntax/import-time issues.
@@ -90,8 +116,19 @@ def run_pytest() -> bool:
     return True
 
 
+def run_docs_link_check() -> bool:
+    print("3) Checking documentation links...")
+    issues = find_markdown_link_issues(REPO_ROOT, DOC_LINK_SOURCES)
+    if issues:
+        print("Documentation link check failed")
+        for issue in issues:
+            print(f"- {issue}")
+        return False
+    return True
+
+
 def run_sample_artifact_generation() -> bool:
-    print("3) Generating sample artifacts...")
+    print("4) Generating sample artifacts...")
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
     for command in _sample_artifact_commands():
@@ -123,6 +160,56 @@ def run_sample_artifact_generation() -> bool:
 
     print("Created sample report gallery, report, manifest, sweep, split sweep, and HTML artifacts.")
     return True
+
+
+def find_markdown_link_issues(
+    repo_root: Path = REPO_ROOT,
+    markdown_files: tuple[Path, ...] = DOC_LINK_SOURCES,
+) -> list[str]:
+    issues: list[str] = []
+    for relative_source in markdown_files:
+        source = repo_root / relative_source
+        if not source.exists():
+            issues.append(f"{relative_source}: source file is missing")
+            continue
+
+        text = _strip_fenced_code_blocks(source.read_text(encoding="utf-8"))
+        for raw_target in MARKDOWN_LINK_RE.findall(text):
+            target = _normalize_markdown_link_target(raw_target)
+            if _is_external_or_anchor_only_link(target):
+                continue
+
+            link_path = _local_markdown_link_path(repo_root, source, target)
+            if not link_path.exists():
+                issues.append(f"{relative_source}: broken link to {raw_target}")
+
+    return issues
+
+
+def _strip_fenced_code_blocks(text: str) -> str:
+    return FENCED_BLOCK_RE.sub("\n", text)
+
+
+def _normalize_markdown_link_target(target: str) -> str:
+    target = target.strip()
+    if target.startswith("<") and target.endswith(">"):
+        target = target[1:-1]
+    return unquote(target)
+
+
+def _is_external_or_anchor_only_link(target: str) -> bool:
+    return (
+        not target
+        or target.startswith("#")
+        or target.startswith(("http://", "https://", "mailto:"))
+    )
+
+
+def _local_markdown_link_path(repo_root: Path, source: Path, target: str) -> Path:
+    target_without_fragment = target.split("#", 1)[0].split("?", 1)[0]
+    if target_without_fragment.startswith("/"):
+        return repo_root / target_without_fragment.lstrip("/")
+    return (source.parent / target_without_fragment).resolve()
 
 
 def _sample_artifact_commands() -> list[list[str]]:
@@ -204,6 +291,7 @@ def main() -> int:
     checks = [
         ("compileall", run_compileall),
         ("pytest", run_pytest),
+        ("documentation link check", run_docs_link_check),
         ("sample artifact generation", run_sample_artifact_generation),
     ]
 

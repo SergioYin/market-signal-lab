@@ -166,6 +166,9 @@ Run the project selfcheck:
 python scripts/selfcheck.py
 ```
 
+The selfcheck compiles Python files, runs tests, validates local documentation
+links, and regenerates checked-in sample artifacts.
+
 ## Scope boundaries
 
 This project intentionally stays narrow:
@@ -193,12 +196,15 @@ Planned improvements (not guaranteed):
 
 Before using any findings, read:
 
+- [Documentation Map](docs/index.md)
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Metric Guide](docs/metric-guide.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.7.0 Release Notes](docs/release-notes-v0.7.0.md)
+- [v0.7.0 Release Checklist](docs/release-v0.7.0.md)
 - [v0.6.0 Release Notes](docs/release-notes-v0.6.0.md)
 - [v0.6.0 Release Checklist](docs/release-v0.6.0.md)
 - [v0.5.0 Release Notes](docs/release-notes-v0.5.0.md)

@@ -4,11 +4,11 @@
 
 ## Validation split
 
-- Research metadata only; this split is not a trading recommendation.
+- Research metadata only; this split is not trading guidance.
 - Train: 2024-01-02 to 2024-01-05 (4 rows).
 - Test: 2024-01-08 to 2024-01-11 (4 rows).
 
-> Train/test columns are a comparison aid for historical research only; a large train/test gap can prompt review for possible parameter overfitting and is not a trading recommendation.
+> Train/test columns are a comparison aid for historical research only; a large train/test gap can prompt review for possible parameter overfitting and is not trading guidance.
 > The robustness_flag label compares historical train/test ranks and return gaps inside this sample only. 'not_flagged' only means the deterministic review thresholds were not crossed; it is not a prediction, a stability claim, or a recommendation to buy, sell, or hold.
 
 | rank | short_window | long_window | total_return | train_rank | test_rank | rank_delta | train_total_return | test_total_return | train_test_return_gap | robustness_flag | annualized_return | max_drawdown | volatility | sharpe_like | win_rate |

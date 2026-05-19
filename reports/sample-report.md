@@ -29,11 +29,11 @@
 
 ## Risk Notes
 
-- Signals use close-price moving averages only.
+- Model exposure states use close-price moving averages only.
 - Filtered to symbol: QQQ_LIKE.
 
 ## Backtest Caveats
 
 - Backtest results are hypothetical and do not guarantee future performance.
-- Signals are evaluated using historical data and may be affected by data quality, survivorship bias, and parameter overfitting.
+- Model exposure states are calculated from historical data only. They can be affected by data quality, survivorship bias, and parameter overfitting, and they are not trading instructions.
 - Reported returns are model outputs before taxes, market impact, and any costs not explicitly included in the backtest.

@@ -22,20 +22,39 @@ DOC_LINK_SOURCES = (
     Path("docs/data-provenance.md"),
     Path("docs/example-data.md"),
     Path("docs/metric-guide.md"),
+    Path("docs/split-sweep-walkthrough.md"),
     Path("docs/release-notes-v0.3.0.md"),
     Path("docs/release-notes-v0.4.0.md"),
     Path("docs/release-notes-v0.5.0.md"),
     Path("docs/release-notes-v0.6.0.md"),
     Path("docs/release-notes-v0.7.0.md"),
     Path("docs/release-notes-v0.8.0.md"),
+    Path("docs/release-notes-v0.9.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
     Path("docs/release-v0.6.0.md"),
     Path("docs/release-v0.7.0.md"),
     Path("docs/release-v0.8.0.md"),
+    Path("docs/release-v0.9.0.md"),
     Path("docs/risk-boundaries.md"),
 )
+HTML_LINK_SOURCES = (
+    Path("reports/index.html"),
+)
+V090_DEMO_LINK_CONTRACT = {
+    Path("docs/split-sweep-walkthrough.md"): (
+        "../reports/sample-sweep-split.html",
+        "../reports/sample-sweep-split.md",
+        "../reports/sample-sweep-split.json",
+    ),
+    Path("reports/index.html"): (
+        "../docs/split-sweep-walkthrough.md",
+        "sample-sweep-split.html",
+        "sample-sweep-split.md",
+        "sample-sweep-split.json",
+    ),
+}
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
@@ -49,6 +68,17 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
 )
+PUBLIC_CLAIM_SOURCES = DOC_LINK_SOURCES + SAMPLE_ARTIFACTS
+FORBIDDEN_PUBLIC_CLAIM_RE = re.compile(
+    r"\b("
+    r"should\s+(buy|sell|hold|trade)|"
+    r"recommend(s|ed|ing)?\s+(buying|selling|holding|trading)|"
+    r"will\s+(outperform|beat\s+the\s+market|make\s+money|profit)|"
+    r"guarantee(s|d)?\s+(return|profit|performance)|"
+    r"live\s+trading\s+signal"
+    r")\b",
+    re.IGNORECASE,
+)
 
 GALLERY_HTML = """<!doctype html>
 <html lang="en">
@@ -59,7 +89,15 @@ GALLERY_HTML = """<!doctype html>
 </head>
 <body>
   <h1>Market Signal Lab Sample Reports</h1>
-  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data. They are research-only, not investment advice, not recommendations, and not evidence of future performance.</p>
+  <p><strong>Why this demo exists:</strong> it gives reviewers a complete, reproducible artifact trail before they run the CLI: human-readable reports, machine-readable JSON, static HTML pages, and a manifest that records the sample inputs and outputs.</p>
+  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data. They are research-only review aids, not investment advice, not recommendations, and not evidence of future performance.</p>
+  <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
+  <h2>Start Here</h2>
+  <ul>
+    <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
+    <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
+    <li><a href="sample-manifest.md">Sample manifest</a></li>
+  </ul>
   <h2>Single Backtest</h2>
   <ul>
     <li><a href="sample-report.html">HTML report</a></li>
@@ -73,6 +111,7 @@ GALLERY_HTML = """<!doctype html>
     <li><a href="sample-sweep.json">JSON sweep</a></li>
   </ul>
   <h2>Split Sweep</h2>
+  <p><a href="../docs/split-sweep-walkthrough.md">Beginner walkthrough for reading split-sweep robustness fields</a></p>
   <ul>
     <li><a href="sample-sweep-split.html">HTML split sweep</a></li>
     <li><a href="sample-sweep-split.md">Markdown split sweep</a></li>
@@ -88,6 +127,7 @@ GALLERY_HTML = """<!doctype html>
 
 
 MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+HTML_HREF_RE = re.compile(r"\bhref=[\"']([^\"']+)[\"']", re.IGNORECASE)
 FENCED_BLOCK_RE = re.compile(r"(^|\n)```.*?(\n```|$)", re.DOTALL)
 
 
@@ -119,10 +159,35 @@ def run_pytest() -> bool:
 
 
 def run_docs_link_check() -> bool:
-    print("3) Checking documentation links...")
-    issues = find_markdown_link_issues(REPO_ROOT, DOC_LINK_SOURCES)
+    print("4) Checking documentation and gallery links...")
+    issues = [
+        *find_markdown_link_issues(REPO_ROOT, DOC_LINK_SOURCES),
+        *find_html_link_issues(REPO_ROOT, HTML_LINK_SOURCES),
+    ]
     if issues:
-        print("Documentation link check failed")
+        print("Documentation/gallery link check failed")
+        for issue in issues:
+            print(f"- {issue}")
+        return False
+    return True
+
+
+def run_demo_acceptance_check() -> bool:
+    print("5) Checking v0.9.0 static demo acceptance links...")
+    issues = find_v090_demo_acceptance_issues(REPO_ROOT)
+    if issues:
+        print("v0.9.0 static demo acceptance check failed")
+        for issue in issues:
+            print(f"- {issue}")
+        return False
+    return True
+
+
+def run_public_claim_check() -> bool:
+    print("6) Checking public no-advice claim boundaries...")
+    issues = find_public_claim_issues(REPO_ROOT, PUBLIC_CLAIM_SOURCES)
+    if issues:
+        print("Public claim boundary check failed")
         for issue in issues:
             print(f"- {issue}")
         return False
@@ -130,7 +195,7 @@ def run_docs_link_check() -> bool:
 
 
 def run_sample_artifact_generation() -> bool:
-    print("4) Generating sample artifacts...")
+    print("3) Generating sample artifacts...")
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
     for command in _sample_artifact_commands():
@@ -168,15 +233,29 @@ def find_markdown_link_issues(
     repo_root: Path = REPO_ROOT,
     markdown_files: tuple[Path, ...] = DOC_LINK_SOURCES,
 ) -> list[str]:
+    return find_local_link_issues(repo_root, markdown_files)
+
+
+def find_html_link_issues(
+    repo_root: Path = REPO_ROOT,
+    html_files: tuple[Path, ...] = HTML_LINK_SOURCES,
+) -> list[str]:
+    return find_local_link_issues(repo_root, html_files)
+
+
+def find_local_link_issues(
+    repo_root: Path,
+    source_files: tuple[Path, ...],
+) -> list[str]:
     issues: list[str] = []
-    for relative_source in markdown_files:
+    for relative_source in source_files:
         source = repo_root / relative_source
         if not source.exists():
             issues.append(f"{relative_source}: source file is missing")
             continue
 
-        text = _strip_fenced_code_blocks(source.read_text(encoding="utf-8"))
-        for raw_target in MARKDOWN_LINK_RE.findall(text):
+        text = source.read_text(encoding="utf-8")
+        for raw_target in _raw_links_for_source(relative_source, text):
             target = _normalize_markdown_link_target(raw_target)
             if _is_external_or_anchor_only_link(target):
                 continue
@@ -186,6 +265,67 @@ def find_markdown_link_issues(
                 issues.append(f"{relative_source}: broken link to {raw_target}")
 
     return issues
+
+
+def find_v090_demo_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    issues: list[str] = []
+    for relative_source, required_targets in V090_DEMO_LINK_CONTRACT.items():
+        source = repo_root / relative_source
+        if not source.exists():
+            issues.append(f"{relative_source}: source file is missing")
+            continue
+
+        text = source.read_text(encoding="utf-8")
+        links = _local_links_for_source(relative_source, text)
+        if relative_source.suffix == ".html" and "<script" in text.lower():
+            issues.append(f"{relative_source}: static demo must not include scripts")
+
+        for target in required_targets:
+            if target not in links:
+                issues.append(f"{relative_source}: missing required demo link to {target}")
+                continue
+
+            link_path = _local_markdown_link_path(repo_root, source, target)
+            if not link_path.exists():
+                issues.append(f"{relative_source}: broken required demo link to {target}")
+            elif link_path.stat().st_size == 0:
+                issues.append(f"{relative_source}: required demo link target is empty: {target}")
+
+    return issues
+
+
+def find_public_claim_issues(
+    repo_root: Path = REPO_ROOT,
+    public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
+) -> list[str]:
+    issues: list[str] = []
+    for relative_source in public_files:
+        source = repo_root / relative_source
+        if not source.exists():
+            issues.append(f"{relative_source}: source file is missing")
+            continue
+
+        text = source.read_text(encoding="utf-8")
+        for line_number, line in enumerate(text.splitlines(), start=1):
+            match = FORBIDDEN_PUBLIC_CLAIM_RE.search(line)
+            if match and not _is_negated_public_claim(line, match):
+                issues.append(
+                    f"{relative_source}:{line_number}: forbidden public claim "
+                    f"'{match.group(0)}'"
+                )
+
+    return issues
+
+
+def _is_negated_public_claim(line: str, match: re.Match[str]) -> bool:
+    claim = match.group(0).lower()
+    prefix = line[max(0, match.start() - 80) : match.start()].lower()
+    direct_prefix = line[max(0, match.start() - 25) : match.start()].lower()
+    if re.search(r"\b(no|not|never|without)\b", direct_prefix):
+        return True
+    if claim == "live trading signal" and re.search(r"\bnot\b", prefix):
+        return True
+    return False
 
 
 def _strip_fenced_code_blocks(text: str) -> str:
@@ -212,6 +352,20 @@ def _local_markdown_link_path(repo_root: Path, source: Path, target: str) -> Pat
     if target_without_fragment.startswith("/"):
         return repo_root / target_without_fragment.lstrip("/")
     return (source.parent / target_without_fragment).resolve()
+
+
+def _raw_links_for_source(relative_source: Path, text: str) -> list[str]:
+    if relative_source.suffix == ".html":
+        return HTML_HREF_RE.findall(text)
+    return MARKDOWN_LINK_RE.findall(_strip_fenced_code_blocks(text))
+
+
+def _local_links_for_source(relative_source: Path, text: str) -> set[str]:
+    return {
+        _normalize_markdown_link_target(target)
+        for target in _raw_links_for_source(relative_source, text)
+        if not _is_external_or_anchor_only_link(_normalize_markdown_link_target(target))
+    }
 
 
 def _sample_artifact_commands() -> list[list[str]]:
@@ -293,8 +447,10 @@ def main() -> int:
     checks = [
         ("compileall", run_compileall),
         ("pytest", run_pytest),
-        ("documentation link check", run_docs_link_check),
         ("sample artifact generation", run_sample_artifact_generation),
+        ("documentation/gallery link check", run_docs_link_check),
+        ("v0.9.0 static demo acceptance check", run_demo_acceptance_check),
+        ("public claim boundary check", run_public_claim_check),
     ]
 
     passed = True

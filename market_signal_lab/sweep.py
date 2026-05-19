@@ -59,7 +59,7 @@ SWEEP_REPORT_SPLIT_COLUMNS = (
 SWEEP_OVERFIT_CAVEAT = (
     "Train/test columns are a comparison aid for historical research only; a "
     "large train/test gap can prompt review for possible parameter overfitting "
-    "and is not a trading recommendation."
+    "and is not trading guidance."
 )
 
 SWEEP_ROBUSTNESS_CAVEAT = (

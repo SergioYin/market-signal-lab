@@ -23,7 +23,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 0.8.0\n"
+    assert result.stdout == "market-signal-lab 0.9.0\n"
     assert result.stderr == ""
 
 
@@ -219,7 +219,7 @@ def test_cli_backtest_outputs_validation_split_metadata(tmp_path: Path) -> None:
             "row_count": 2,
         },
         "research_only": True,
-        "note": "Validation split metadata is not a trading recommendation.",
+        "note": "Validation split metadata is a research note, not trading guidance.",
         "method": "ratio",
         "split_ratio": 0.5,
     }
@@ -774,7 +774,7 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
     assert result.returncode == 0
     report = output_path.read_text()
     assert "## Validation split" in report
-    assert "not a trading recommendation" in report
+    assert "not trading guidance" in report
     assert "train_total_return" in report
     assert "test_total_return" in report
     assert "train_rank" in report
@@ -796,7 +796,7 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
             "row_count": 4,
         },
         "research_only": True,
-        "note": "Validation split metadata is not a trading recommendation.",
+        "note": "Validation split metadata is a research note, not trading guidance.",
         "method": "cutoff",
         "split_cutoff": "2024-01-08",
     }

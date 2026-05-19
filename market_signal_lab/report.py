@@ -54,8 +54,9 @@ def render_experiment_report(
         "",
         "- Backtest results are hypothetical and do not guarantee future performance.",
         (
-            "- Signals are evaluated using historical data and may be affected by "
-            "data quality, survivorship bias, and parameter overfitting."
+            "- Model exposure states are calculated from historical data only. "
+            "They can be affected by data quality, survivorship bias, and "
+            "parameter overfitting, and they are not trading instructions."
         ),
         (
             "- Reported returns are model outputs before taxes, market impact, "
@@ -80,8 +81,7 @@ def render_validation_split_note(
         "## Validation split",
         "",
         (
-            "- Research metadata only; this split is not a trading "
-            "recommendation."
+            "- Research metadata only; this split is not trading guidance."
         ),
         (
             f"- Train: {train['first_date']} to {train['last_date']} "
@@ -150,9 +150,11 @@ def _render_risk_notes(
         symbol_text = ", ".join(leveraged_symbols)
         notes.append(
             "- Leveraged ETF warning: "
-            f"{symbol_text} seeks leveraged daily returns, can suffer volatility "
-            "decay, and may diverge materially from the underlying index over "
-            "longer holding periods."
+            f"{symbol_text} seeks leveraged daily returns. Multi-day results "
+            "depend on the path of daily moves, losses can grow quickly, and "
+            "choppy markets can reduce returns through volatility decay even "
+            "when the underlying index ends near flat, especially over longer "
+            "holding periods."
         )
 
     if not notes:

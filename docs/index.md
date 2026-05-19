@@ -7,6 +7,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
 - [Risk Boundaries](risk-boundaries.md) - public no-advice and no-execution boundaries.
 - [Metric Guide](metric-guide.md) - definitions and caveats for reported metrics.
+- [Split Sweep Walkthrough](split-sweep-walkthrough.md) - beginner reading guide for split-sweep robustness reports.
 - [Example Data and Synthetic Data Caveats](example-data.md) - bundled sample-data limits.
 - [Data Provenance](data-provenance.md) - how local CSV input and placeholder symbols are handled.
 
@@ -17,6 +18,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 ## Release Notes
 
+- [v0.9.0 Release Notes](release-notes-v0.9.0.md)
+- [v0.9.0 Release Checklist](release-v0.9.0.md)
 - [v0.8.0 Release Notes](release-notes-v0.8.0.md)
 - [v0.8.0 Release Checklist](release-v0.8.0.md)
 - [v0.7.0 Release Notes](release-notes-v0.7.0.md)

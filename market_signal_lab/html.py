@@ -7,7 +7,7 @@ import re
 
 
 RESEARCH_ONLY_WARNING = (
-    "Research-only: this artifact is for historical signal research, not "
+    "Research-only: this artifact is for historical market research, not "
     "investment advice, not a recommendation, and not evidence of future "
     "performance."
 )

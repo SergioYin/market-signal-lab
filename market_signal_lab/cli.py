@@ -335,7 +335,7 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
         "sharpe_like": sharpe_like(strategy_returns),
         "win_rate": win_rate_from_returns(strategy_returns),
     }
-    risk_notes = ["Signals use close-price moving averages only."]
+    risk_notes = ["Model exposure states use close-price moving averages only."]
     if args.symbol:
         risk_notes.append(f"Filtered to symbol: {args.symbol}.")
 
@@ -468,7 +468,7 @@ def _build_validation_split_metadata(
         "train": _partition_metadata(split.train),
         "test": _partition_metadata(split.test),
         "research_only": True,
-        "note": "Validation split metadata is not a trading recommendation.",
+        "note": "Validation split metadata is a research note, not trading guidance.",
     }
     if args.split_ratio is not None:
         metadata["method"] = "ratio"

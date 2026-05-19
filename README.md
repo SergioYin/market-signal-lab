@@ -1,6 +1,16 @@
 # Market Signal Lab
 
-Market Signal Lab is a public sandbox for transparent trading-signal research. It helps users run reproducible moving-average crossover backtests on OHLC data, compare a strategy against a same-period buy-and-hold baseline, inspect risk metrics, and generate Markdown, JSON, HTML, and manifest artifacts for review.
+Market Signal Lab is a public, research-only sandbox for reproducible trading-signal experiments. Its main value is the artifact trail: one local CSV can produce Markdown, JSON, HTML, and manifest outputs that a reviewer can inspect, rerun, diff, or publish as a static demo without connecting to brokers or live market data.
+
+The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
+
+- [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
+- [Static Sample Gallery](reports/index.html) - browser-openable links to the generated sample artifacts.
+- [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
+
+This is not a trading bot, signal service, forecast engine, or recommendation system.
+
+Worth saving if you want a compact reference for how to package research outputs with visible assumptions, static artifacts, and no execution surface.
 
 ## What you get in 60 seconds
 
@@ -111,7 +121,7 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
 
 Market Signal Lab is for research and learning. It does not connect to brokers, place trades, or tell you what to buy or sell. Treat every result as a historical experiment, not a live trading instruction.
 
-Leveraged ETF examples such as TQQQ/QLD need extra caution, especially for beginners. These products generally reset exposure daily, so multi-day returns are path-dependent and cannot be estimated by simply multiplying the underlying index's start-to-end return. Leverage can magnify losses quickly, and choppy markets can erode long-horizon returns even when the underlying index ends near flat. The bundled leveraged ETF-like sample data is synthetic and simplified; it is not a full model of real fund fees, tracking error, financing costs, taxes, liquidity, or market impact.
+Leveraged ETF examples such as TQQQ/QLD need extra caution, especially for beginners. Many of these products reset exposure every day, so a multi-day result depends on the order of daily moves and cannot be estimated by simply multiplying the underlying index's start-to-end return. Leverage can magnify losses quickly, and choppy markets can erode longer-period returns even when the underlying index ends near flat. The bundled leveraged ETF-like sample data is synthetic and simplified; it is useful for checking artifact shape, not for estimating real fund behavior. It is not a full model of real fund fees, tracking differences, financing costs, taxes, liquidity, or market impact.
 
 ## Purpose
 
@@ -217,10 +227,13 @@ Before using any findings, read:
 - [Documentation Map](docs/index.md)
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Metric Guide](docs/metric-guide.md)
+- [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.9.0 Release Notes](docs/release-notes-v0.9.0.md)
+- [v0.9.0 Release Checklist](docs/release-v0.9.0.md)
 - [v0.8.0 Release Notes](docs/release-notes-v0.8.0.md)
 - [v0.8.0 Release Checklist](docs/release-v0.8.0.md)
 - [v0.7.0 Release Notes](docs/release-notes-v0.7.0.md)

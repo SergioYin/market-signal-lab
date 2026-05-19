@@ -27,6 +27,7 @@ def render_experiment_report(
     metrics: Mapping[str, float],
     risk_notes: Sequence[str] = (),
     validation_split: Mapping[str, Any] | None = None,
+    data_provenance: Mapping[str, Any] | None = None,
 ) -> str:
     """Render a Markdown report for one strategy/backtest experiment."""
 
@@ -46,6 +47,7 @@ def render_experiment_report(
         *_render_metrics(metrics),
         "",
         *render_validation_split_note(validation_split),
+        *render_data_provenance_note(data_provenance),
         "## Risk Notes",
         "",
         *_render_risk_notes(strategy_config, risk_notes),
@@ -95,11 +97,50 @@ def render_validation_split_note(
     ]
 
 
+def render_data_provenance_note(
+    data_provenance: Mapping[str, Any] | None,
+) -> list[str]:
+    """Render concise research-only static fixture provenance metadata."""
+
+    if data_provenance is None:
+        return []
+
+    lines = [
+        "## Data Provenance",
+        "",
+        "- Research-only fixture metadata; not live data, not investment advice, "
+        "and not a prediction.",
+        f"- **Dataset label**: {_format_value(data_provenance['dataset_label'])}",
+        f"- **Data kind**: {_format_value(data_provenance['data_kind'])}",
+        f"- **Source**: {_format_value(data_provenance['source'])}",
+        f"- **Created date**: {_format_value(data_provenance['created_date'])}",
+        f"- **As-of date**: {_format_value(data_provenance['as_of_date'])}",
+    ]
+    metadata_path = data_provenance.get("metadata_path")
+    if metadata_path:
+        lines.append(f"- **Metadata path**: {_format_value(metadata_path)}")
+
+    limitations = data_provenance.get("limitations", ())
+    if limitations:
+        lines.append(f"- **Limitations**: {_format_limitations(limitations)}")
+
+    return [*lines, ""]
+
+
 def _render_mapping(values: Mapping[str, Any]) -> list[str]:
     if not values:
         return ["- No strategy configuration provided."]
 
     return [f"- **{key}**: {_format_value(value)}" for key, value in values.items()]
+
+
+def _format_limitations(limitations: Any) -> str:
+    if isinstance(limitations, Sequence) and not isinstance(
+        limitations,
+        (str, bytes, bytearray),
+    ):
+        return "; ".join(str(item) for item in limitations)
+    return _format_value(limitations)
 
 
 def _render_backtest_summary(

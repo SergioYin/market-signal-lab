@@ -2,6 +2,8 @@
 
 Market Signal Lab is a public, research-only sandbox for reproducible trading-signal experiments. Its main value is the artifact trail: one local CSV can produce Markdown, JSON, HTML, and manifest outputs that a reviewer can inspect, rerun, diff, or publish as a static demo without connecting to brokers or live market data.
 
+The v1.0.0 readiness increment adds checked static fixture provenance for the bundled sample CSV, so generated sample reports, JSON payloads, and manifests label the data as synthetic, static, and research-only without performing live downloads.
+
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
@@ -195,7 +197,8 @@ python scripts/selfcheck.py
 ```
 
 The selfcheck compiles Python files, runs tests, validates local documentation
-links, and regenerates checked-in sample artifacts.
+links, checks static fixture provenance metadata, and regenerates checked-in
+sample artifacts.
 
 ## Scope boundaries
 

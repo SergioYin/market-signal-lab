@@ -16,7 +16,10 @@ from market_signal_lab.metrics import (
     volatility,
     win_rate_from_returns,
 )
-from market_signal_lab.report import render_validation_split_note
+from market_signal_lab.report import (
+    render_data_provenance_note,
+    render_validation_split_note,
+)
 from market_signal_lab.strategies import moving_average_crossover_strategy
 
 
@@ -245,6 +248,7 @@ def format_sweep_number(value: float) -> str:
 def render_sweep_report(
     results: Sequence[SweepResult],
     validation_split: Mapping[str, Any] | None = None,
+    data_provenance: Mapping[str, Any] | None = None,
 ) -> str:
     """Render ranked moving-average sweep results as a Markdown report."""
 
@@ -254,6 +258,7 @@ def render_sweep_report(
         f"> {SWEEP_REPORT_CAVEAT}",
         "",
         *render_validation_split_note(validation_split),
+        *render_data_provenance_note(data_provenance),
     ]
     if validation_split is not None:
         lines.extend(

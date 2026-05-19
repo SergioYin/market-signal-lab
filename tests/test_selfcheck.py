@@ -91,6 +91,8 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v0.8.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v0.9.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v0.9.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.0.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.0.0.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -202,6 +204,21 @@ def test_public_claim_check_accepts_current_public_docs_and_reports() -> None:
     )
 
     assert issues == []
+
+
+def test_fixture_provenance_check_accepts_current_metadata() -> None:
+    issues = selfcheck.find_fixture_provenance_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_fixture_provenance_check_reports_missing_metadata(tmp_path: Path) -> None:
+    issues = selfcheck.find_fixture_provenance_issues(tmp_path)
+
+    assert issues == [
+        "examples/data/sample_tqqq_qld_like.csv.provenance.json: "
+        "provenance metadata file is missing"
+    ]
 
 
 def test_canonical_docs_map_links_every_docs_markdown_file() -> None:

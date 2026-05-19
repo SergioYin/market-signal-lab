@@ -50,6 +50,29 @@ def test_build_manifest_omits_generated_at_when_not_provided() -> None:
     assert manifest["research_only"] is True
 
 
+def test_build_manifest_includes_static_fixture_provenance_when_provided() -> None:
+    provenance = {
+        "dataset_label": "sample_tqqq_qld_like",
+        "data_kind": "synthetic_static_fixture",
+        "source": "Hand-authored deterministic OHLC sample.",
+        "created_date": "2026-05-18",
+        "as_of_date": "2026-05-18",
+        "limitations": ["Synthetic static fixture only."],
+        "metadata_path": "examples/data/sample_tqqq_qld_like.csv.provenance.json",
+        "research_only": True,
+    }
+
+    manifest = build_manifest(
+        input_path="examples/data/sample_tqqq_qld_like.csv",
+        symbol="QQQ_LIKE",
+        mode="backtest",
+        fee_bps=0.0,
+        data_provenance=provenance,
+    )
+
+    assert manifest["data_provenance"] == provenance
+
+
 def test_render_manifest_markdown_renders_nested_sections() -> None:
     markdown = render_manifest_markdown(
         {

@@ -16,6 +16,7 @@ def build_manifest(
     strategy_config: Mapping[str, Any] | None = None,
     sweep_config: Mapping[str, Any] | None = None,
     output_paths: Mapping[str, str | Path | None] | None = None,
+    data_provenance: Mapping[str, Any] | None = None,
     generated_at: str | None = None,
 ) -> dict[str, Any]:
     """Build a deterministic research-only manifest dictionary for one run."""
@@ -38,6 +39,8 @@ def build_manifest(
         manifest["sweep_config"] = dict(sweep_config)
 
     manifest["fee_bps"] = fee_bps
+    if data_provenance is not None:
+        manifest["data_provenance"] = dict(data_provenance)
     manifest["output_paths"] = _normalize_output_paths(output_paths or {})
     manifest["research_only"] = True
     return manifest

@@ -23,7 +23,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 0.9.0\n"
+    assert result.stdout == "market-signal-lab 1.0.0\n"
     assert result.stderr == ""
 
 
@@ -581,6 +581,48 @@ def test_cli_creates_parent_directories_for_output_artifacts(tmp_path: Path) -> 
     assert json.loads(json_path.read_text())["strategy_config"]["symbol"] == "QQQ_LIKE"
     assert "<h1>Market Signal Experiment Report</h1>" in html_path.read_text()
     assert "# Experiment Manifest" in manifest_path.read_text()
+
+
+def test_cli_outputs_static_fixture_provenance_for_bundled_sample(tmp_path: Path) -> None:
+    output_path = tmp_path / "sample-report.md"
+    json_path = tmp_path / "sample-report.json"
+    manifest_path = tmp_path / "sample-manifest.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--output",
+            str(output_path),
+            "--json-output",
+            str(json_path),
+            "--manifest-output",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    markdown = output_path.read_text()
+    payload = json.loads(json_path.read_text())
+    manifest = manifest_path.read_text()
+
+    assert "## Data Provenance" in markdown
+    assert "sample_tqqq_qld_like" in markdown
+    assert payload["data_provenance"]["data_kind"] == "synthetic_static_fixture"
+    assert payload["data_provenance"]["research_only"] is True
+    assert "## data_provenance" in manifest
+    assert "synthetic_static_fixture" in manifest
 
 
 def test_cli_sweep_prints_markdown_report_to_stdout() -> None:

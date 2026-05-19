@@ -13,7 +13,12 @@ from typing import Any
 
 from market_signal_lab import __version__
 from market_signal_lab.backtest import backtest_long_cash
-from market_signal_lab.data import REQUIRED_COLUMNS, PriceBar, load_ohlc_csv
+from market_signal_lab.data import (
+    REQUIRED_COLUMNS,
+    PriceBar,
+    load_ohlc_csv,
+    load_static_fixture_provenance,
+)
 from market_signal_lab.html import render_html_report
 from market_signal_lab.metrics import (
     annualized_return,
@@ -305,7 +310,9 @@ def _coerce_config_integer_list(key: str, value: Any) -> tuple[int, ...]:
 
 
 def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    bars = _load_bars(Path(args.csv_path), symbol=args.symbol)
+    csv_path = Path(args.csv_path)
+    provenance = _load_provenance_payload(csv_path)
+    bars = _load_bars(csv_path, symbol=args.symbol)
     split = _build_validation_split(args, bars)
     validation_split = _build_validation_split_metadata(args, split)
     signals = moving_average_crossover_strategy(
@@ -351,6 +358,7 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
         metrics=metrics,
         risk_notes=tuple(risk_notes),
         validation_split=validation_split,
+        data_provenance=provenance,
     )
 
     json_payload = {
@@ -362,6 +370,8 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
     }
     if validation_split is not None:
         json_payload["validation_split"] = validation_split
+    if provenance is not None:
+        json_payload["data_provenance"] = provenance
 
     manifest_payload = build_manifest(
         input_path=args.csv_path,
@@ -370,13 +380,16 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
         strategy_config=strategy_config,
         fee_bps=args.fee_bps,
         output_paths=_output_paths(args),
+        data_provenance=provenance,
     )
 
     return report, json_payload, manifest_payload
 
 
 def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    bars = _load_bars(Path(args.csv_path), symbol=args.symbol)
+    csv_path = Path(args.csv_path)
+    provenance = _load_provenance_payload(csv_path)
+    bars = _load_bars(csv_path, symbol=args.symbol)
     split = _build_validation_split(args, bars)
     validation_split = _build_validation_split_metadata(args, split)
     results = run_moving_average_sweep(
@@ -388,7 +401,11 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
         train_bars=split.train if split is not None else None,
         test_bars=split.test if split is not None else None,
     )
-    report = render_sweep_report(results, validation_split=validation_split)
+    report = render_sweep_report(
+        results,
+        validation_split=validation_split,
+        data_provenance=provenance,
+    )
     sweep_config: dict[str, Any] = {
         "short_windows": list(args.short_windows),
         "long_windows": list(args.long_windows),
@@ -407,6 +424,8 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
     }
     if validation_split is not None:
         json_payload["validation_split"] = validation_split
+    if provenance is not None:
+        json_payload["data_provenance"] = provenance
 
     manifest_payload = build_manifest(
         input_path=args.csv_path,
@@ -415,9 +434,17 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
         sweep_config=sweep_config,
         fee_bps=args.fee_bps,
         output_paths=_output_paths(args),
+        data_provenance=provenance,
     )
 
     return report, json_payload, manifest_payload
+
+
+def _load_provenance_payload(csv_path: Path) -> dict[str, Any] | None:
+    provenance = load_static_fixture_provenance(csv_path)
+    if provenance is None:
+        return None
+    return provenance.as_dict()
 
 
 def _compact_json(payload: dict[str, Any]) -> str:

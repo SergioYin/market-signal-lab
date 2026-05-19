@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import compileall
+import json
 import re
 import subprocess
 import sys
@@ -30,6 +31,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v0.7.0.md"),
     Path("docs/release-notes-v0.8.0.md"),
     Path("docs/release-notes-v0.9.0.md"),
+    Path("docs/release-notes-v1.0.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -37,7 +39,11 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v0.7.0.md"),
     Path("docs/release-v0.8.0.md"),
     Path("docs/release-v0.9.0.md"),
+    Path("docs/release-v1.0.0.md"),
     Path("docs/risk-boundaries.md"),
+)
+FIXTURE_PROVENANCE_FILES = (
+    Path("examples/data/sample_tqqq_qld_like.csv.provenance.json"),
 )
 HTML_LINK_SOURCES = (
     Path("reports/index.html"),
@@ -194,6 +200,17 @@ def run_public_claim_check() -> bool:
     return True
 
 
+def run_fixture_provenance_check() -> bool:
+    print("7) Checking static fixture provenance metadata...")
+    issues = find_fixture_provenance_issues(REPO_ROOT)
+    if issues:
+        print("Static fixture provenance check failed")
+        for issue in issues:
+            print(f"- {issue}")
+        return False
+    return True
+
+
 def run_sample_artifact_generation() -> bool:
     print("3) Generating sample artifacts...")
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -313,6 +330,50 @@ def find_public_claim_issues(
                     f"{relative_source}:{line_number}: forbidden public claim "
                     f"'{match.group(0)}'"
                 )
+
+    return issues
+
+
+def find_fixture_provenance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    issues: list[str] = []
+    for relative_path in FIXTURE_PROVENANCE_FILES:
+        path = repo_root / relative_path
+        if not path.exists():
+            issues.append(f"{relative_path}: provenance metadata file is missing")
+            continue
+
+        try:
+            raw = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(f"{relative_path}: invalid JSON: {exc.msg}")
+            continue
+
+        if not isinstance(raw, dict):
+            issues.append(f"{relative_path}: metadata must be a JSON object")
+            continue
+
+        for key in ("dataset_label", "data_kind", "source", "created_date", "as_of_date"):
+            if not isinstance(raw.get(key), str) or not raw[key].strip():
+                issues.append(f"{relative_path}: {key} must be a non-empty string")
+        if raw.get("data_kind") != "synthetic_static_fixture":
+            issues.append(
+                f"{relative_path}: data_kind must be synthetic_static_fixture"
+            )
+        if raw.get("research_only") is not True:
+            issues.append(f"{relative_path}: research_only must be true")
+        limitations = raw.get("limitations")
+        if (
+            not isinstance(limitations, list)
+            or not limitations
+            or not all(isinstance(item, str) and item.strip() for item in limitations)
+        ):
+            issues.append(
+                f"{relative_path}: limitations must be a non-empty list of strings"
+            )
+
+        csv_path = path.with_name(path.name.removesuffix(".provenance.json"))
+        if not csv_path.exists():
+            issues.append(f"{relative_path}: source CSV is missing")
 
     return issues
 
@@ -451,6 +512,7 @@ def main() -> int:
         ("documentation/gallery link check", run_docs_link_check),
         ("v0.9.0 static demo acceptance check", run_demo_acceptance_check),
         ("public claim boundary check", run_public_claim_check),
+        ("static fixture provenance check", run_fixture_provenance_check),
     ]
 
     passed = True

@@ -47,6 +47,35 @@ def test_render_experiment_report_warns_for_leveraged_etfs() -> None:
     assert "longer holding periods" in report
 
 
+def test_render_experiment_report_includes_static_fixture_provenance() -> None:
+    report = render_experiment_report(
+        strategy_config={"symbol": "QQQ_LIKE"},
+        backtest_curve=_curve(),
+        metrics={"total_return": 0.10},
+        data_provenance={
+            "dataset_label": "sample_tqqq_qld_like",
+            "data_kind": "synthetic_static_fixture",
+            "source": "Hand-authored deterministic OHLC sample.",
+            "created_date": "2026-05-18",
+            "as_of_date": "2026-05-18",
+            "limitations": [
+                "Synthetic rows are not live-feed data.",
+                "Do not use for advice, recommendations, predictions, or market claims.",
+            ],
+            "metadata_path": "examples/data/sample_tqqq_qld_like.csv.provenance.json",
+            "research_only": True,
+        },
+    )
+
+    assert "## Data Provenance" in report
+    assert "Research-only fixture metadata" in report
+    assert "- **Dataset label**: sample_tqqq_qld_like" in report
+    assert "- **Data kind**: synthetic_static_fixture" in report
+    assert "not investment advice" in report
+    assert "not a prediction" in report
+    assert "not live-feed data" in report
+
+
 def _curve() -> list[EquityCurveRecord]:
     return [
         EquityCurveRecord(

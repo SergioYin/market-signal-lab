@@ -37,12 +37,12 @@ def test_split_train_test_by_cutoff_date() -> None:
     [
         ({"train_ratio": 0.0}, "train_ratio must be greater than 0"),
         ({"train_ratio": 1.0}, "train_ratio must be greater than 0"),
-        ({}, "provide exactly one"),
+        ({}, "provide exactly one split selector"),
         (
             {"train_ratio": 0.5, "cutoff_date": "2024-01-03"},
-            "provide exactly one",
+            "provide exactly one split selector",
         ),
-        ({"cutoff_date": "not-a-date"}, "cutoff_date must be an ISO date"),
+        ({"cutoff_date": "not-a-date"}, "split cutoff must be an ISO date"),
     ],
 )
 def test_split_train_test_rejects_invalid_split_inputs(
@@ -56,10 +56,12 @@ def test_split_train_test_rejects_invalid_split_inputs(
 @pytest.mark.parametrize(
     ("bars", "kwargs", "message"),
     [
-        ([], {"train_ratio": 0.5}, "train partition must not be empty"),
-        (_bars(1), {"train_ratio": 0.5}, "train partition must not be empty"),
-        (_bars(2), {"cutoff_date": "2024-01-02"}, "train partition must not be empty"),
-        (_bars(2), {"cutoff_date": "2024-01-05"}, "test partition must not be empty"),
+        ([], {"train_ratio": 0.5}, "empty training partition"),
+        (_bars(1), {"train_ratio": 0.5}, "empty training partition"),
+        (_bars(2), {"train_ratio": 0.49}, "empty training partition"),
+        (_bars(2), {"cutoff_date": "2024-01-02"}, "empty training partition"),
+        (_bars(2), {"cutoff_date": "2024-01-01"}, "empty training partition"),
+        (_bars(2), {"cutoff_date": "2024-01-05"}, "empty test partition"),
     ],
 )
 def test_split_train_test_rejects_empty_partitions(

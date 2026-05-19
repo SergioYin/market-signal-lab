@@ -4,7 +4,11 @@ Market Signal Lab is a public sandbox for transparent trading-signal research. I
 
 ## What you get in 60 seconds
 
-After installing, use the bundled sample CSV to create the main research artifacts:
+From the repository root, install the CLI and use the bundled sample CSV to create the main research artifacts:
+
+```bash
+python -m pip install -e .
+```
 
 Normal report:
 
@@ -38,6 +42,7 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
   --sweep \
   --short-windows 1,2 \
   --long-windows 2,3 \
+  --fee-bps 10.0 \
   --split-ratio 0.5 \
   --top-n 3 \
   --output reports/sample-sweep-split.md
@@ -57,11 +62,22 @@ market-signal-lab --config examples/configs/split-sweep.json \
   --output reports/my-split-sweep.md
 ```
 
-When a sweep uses `--split-ratio` or `--split-cutoff`, the sweep output includes
-`train_total_return` and `test_total_return` columns for train/test comparison.
-These fields are research diagnostics for checking how historical rankings differ
-across two partitions. They are not predictions, forecasts, recommendations, or
-evidence of future performance.
+When a sweep uses `--split-ratio` or `--split-cutoff`, the Markdown and HTML
+tables include `train_rank`, `test_rank`, `rank_delta`, `train_total_return`,
+`test_total_return`, `train_test_return_gap`, and `robustness_flag` columns for
+train/test comparison. JSON `ranked_results` rows keep the returns under
+`train_metrics.total_return` and `test_metrics.total_return`, and keep
+`train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and
+`robustness_flag` under the `robustness` object. These fields are research
+diagnostics for checking how historical rankings and return gaps differ across
+two partitions. They are not predictions, forecasts, recommendations, stability
+claims, or evidence of future performance.
+
+For beginners, read `robustness_flag` as a review label only. `fragile` means
+the row crossed the project's deterministic rank-movement, return-gap, or
+train-positive/test-nonpositive review rules inside the supplied sample.
+`not_flagged` only means those review rules were not crossed; it does not mean
+the setting is safe, robust in future data, or suitable for trading.
 
 JSON export:
 
@@ -93,7 +109,9 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
 
 ## Not a trading bot
 
-Market Signal Lab is for research and learning. It does not connect to brokers, place trades, or tell you what to buy or sell. Leveraged ETF examples can move faster than broad market funds and may lose value quickly, especially over longer holding periods or choppy markets. Treat every result as a historical experiment, not a live trading instruction.
+Market Signal Lab is for research and learning. It does not connect to brokers, place trades, or tell you what to buy or sell. Treat every result as a historical experiment, not a live trading instruction.
+
+Leveraged ETF examples such as TQQQ/QLD need extra caution, especially for beginners. These products generally reset exposure daily, so multi-day returns are path-dependent and cannot be estimated by simply multiplying the underlying index's start-to-end return. Leverage can magnify losses quickly, and choppy markets can erode long-horizon returns even when the underlying index ends near flat. The bundled leveraged ETF-like sample data is synthetic and simplified; it is not a full model of real fund fees, tracking error, financing costs, taxes, liquidity, or market impact.
 
 ## Purpose
 
@@ -179,7 +197,7 @@ This project intentionally stays narrow:
 - It is built around CSV-based OHLC input and does not fetch market data automatically.
 - Performance metrics are educational and diagnostic, not investment advice.
 - Buy-and-hold benchmark metrics are historical diagnostics, not recommendations.
-- Train/test sweep comparisons are research diagnostics, not predictions.
+- Train/test sweep rankings and robustness flags are research diagnostics, not predictions or stability claims.
 - Outputs are reproducible artifacts for analysis, not execution signals for live systems.
 
 ## Roadmap
@@ -203,6 +221,8 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [v0.8.0 Release Notes](docs/release-notes-v0.8.0.md)
+- [v0.8.0 Release Checklist](docs/release-v0.8.0.md)
 - [v0.7.0 Release Notes](docs/release-notes-v0.7.0.md)
 - [v0.7.0 Release Checklist](docs/release-v0.7.0.md)
 - [v0.6.0 Release Notes](docs/release-notes-v0.6.0.md)

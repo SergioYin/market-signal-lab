@@ -43,25 +43,38 @@ def main(argv: Sequence[str] | None = None) -> int:
         report, json_payload, manifest_payload = (
             _run_sweep(args) if args.sweep else _run_backtest(args)
         )
+        _write_outputs(args, report, json_payload, manifest_payload)
     except (OSError, ValueError, ArgumentTypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
+    return 0
+
+
+def _write_outputs(
+    args: Namespace,
+    report: str,
+    json_payload: dict[str, Any],
+    manifest_payload: dict[str, Any],
+) -> None:
     if args.output:
-        args.output.write_text(report)
+        _write_text(args.output, report)
     else:
         print(report, end="")
 
     if args.json_output:
-        args.json_output.write_text(_compact_json(json_payload))
+        _write_text(args.json_output, _compact_json(json_payload))
 
     if args.html_output:
-        args.html_output.write_text(render_html_report(report))
+        _write_text(args.html_output, render_html_report(report))
 
     if args.manifest_output:
-        args.manifest_output.write_text(render_manifest_markdown(manifest_payload))
+        _write_text(args.manifest_output, render_manifest_markdown(manifest_payload))
 
-    return 0
+
+def _write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
 
 
 def _build_parser() -> ArgumentParser:
@@ -154,16 +167,20 @@ def _build_parser() -> ArgumentParser:
     split_group.add_argument(
         "--split-ratio",
         type=_parse_split_ratio,
+        metavar="RATIO",
         help=(
-            "Optional train/test split ratio for research metadata only; "
-            "must be greater than 0 and less than 1."
+            "Use the first RATIO share of rows for training and the rest for "
+            "testing; with --sweep, adds train/test rank and return-gap "
+            "diagnostics. Must be greater than 0 and less than 1."
         ),
     )
     split_group.add_argument(
         "--split-cutoff",
+        metavar="YYYY-MM-DD",
         help=(
-            "Optional train/test cutoff date (YYYY-MM-DD) for research "
-            "metadata only."
+            "Use rows before this date for training and rows on or after it "
+            "for testing; with --sweep, adds train/test rank and return-gap "
+            "diagnostics."
         ),
     )
     return parser
@@ -189,7 +206,10 @@ def _resolve_args(args: Namespace, parser: ArgumentParser) -> Namespace:
     if resolved.csv_path is None:
         parser.error("the following arguments are required: csv_path")
     if resolved.split_ratio is not None and resolved.split_cutoff is not None:
-        parser.error("argument --split-cutoff: not allowed with argument --split-ratio")
+        parser.error(
+            "choose only one validation split option: --split-ratio or "
+            "--split-cutoff (config keys: split_ratio or split_cutoff)"
+        )
 
     return resolved
 
@@ -417,6 +437,8 @@ def _serialize_sweep_result(rank: int, result: SweepResult) -> dict[str, Any]:
         row["train_metrics"] = result.train_metrics
     if result.test_metrics is not None:
         row["test_metrics"] = result.test_metrics
+    if result.robustness is not None:
+        row["robustness"] = result.robustness
 
     return row
 

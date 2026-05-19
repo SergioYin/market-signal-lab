@@ -4,49 +4,57 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Market Signal Lab Report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
 </head>
 <body>
   <h1>Market Signal Lab Report</h1>
   <p><strong>Research-only: this artifact is for historical signal research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
-  <pre># Market Signal Experiment Report
-
-## Strategy Config
-
-- **short_window**: 20
-- **long_window**: 50
-- **symbol**: QQQ_LIKE
-- **fee_bps**: 10.0000
-
-## Backtest Summary
-
-- **Start date**: 2024-01-02
-- **End date**: 2024-01-11
-- **Starting equity**: 1.0000
-- **Ending equity**: 1.0000
-- **Backtest total return**: 0.00%
-- **Exposure changes**: 0
-
-## Metrics
-
-- **Strategy total return**: 0.00%
-- **Buy-and-hold total return**: 1.69%
-- **Strategy minus buy-and-hold return**: -1.69%
-- **Annualized return**: 0.00%
-- **Max drawdown**: 0.00%
-- **Volatility**: 0.00%
-- **Sharpe-like score**: 0.0000
-- **Win rate**: 0.00%
-
-## Risk Notes
-
-- Signals use close-price moving averages only.
-- Filtered to symbol: QQQ_LIKE.
-
-## Backtest Caveats
-
-- Backtest results are hypothetical and do not guarantee future performance.
-- Signals are evaluated using historical data and may be affected by data quality, survivorship bias, and parameter overfitting.
-- Reported returns are model outputs before taxes, market impact, and any costs not explicitly included in the backtest.
-</pre>
+  <h1>Market Signal Experiment Report</h1>
+  <h2>Strategy Config</h2>
+  <ul>
+    <li><strong>short_window</strong>: 20</li>
+    <li><strong>long_window</strong>: 50</li>
+    <li><strong>symbol</strong>: QQQ_LIKE</li>
+    <li><strong>fee_bps</strong>: 10.0000</li>
+  </ul>
+  <h2>Backtest Summary</h2>
+  <ul>
+    <li><strong>Start date</strong>: 2024-01-02</li>
+    <li><strong>End date</strong>: 2024-01-11</li>
+    <li><strong>Starting equity</strong>: 1.0000</li>
+    <li><strong>Ending equity</strong>: 1.0000</li>
+    <li><strong>Backtest total return</strong>: 0.00%</li>
+    <li><strong>Exposure changes</strong>: 0</li>
+  </ul>
+  <h2>Metrics</h2>
+  <ul>
+    <li><strong>Strategy total return</strong>: 0.00%</li>
+    <li><strong>Buy-and-hold total return</strong>: 1.69%</li>
+    <li><strong>Strategy minus buy-and-hold return</strong>: -1.69%</li>
+    <li><strong>Annualized return</strong>: 0.00%</li>
+    <li><strong>Max drawdown</strong>: 0.00%</li>
+    <li><strong>Volatility</strong>: 0.00%</li>
+    <li><strong>Sharpe-like score</strong>: 0.0000</li>
+    <li><strong>Win rate</strong>: 0.00%</li>
+  </ul>
+  <h2>Risk Notes</h2>
+  <ul>
+    <li>Signals use close-price moving averages only.</li>
+    <li>Filtered to symbol: QQQ_LIKE.</li>
+  </ul>
+  <h2>Backtest Caveats</h2>
+  <ul>
+    <li>Backtest results are hypothetical and do not guarantee future performance.</li>
+    <li>Signals are evaluated using historical data and may be affected by data quality, survivorship bias, and parameter overfitting.</li>
+    <li>Reported returns are model outputs before taxes, market impact, and any costs not explicitly included in the backtest.</li>
+  </ul>
 </body>
 </html>

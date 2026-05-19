@@ -4,19 +4,72 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Market Signal Lab Report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
 </head>
 <body>
   <h1>Market Signal Lab Report</h1>
   <p><strong>Research-only: this artifact is for historical signal research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
-  <pre># Moving Average Sweep Report
-
-&gt; Research-only: this sweep is a historical parameter screen, not investment advice, not a recommendation, and not evidence of future performance.
-
-| rank | short_window | long_window | total_return | annualized_return | max_drawdown | volatility | sharpe_like | win_rate |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 10 | 50 | 0.00% | 0.00% | 0.00% | 0.00% | 0.0000 | 0.00% |
-| 2 | 10 | 100 | 0.00% | 0.00% | 0.00% | 0.00% | 0.0000 | 0.00% |
-| 3 | 20 | 50 | 0.00% | 0.00% | 0.00% | 0.00% | 0.0000 | 0.00% |
-</pre>
+  <h1>Moving Average Sweep Report</h1>
+  <blockquote>Research-only: this sweep is a historical parameter screen, not investment advice, not a recommendation, and not evidence of future performance.</blockquote>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>rank</th>
+          <th>short_window</th>
+          <th>long_window</th>
+          <th>total_return</th>
+          <th>annualized_return</th>
+          <th>max_drawdown</th>
+          <th>volatility</th>
+          <th>sharpe_like</th>
+          <th>win_rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>10</td>
+          <td>50</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.0000</td>
+          <td>0.00%</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>10</td>
+          <td>100</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.0000</td>
+          <td>0.00%</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>20</td>
+          <td>50</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.00%</td>
+          <td>0.0000</td>
+          <td>0.00%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </body>
 </html>

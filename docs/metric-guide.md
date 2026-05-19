@@ -68,9 +68,17 @@ A high win rate does not guarantee a good result. A strategy can win often but l
 
 ## Sweep Ranking Metrics
 
-Sweep reports show metrics for several moving-average window combinations. The ranking tells you which settings sorted best within the tested historical data and ranking rule.
+Sweep reports show metrics for several moving-average window combinations. The ranking tells you which settings sorted highest within the tested historical data and ranking rule.
 
-Sweep rankings are not predictions. Testing many parameter combinations can accidentally reward settings that fit noise in one sample. Train/test fields, when present, are diagnostics for comparing two historical partitions, not evidence of future performance.
+Sweep rankings are not predictions. Testing many parameter combinations can accidentally reward settings that fit noise in one sample. Train/test fields, when present, are diagnostics for comparing two historical partitions, not evidence of future performance or stable behavior.
+
+Split sweep reports also compare each parameter set's train rank with its test
+rank. `rank_delta` is test rank minus train rank, and
+`train_test_return_gap` is train total return minus test total return. A
+`robustness_flag` of `fragile` means the row crossed deterministic review
+thresholds for rank movement or return gap inside the supplied sample.
+`not_flagged` only means those thresholds were not crossed in that sample; it
+does not predict future behavior, claim stability, or advise any trade.
 
 ## Leveraged ETF Path-Dependency Caveats
 

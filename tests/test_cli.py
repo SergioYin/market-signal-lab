@@ -23,7 +23,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 0.7.0\n"
+    assert result.stdout == "market-signal-lab 0.8.0\n"
     assert result.stderr == ""
 
 
@@ -165,7 +165,8 @@ def test_cli_writes_backtest_html_report(tmp_path: Path) -> None:
     assert "Market Signal Experiment Report" in result.stdout
     html = html_path.read_text()
     assert "<!doctype html>" in html
-    assert "<pre># Market Signal Experiment Report" in html
+    assert "<h1>Market Signal Experiment Report</h1>" in html
+    assert "<li><strong>Backtest total return</strong>:" in html
     assert "Research-only" in html
 
 
@@ -486,7 +487,7 @@ def test_cli_rejects_config_split_ratio_and_cutoff(tmp_path: Path) -> None:
     )
 
     assert result.returncode == 2
-    assert "not allowed with argument" in result.stderr
+    assert "choose only one validation split option" in result.stderr
 
 
 def test_cli_writes_markdown_manifest(tmp_path: Path) -> None:
@@ -540,6 +541,46 @@ def test_cli_writes_markdown_manifest(tmp_path: Path) -> None:
     assert f"- **manifest**: {manifest_path}" in manifest
     assert f"- **markdown_report**: {report_path}" in manifest
     assert "- **research_only**: true" in manifest
+
+
+def test_cli_creates_parent_directories_for_output_artifacts(tmp_path: Path) -> None:
+    output_path = tmp_path / "new" / "reports" / "backtest-report.md"
+    json_path = tmp_path / "new" / "json" / "backtest-report.json"
+    html_path = tmp_path / "new" / "html" / "backtest-report.html"
+    manifest_path = tmp_path / "new" / "manifest" / "manifest.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "2",
+            "--long-window",
+            "3",
+            "--output",
+            str(output_path),
+            "--json-output",
+            str(json_path),
+            "--html-output",
+            str(html_path),
+            "--manifest-output",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert "Market Signal Experiment Report" in output_path.read_text()
+    assert json.loads(json_path.read_text())["strategy_config"]["symbol"] == "QQQ_LIKE"
+    assert "<h1>Market Signal Experiment Report</h1>" in html_path.read_text()
+    assert "# Experiment Manifest" in manifest_path.read_text()
 
 
 def test_cli_sweep_prints_markdown_report_to_stdout() -> None:
@@ -693,8 +734,9 @@ def test_cli_writes_sweep_html_report(tmp_path: Path) -> None:
     assert result.returncode == 0
     assert "# Moving Average Sweep Report" in result.stdout
     html = html_path.read_text()
-    assert "<pre># Moving Average Sweep Report" in html
-    assert "| rank | short_window | long_window | total_return |" in html
+    assert "<h1>Moving Average Sweep Report</h1>" in html
+    assert "<th>rank</th>" in html
+    assert "<th>total_return</th>" in html
     assert "Research-only" in html
 
 
@@ -714,7 +756,7 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
             "--short-windows",
             "2,3",
             "--long-windows",
-            "4,5",
+            "4",
             "--top-n",
             "2",
             "--split-cutoff",
@@ -735,7 +777,12 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
     assert "not a trading recommendation" in report
     assert "train_total_return" in report
     assert "test_total_return" in report
+    assert "train_rank" in report
+    assert "test_rank" in report
+    assert "robustness_flag" in report
     assert "parameter overfitting" in report
+    assert "not a prediction" in report
+    assert "stability claim" in report
     payload = json.loads(json_path.read_text())
     assert payload["validation_split"] == {
         "train": {
@@ -756,8 +803,73 @@ def test_cli_sweep_outputs_validation_split_metadata(tmp_path: Path) -> None:
     first_result = payload["ranked_results"][0]
     assert "train_metrics" in first_result
     assert "test_metrics" in first_result
+    assert "robustness" in first_result
     assert set(first_result["train_metrics"]) == set(first_result["metrics"])
     assert set(first_result["test_metrics"]) == set(first_result["metrics"])
+    assert set(first_result["robustness"]) == {
+        "train_rank",
+        "test_rank",
+        "rank_delta",
+        "train_test_return_gap",
+        "robustness_flag",
+    }
+    assert not {
+        "train_rank",
+        "test_rank",
+        "rank_delta",
+        "train_test_return_gap",
+        "robustness_flag",
+    } & set(first_result)
+    assert first_result["robustness"]["robustness_flag"] in {
+        "fragile",
+        "not_flagged",
+    }
+    markdown_rows = _split_sweep_markdown_rows(report)
+    assert len(markdown_rows) == len(payload["ranked_results"])
+    for markdown_row, json_row in zip(markdown_rows, payload["ranked_results"]):
+        robustness = json_row["robustness"]
+        assert markdown_row["rank"] == str(json_row["rank"])
+        assert markdown_row["short_window"] == str(json_row["windows"]["short_window"])
+        assert markdown_row["long_window"] == str(json_row["windows"]["long_window"])
+        assert markdown_row["train_rank"] == str(robustness["train_rank"])
+        assert markdown_row["test_rank"] == str(robustness["test_rank"])
+        assert markdown_row["rank_delta"] == str(robustness["rank_delta"])
+        assert markdown_row["train_total_return"] == _format_percent(
+            json_row["train_metrics"]["total_return"]
+        )
+        assert markdown_row["test_total_return"] == _format_percent(
+            json_row["test_metrics"]["total_return"]
+        )
+        assert markdown_row["train_test_return_gap"] == _format_percent(
+            robustness["train_test_return_gap"]
+        )
+        assert markdown_row["robustness_flag"] == robustness["robustness_flag"]
+
+
+def test_cli_rejects_split_sweep_windows_larger_than_partitions() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--sweep",
+            "--short-windows",
+            "2,3",
+            "--long-windows",
+            "4,5",
+            "--split-cutoff",
+            "2024-01-08",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "at least 5 rows to evaluate the largest long window" in result.stderr
 
 
 def test_cli_rejects_mutually_exclusive_validation_split_flags() -> None:
@@ -838,3 +950,33 @@ def test_cli_rejects_invalid_split_ratio_flag() -> None:
 
     assert result.returncode == 2
     assert "split ratio must be greater than 0 and less than 1" in result.stderr
+
+
+def _split_sweep_markdown_rows(report: str) -> list[dict[str, str]]:
+    header = (
+        "| rank | short_window | long_window | total_return | train_rank | "
+        "test_rank | rank_delta | train_total_return | test_total_return | "
+        "train_test_return_gap | robustness_flag | annualized_return | "
+        "max_drawdown | volatility | sharpe_like | win_rate |"
+    )
+    columns = [value.strip() for value in header.strip("|").split("|")]
+    rows: list[dict[str, str]] = []
+    in_split_table = False
+    for line in report.splitlines():
+        if line == header:
+            in_split_table = True
+            continue
+        if not in_split_table:
+            continue
+        if line.startswith("| ---"):
+            continue
+        if not line.startswith("| "):
+            break
+        values = [value.strip() for value in line.strip("|").split("|")]
+        rows.append(dict(zip(columns, values)))
+
+    return rows
+
+
+def _format_percent(value: float) -> str:
+    return f"{value * 100:.2f}%"

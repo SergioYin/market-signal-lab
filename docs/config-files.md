@@ -48,6 +48,9 @@ treated the same as omitting that key, allowing the CLI default or explicit flag
 to take effect.
 
 The bundled `examples/configs/split-sweep.json` uses synthetic sample data and
-train/test diagnostics. Those outputs are research artifacts only: they are not
-broker instructions, trading recommendations, forecasts, or evidence of future
-performance.
+train/test rank and `robustness_flag` label diagnostics. In JSON outputs,
+`train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and
+`robustness_flag` appear under each row's `robustness` object; train and test
+returns appear as `train_metrics.total_return` and `test_metrics.total_return`.
+Those outputs are research artifacts only: they are not broker instructions,
+trading recommendations, forecasts, or evidence of future performance.

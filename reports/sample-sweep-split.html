@@ -4,27 +4,108 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Market Signal Lab Report</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
 </head>
 <body>
   <h1>Market Signal Lab Report</h1>
   <p><strong>Research-only: this artifact is for historical signal research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
-  <pre># Moving Average Sweep Report
-
-&gt; Research-only: this sweep is a historical parameter screen, not investment advice, not a recommendation, and not evidence of future performance.
-
-## Validation split
-
-- Research metadata only; this split is not a trading recommendation.
-- Train: 2024-01-02 to 2024-01-05 (4 rows).
-- Test: 2024-01-08 to 2024-01-11 (4 rows).
-
-&gt; Train/test columns are a comparison aid for historical research only; a large train/test gap can be a sign of parameter overfitting and is not a trading recommendation.
-
-| rank | short_window | long_window | total_return | train_total_return | test_total_return | annualized_return | max_drawdown | volatility | sharpe_like | win_rate |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 2 | 3 | 1.51% | 1.80% | -1.64% | 71.46% | -1.74% | 17.09% | 3.2432 | 28.57% |
-| 2 | 1 | 3 | -1.76% | 0.00% | -1.64% | -47.19% | -1.76% | 12.09% | -5.2143 | 14.29% |
-| 3 | 1 | 2 | -3.02% | -1.29% | -0.59% | -66.86% | -3.02% | 12.86% | -8.5009 | 14.29% |
-</pre>
+  <h1>Moving Average Sweep Report</h1>
+  <blockquote>Research-only: this sweep is a historical parameter screen, not investment advice, not a recommendation, and not evidence of future performance.</blockquote>
+  <h2>Validation split</h2>
+  <ul>
+    <li>Research metadata only; this split is not a trading recommendation.</li>
+    <li>Train: 2024-01-02 to 2024-01-05 (4 rows).</li>
+    <li>Test: 2024-01-08 to 2024-01-11 (4 rows).</li>
+  </ul>
+  <blockquote>Train/test columns are a comparison aid for historical research only; a large train/test gap can prompt review for possible parameter overfitting and is not a trading recommendation.</blockquote>
+  <blockquote>The robustness_flag label compares historical train/test ranks and return gaps inside this sample only. &#x27;not_flagged&#x27; only means the deterministic review thresholds were not crossed; it is not a prediction, a stability claim, or a recommendation to buy, sell, or hold.</blockquote>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>rank</th>
+          <th>short_window</th>
+          <th>long_window</th>
+          <th>total_return</th>
+          <th>train_rank</th>
+          <th>test_rank</th>
+          <th>rank_delta</th>
+          <th>train_total_return</th>
+          <th>test_total_return</th>
+          <th>train_test_return_gap</th>
+          <th>robustness_flag</th>
+          <th>annualized_return</th>
+          <th>max_drawdown</th>
+          <th>volatility</th>
+          <th>sharpe_like</th>
+          <th>win_rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>3</td>
+          <td>1.51%</td>
+          <td>1</td>
+          <td>3</td>
+          <td>2</td>
+          <td>1.80%</td>
+          <td>-1.64%</td>
+          <td>3.44%</td>
+          <td>fragile</td>
+          <td>71.46%</td>
+          <td>-1.74%</td>
+          <td>17.09%</td>
+          <td>3.2432</td>
+          <td>28.57%</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>1</td>
+          <td>3</td>
+          <td>-1.76%</td>
+          <td>2</td>
+          <td>2</td>
+          <td>0</td>
+          <td>0.00%</td>
+          <td>-1.64%</td>
+          <td>1.64%</td>
+          <td>not_flagged</td>
+          <td>-47.19%</td>
+          <td>-1.76%</td>
+          <td>12.09%</td>
+          <td>-5.2143</td>
+          <td>14.29%</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>1</td>
+          <td>2</td>
+          <td>-3.02%</td>
+          <td>3</td>
+          <td>1</td>
+          <td>-2</td>
+          <td>-1.29%</td>
+          <td>-0.59%</td>
+          <td>-0.70%</td>
+          <td>fragile</td>
+          <td>-66.86%</td>
+          <td>-3.02%</td>
+          <td>12.86%</td>
+          <td>-8.5009</td>
+          <td>14.29%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </body>
 </html>

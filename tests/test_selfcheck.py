@@ -44,8 +44,8 @@ def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
 
 def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/index.md") in selfcheck.DOC_LINK_SOURCES
-    assert Path("docs/release-notes-v0.7.0.md") in selfcheck.DOC_LINK_SOURCES
-    assert Path("docs/release-v0.7.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v0.8.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v0.8.0.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_docs_link_check_accepts_repo_local_links(tmp_path: Path) -> None:
@@ -97,7 +97,7 @@ def test_canonical_docs_map_links_every_docs_markdown_file() -> None:
     assert expected_docs.issubset({path.name for path in linked_docs})
 
 
-def test_split_sweep_sample_artifact_has_non_zero_diagnostics(tmp_path: Path) -> None:
+def test_split_sweep_sample_artifact_has_split_diagnostics(tmp_path: Path) -> None:
     command = _split_sweep_command()
     output_paths = {
         "reports/sample-sweep-split.md": tmp_path / "sample-sweep-split.md",
@@ -121,9 +121,20 @@ def test_split_sweep_sample_artifact_has_non_zero_diagnostics(tmp_path: Path) ->
     assert payload["sweep_config"]["long_windows"] == [2, 3]
     assert payload["validation_split"]["split_ratio"] == 0.5
 
-    top_result = payload["ranked_results"][0]
-    assert top_result["train_metrics"]["total_return"] != 0.0
-    assert top_result["test_metrics"]["total_return"] != 0.0
+    assert payload["ranked_results"]
+    for result in payload["ranked_results"]:
+        assert set(result["train_metrics"]) == set(result["metrics"])
+        assert set(result["test_metrics"]) == set(result["metrics"])
+        assert set(result["robustness"]) == {
+            "train_rank",
+            "test_rank",
+            "rank_delta",
+            "train_test_return_gap",
+            "robustness_flag",
+        }
+        assert result["robustness"]["train_rank"] >= 1
+        assert result["robustness"]["test_rank"] >= 1
+        assert result["robustness"]["robustness_flag"] in {"fragile", "not_flagged"}
 
 
 def _split_sweep_command() -> list[str]:

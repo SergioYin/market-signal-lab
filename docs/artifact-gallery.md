@@ -24,9 +24,9 @@ For plain-language definitions of report metrics, including buy-and-hold compari
 
 `reports/sample-sweep.html` is an HTML wrapper around the Markdown sweep report. It provides a browser-viewable version of the same ranked table.
 
-Sweep runs can also include train/test comparison metadata by passing `--split-ratio` or `--split-cutoff`. In that mode, the ranked table and JSON results include `train_total_return` and `test_total_return` diagnostics for each window pair when those partitions can be evaluated. These values compare historical partitions inside the supplied dataset; they are not forecasts, recommendations, or evidence of future performance.
+Sweep runs can also include train/test comparison metadata by passing `--split-ratio` or `--split-cutoff`. In that mode, the Markdown and HTML ranked tables include `train_rank`, `test_rank`, `rank_delta`, `train_total_return`, `test_total_return`, `train_test_return_gap`, and `robustness_flag` diagnostics for each window pair when those partitions can be evaluated. JSON `ranked_results` rows store the same train/test return values in `train_metrics.total_return` and `test_metrics.total_return`, and store `train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and `robustness_flag` in the nested `robustness` object. These values compare historical partitions inside the supplied dataset; they are not forecasts, recommendations, stability claims, or evidence of future performance.
 
-`reports/sample-sweep-split.md`, `reports/sample-sweep-split.json`, and `reports/sample-sweep-split.html` are generated from the bundled sample CSV with `--sweep --short-windows 1,2 --long-windows 2,3 --split-ratio 0.5`. The small windows and even split are intentional for the eight-row fixture so the train/test comparison columns show non-zero diagnostics in the checked-in sample artifact set.
+`reports/sample-sweep-split.md`, `reports/sample-sweep-split.json`, and `reports/sample-sweep-split.html` are generated from the bundled sample CSV with `--sweep --short-windows 1,2 --long-windows 2,3 --fee-bps 10.0 --top-n 3 --split-ratio 0.5`, plus matching `--output`, `--json-output`, and `--html-output` paths. The small windows and even split are intentional for the eight-row fixture so the train/test comparison columns and `robustness_flag` labels show sample diagnostics in the checked-in artifact set.
 
 ### Why Sweep Rankings Are Not Predictions
 
@@ -34,7 +34,7 @@ A sweep ranking says, "within this historical sample, using these settings, this
 
 For beginners, think of a sweep like checking which shoes were fastest on one short practice route. The result can describe that route, on that day, under those conditions. It does not prove those shoes will be fastest on every route or in future weather. In market research, this gap is larger because prices change, regimes shift, costs vary, and testing many parameter combinations can accidentally reward settings that fit noise.
 
-Use sweep rankings and train/test comparison fields as a starting point for questioning a strategy, not as a prediction engine.
+Use sweep rankings, train/test comparison fields, and `robustness_flag` labels as a starting point for questioning a strategy, not as a prediction engine.
 
 ## Manifest Artifact
 

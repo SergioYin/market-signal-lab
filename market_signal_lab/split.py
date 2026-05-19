@@ -50,7 +50,7 @@ def _validate_split_selector(
     cutoff_date: str | None,
 ) -> None:
     if (train_ratio is None) == (cutoff_date is None):
-        raise ValueError("provide exactly one of train_ratio or cutoff_date")
+        raise ValueError("provide exactly one split selector: train_ratio or cutoff_date")
 
     if train_ratio is not None and not 0 < train_ratio < 1:
         raise ValueError("train_ratio must be greater than 0 and less than 1")
@@ -69,7 +69,9 @@ def _parse_cutoff_date(cutoff_date: str | None) -> date:
     try:
         return date.fromisoformat(cutoff_date)
     except ValueError as exc:
-        raise ValueError(f"cutoff_date must be an ISO date: {cutoff_date!r}") from exc
+        raise ValueError(
+            f"split cutoff must be an ISO date (YYYY-MM-DD): {cutoff_date!r}"
+        ) from exc
 
 
 def _cutoff_index(bars: Sequence[PriceBar], cutoff: date) -> int:
@@ -84,6 +86,12 @@ def _validate_non_empty_partitions(
     test: Sequence[PriceBar],
 ) -> None:
     if not train:
-        raise ValueError("train partition must not be empty")
+        raise ValueError(
+            "validation split produced an empty training partition; choose a "
+            "larger split ratio or a later split cutoff"
+        )
     if not test:
-        raise ValueError("test partition must not be empty")
+        raise ValueError(
+            "validation split produced an empty test partition; choose a "
+            "smaller split ratio or an earlier split cutoff"
+        )

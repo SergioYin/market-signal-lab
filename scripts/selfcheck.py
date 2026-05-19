@@ -27,11 +27,13 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v0.5.0.md"),
     Path("docs/release-notes-v0.6.0.md"),
     Path("docs/release-notes-v0.7.0.md"),
+    Path("docs/release-notes-v0.8.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
     Path("docs/release-v0.6.0.md"),
     Path("docs/release-v0.7.0.md"),
+    Path("docs/release-v0.8.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 SAMPLE_ARTIFACTS = (

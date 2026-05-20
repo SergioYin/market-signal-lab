@@ -33,8 +33,8 @@ def test_render_experiment_report_contains_backtest_caveats() -> None:
     assert NOTE_LINE in report
     assert "- **Periods in market**: 1 of 1 close-to-close periods (100.00%)." in report
     assert "- **Exposure changes**: 1." in report
-    assert "- **Entries to market**: 1." in report
-    assert "- **Exits to cash**: 0." in report
+    assert "- **Modeled entries**: 1." in report
+    assert "- **Modeled exits**: 0." in report
     assert "- **Buy-and-hold total return**: 5.00%" in report
     assert "- **Strategy minus buy-and-hold return**: 5.00%" in report
     assert "Backtest results are hypothetical" in report
@@ -187,8 +187,8 @@ def test_exposure_trade_review_stays_stable_for_no_trade_case() -> None:
     assert "- **Periods in market**: 0 of 2 close-to-close periods (0.00%)." in report
     assert "- **Periods in cash**: 2 of 2 close-to-close periods (100.00%)." in report
     assert "- **Exposure changes**: 0." in report
-    assert "- **Entries to market**: 0." in report
-    assert "- **Exits to cash**: 0." in report
+    assert "- **Modeled entries**: 0." in report
+    assert "- **Modeled exits**: 0." in report
 
 
 def test_exposure_trade_review_handles_single_record_without_periods() -> None:

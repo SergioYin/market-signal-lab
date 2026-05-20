@@ -264,8 +264,8 @@ def _render_exposure_trade_review(review: Mapping[str, Any]) -> list[str]:
         ),
         f"- **Average exposure**: {_format_percent(review['average_exposure'])}.",
         f"- **Exposure changes**: {review['exposure_changes']}.",
-        f"- **Entries to market**: {review['entries_to_market']}.",
-        f"- **Exits to cash**: {review['exits_to_cash']}.",
+        f"- **Modeled entries**: {review['entries_to_market']}.",
+        f"- **Modeled exits**: {review['exits_to_cash']}.",
         (
             "- **Total fee drag**: "
             f"{_format_percent(review['total_fee_drag'])} summed across periods."

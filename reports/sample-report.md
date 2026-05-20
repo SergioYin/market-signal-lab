@@ -23,8 +23,8 @@
 - **Periods in cash**: 7 of 7 close-to-close periods (100.00%).
 - **Average exposure**: 0.00%.
 - **Exposure changes**: 0.
-- **Entries to market**: 0.
-- **Exits to cash**: 0.
+- **Modeled entries**: 0.
+- **Modeled exits**: 0.
 - **Total fee drag**: 0.00% summed across periods.
 
 ## Metrics

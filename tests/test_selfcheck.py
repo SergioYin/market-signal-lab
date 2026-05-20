@@ -93,6 +93,13 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v0.9.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.0.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.0.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.1.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.1.0.md") in selfcheck.DOC_LINK_SOURCES
+
+
+def test_public_claim_sources_include_v110_release_docs() -> None:
+    assert Path("docs/release-notes-v1.1.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.1.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -271,6 +278,69 @@ def test_split_sweep_sample_artifact_has_split_diagnostics(tmp_path: Path) -> No
         assert result["robustness"]["train_rank"] >= 1
         assert result["robustness"]["test_rank"] >= 1
         assert result["robustness"]["robustness_flag"] in {"fragile", "not_flagged"}
+
+
+def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Path) -> None:
+    command = _single_backtest_command()
+    output_paths = {
+        "reports/sample-report.md": tmp_path / "sample-report.md",
+        "reports/sample-report.json": tmp_path / "sample-report.json",
+        "reports/sample-report.html": tmp_path / "sample-report.html",
+        "reports/sample-manifest.md": tmp_path / "sample-manifest.md",
+    }
+    command = [str(output_paths.get(value, value)) for value in command]
+
+    result = subprocess.run(
+        command,
+        cwd=selfcheck.REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+    markdown = (tmp_path / "sample-report.md").read_text(encoding="utf-8")
+    html = (tmp_path / "sample-report.html").read_text(encoding="utf-8")
+    payload = json.loads((tmp_path / "sample-report.json").read_text())
+
+    assert "## Modeled Exposure Review" in markdown
+    assert "- **Modeled entries**:" in markdown
+    assert "- **Modeled exits**:" in markdown
+    assert "<h2>Modeled Exposure Review</h2>" in html
+    assert "Modeled entries" in html
+    assert "Modeled exits" in html
+
+    review = payload["exposure_trade_review"]
+    assert set(review) == {
+        "period_count",
+        "periods_in_market",
+        "periods_in_cash",
+        "percent_periods_in_market",
+        "percent_periods_in_cash",
+        "average_exposure",
+        "exposure_changes",
+        "entries_to_market",
+        "exits_to_cash",
+        "total_fee_drag",
+        "research_only",
+        "note",
+    }
+    assert review["period_count"] == 7
+    assert review["research_only"] is True
+    assert "not investment advice" in review["note"]
+    assert "trading guidance" in review["note"]
+    assert "instructions to buy, sell, hold, or size a position" in review["note"]
+
+
+def _single_backtest_command() -> list[str]:
+    backtest_commands = [
+        command
+        for command in selfcheck._sample_artifact_commands()
+        if "reports/sample-report.md" in command
+    ]
+    assert len(backtest_commands) == 1
+    return backtest_commands[0]
 
 
 def _split_sweep_command() -> list[str]:

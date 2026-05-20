@@ -16,6 +16,17 @@
 - **Backtest total return**: 0.00%
 - **Exposure changes**: 0
 
+## Modeled Exposure Review
+
+- Historical exposure metadata only; these model states are not investment advice, trading guidance, executed trades, or instructions to buy, sell, hold, or size a position.
+- **Periods in market**: 0 of 7 close-to-close periods (0.00%).
+- **Periods in cash**: 7 of 7 close-to-close periods (100.00%).
+- **Average exposure**: 0.00%.
+- **Exposure changes**: 0.
+- **Entries to market**: 0.
+- **Exits to cash**: 0.
+- **Total fee drag**: 0.00% summed across periods.
+
 ## Metrics
 
 - **Strategy total return**: 0.00%

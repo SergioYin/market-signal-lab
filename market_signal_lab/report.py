@@ -9,6 +9,11 @@ from typing import Any
 from market_signal_lab.backtest import EquityCurveRecord
 
 LEVERAGED_ETF_SYMBOLS = frozenset({"TQQQ", "QLD"})
+EXPOSURE_TRADE_REVIEW_NOTE = (
+    "Historical exposure metadata only; these model states are not "
+    "investment advice, trading guidance, executed trades, or instructions "
+    "to buy, sell, hold, or size a position."
+)
 METRIC_LABELS = {
     "total_return": "Strategy total return",
     "buy_and_hold_total_return": "Buy-and-hold total return",
@@ -42,6 +47,10 @@ def render_experiment_report(
         "",
         *_render_backtest_summary(backtest_curve),
         "",
+        "## Modeled Exposure Review",
+        "",
+        *_render_exposure_trade_review(build_exposure_trade_review(backtest_curve)),
+        "",
         "## Metrics",
         "",
         *_render_metrics(metrics),
@@ -67,6 +76,68 @@ def render_experiment_report(
     ]
 
     return "\n".join(lines) + "\n"
+
+
+def build_exposure_trade_review(
+    backtest_curve: Sequence[EquityCurveRecord],
+) -> dict[str, Any]:
+    """Summarize historical exposure changes for report and JSON artifacts."""
+
+    if not backtest_curve:
+        return {
+            "period_count": 0,
+            "periods_in_market": 0,
+            "periods_in_cash": 0,
+            "percent_periods_in_market": 0.0,
+            "percent_periods_in_cash": 0.0,
+            "average_exposure": 0.0,
+            "exposure_changes": 0,
+            "entries_to_market": 0,
+            "exits_to_cash": 0,
+            "total_fee_drag": 0.0,
+            "research_only": True,
+            "note": EXPOSURE_TRADE_REVIEW_NOTE,
+        }
+
+    period_records = backtest_curve[1:]
+    period_count = len(period_records)
+    periods_in_market = sum(1 for record in period_records if record.exposure > 0.0)
+    periods_in_cash = period_count - periods_in_market
+    exposure_changes = sum(
+        1
+        for previous, current in zip(backtest_curve, backtest_curve[1:])
+        if previous.exposure != current.exposure
+    )
+    entries_to_market = sum(
+        1
+        for previous, current in zip(backtest_curve, backtest_curve[1:])
+        if previous.exposure == 0.0 and current.exposure > 0.0
+    )
+    exits_to_cash = sum(
+        1
+        for previous, current in zip(backtest_curve, backtest_curve[1:])
+        if previous.exposure > 0.0 and current.exposure == 0.0
+    )
+    average_exposure = (
+        sum(record.exposure for record in period_records) / period_count
+        if period_count
+        else 0.0
+    )
+
+    return {
+        "period_count": period_count,
+        "periods_in_market": periods_in_market,
+        "periods_in_cash": periods_in_cash,
+        "percent_periods_in_market": _ratio(periods_in_market, period_count),
+        "percent_periods_in_cash": _ratio(periods_in_cash, period_count),
+        "average_exposure": average_exposure,
+        "exposure_changes": exposure_changes,
+        "entries_to_market": entries_to_market,
+        "exits_to_cash": exits_to_cash,
+        "total_fee_drag": sum(record.fee for record in period_records),
+        "research_only": True,
+        "note": EXPOSURE_TRADE_REVIEW_NOTE,
+    }
 
 
 def render_validation_split_note(
@@ -168,6 +239,40 @@ def _render_backtest_summary(
     ]
 
 
+def _render_exposure_trade_review(review: Mapping[str, Any]) -> list[str]:
+    if not review:
+        return ["- No exposure review available."]
+
+    period_count = int(review["period_count"])
+    if period_count == 0:
+        return [
+            f"- {review['note']}",
+            "- No close-to-close periods were available to review.",
+        ]
+
+    return [
+        f"- {review['note']}",
+        (
+            f"- **Periods in market**: {review['periods_in_market']} of "
+            f"{period_count} close-to-close periods "
+            f"({_format_percent(review['percent_periods_in_market'])})."
+        ),
+        (
+            f"- **Periods in cash**: {review['periods_in_cash']} of "
+            f"{period_count} close-to-close periods "
+            f"({_format_percent(review['percent_periods_in_cash'])})."
+        ),
+        f"- **Average exposure**: {_format_percent(review['average_exposure'])}.",
+        f"- **Exposure changes**: {review['exposure_changes']}.",
+        f"- **Entries to market**: {review['entries_to_market']}.",
+        f"- **Exits to cash**: {review['exits_to_cash']}.",
+        (
+            "- **Total fee drag**: "
+            f"{_format_percent(review['total_fee_drag'])} summed across periods."
+        ),
+    ]
+
+
 def _render_metrics(metrics: Mapping[str, float]) -> list[str]:
     if not metrics:
         return ["- No metrics provided."]
@@ -255,3 +360,9 @@ def _format_percent(value: float) -> str:
 
 def _format_date(value: date) -> str:
     return value.isoformat()
+
+
+def _ratio(numerator: int, denominator: int) -> float:
+    if denominator == 0:
+        return 0.0
+    return numerator / denominator

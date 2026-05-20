@@ -5,6 +5,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from market_signal_lab.report import EXPOSURE_TRADE_REVIEW_NOTE
+
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
 
@@ -23,7 +25,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 1.0.0\n"
+    assert result.stdout == "market-signal-lab 1.1.0\n"
     assert result.stderr == ""
 
 
@@ -125,6 +127,20 @@ def test_cli_writes_backtest_json_report(tmp_path: Path) -> None:
         )
         < 1e-12
     )
+    assert payload["exposure_trade_review"] == {
+        "period_count": 3,
+        "periods_in_market": 1,
+        "periods_in_cash": 2,
+        "percent_periods_in_market": 1 / 3,
+        "percent_periods_in_cash": 2 / 3,
+        "average_exposure": 1 / 3,
+        "exposure_changes": 1,
+        "entries_to_market": 1,
+        "exits_to_cash": 0,
+        "total_fee_drag": 0.0,
+        "research_only": True,
+        "note": EXPOSURE_TRADE_REVIEW_NOTE,
+    }
     assert payload["first_date"] == "2024-01-01"
     assert payload["last_date"] == "2024-01-04"
     assert payload["row_count"] == 4

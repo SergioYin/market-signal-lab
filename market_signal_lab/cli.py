@@ -29,7 +29,10 @@ from market_signal_lab.metrics import (
     win_rate_from_returns,
 )
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
-from market_signal_lab.report import render_experiment_report
+from market_signal_lab.report import (
+    build_exposure_trade_review,
+    render_experiment_report,
+)
 from market_signal_lab.split import TrainTestSplit, split_train_test
 from market_signal_lab.strategies import moving_average_crossover_strategy
 from market_signal_lab.sweep import (
@@ -360,10 +363,12 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
         validation_split=validation_split,
         data_provenance=provenance,
     )
+    exposure_trade_review = build_exposure_trade_review(backtest_curve)
 
     json_payload = {
         "strategy_config": strategy_config,
         "metrics": metrics,
+        "exposure_trade_review": exposure_trade_review,
         "first_date": bars[0].date.isoformat() if bars else None,
         "last_date": bars[-1].date.isoformat() if bars else None,
         "row_count": len(bars),

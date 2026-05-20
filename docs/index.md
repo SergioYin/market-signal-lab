@@ -5,6 +5,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 ## Start Here
 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
+- [Exposure/trade review sample](../reports/sample-report.md) - fastest way to inspect the new modeled exposure review in the checked-in single backtest report.
+- [Exposure/trade review JSON](../reports/sample-report.json) - machine-readable `exposure_trade_review` sample for the same research-only run.
 - [Risk Boundaries](risk-boundaries.md) - public no-advice and no-execution boundaries.
 - [Metric Guide](metric-guide.md) - definitions and caveats for reported metrics.
 - [Split Sweep Walkthrough](split-sweep-walkthrough.md) - beginner reading guide for split-sweep robustness reports.
@@ -18,6 +20,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 ## Release Notes
 
+- [v1.1.0 Release Notes](release-notes-v1.1.0.md)
 - [v1.0.0 Release Notes](release-notes-v1.0.0.md)
 - [v1.0.0 Release Checklist](release-v1.0.0.md)
 - [v0.9.0 Release Notes](release-notes-v0.9.0.md)

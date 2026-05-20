@@ -33,6 +33,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v0.9.0.md"),
     Path("docs/release-notes-v1.0.0.md"),
     Path("docs/release-notes-v1.1.0.md"),
+    Path("docs/release-notes-v1.2.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -42,6 +43,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v0.9.0.md"),
     Path("docs/release-v1.0.0.md"),
     Path("docs/release-v1.1.0.md"),
+    Path("docs/release-v1.2.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -75,6 +77,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
+    Path("reports/fee-sensitivity.md"),
+    Path("reports/fee-sensitivity.json"),
 )
 PUBLIC_CLAIM_SOURCES = DOC_LINK_SOURCES + SAMPLE_ARTIFACTS
 FORBIDDEN_PUBLIC_CLAIM_RE = re.compile(
@@ -111,6 +115,8 @@ GALLERY_HTML = """<!doctype html>
     <li><a href="sample-report.html">HTML report</a></li>
     <li><a href="sample-report.md">Markdown report</a></li>
     <li><a href="sample-report.json">JSON report</a></li>
+    <li><a href="fee-sensitivity.md">Fee sensitivity Markdown</a></li>
+    <li><a href="fee-sensitivity.json">Fee sensitivity JSON</a></li>
   </ul>
   <h2>Parameter Sweep</h2>
   <ul>
@@ -244,7 +250,7 @@ def run_sample_artifact_generation() -> bool:
             print(f"Empty sample artifact: {artifact}")
             return False
 
-    print("Created sample report gallery, report, manifest, sweep, split sweep, and HTML artifacts.")
+    print("Created sample report gallery, report, manifest, sweep, split sweep, fee sensitivity, and HTML artifacts.")
     return True
 
 
@@ -502,6 +508,14 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/sample-sweep-split.json",
             "--html-output",
             "reports/sample-sweep-split.html",
+        ],
+        [
+            sys.executable,
+            "scripts/fee_sensitivity.py",
+            "--markdown-output",
+            "reports/fee-sensitivity.md",
+            "--json-output",
+            "reports/fee-sensitivity.json",
         ],
     ]
 

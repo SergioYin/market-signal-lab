@@ -1,0 +1,114 @@
+{
+  "artifact": "fee_sensitivity",
+  "caveats": [
+    "Fee sensitivity here means rerunning the same historical model with different basis-point assumptions; it is not an estimate of real broker costs, spreads, taxes, liquidity, or market impact.",
+    "The bundled sample is intentionally tiny and synthetic. Its numbers are useful for checking artifact shape and reproducibility, not for making market claims.",
+    "The existing 20/50 moving-average setup has no modeled exposure changes on this eight-row sample, so changing fee_bps does not change the reported return in this artifact.",
+    "Modeled exposure changes, entries, exits, and fee drag are historical model metadata only. They are not executed trades or instructions.",
+    "Buy-and-hold comparison fields are same-period historical context only; they are not recommendations or evidence of future performance."
+  ],
+  "data_provenance": {
+    "as_of_date": "2026-05-18",
+    "created_date": "2026-05-18",
+    "data_kind": "synthetic_static_fixture",
+    "dataset_label": "sample_tqqq_qld_like",
+    "limitations": [
+      "Synthetic rows are not broker, exchange, fund-provider, vendor, or live-feed data.",
+      "Placeholder symbols QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE are example-shaped labels, not real instrument histories.",
+      "Leveraged ETF-like rows do not model fund mechanics, fees, tracking differences, financing costs, taxes, liquidity, or market impact.",
+      "Use only for deterministic research artifact checks; do not use for advice, recommendations, predictions, or market claims."
+    ],
+    "metadata_path": "examples/data/sample_tqqq_qld_like.csv.provenance.json",
+    "research_only": true,
+    "source": "Hand-authored deterministic OHLC sample bundled with Market Signal Lab for offline examples and tests."
+  },
+  "fee_bps_values": [
+    0.0,
+    5.0,
+    10.0,
+    25.0,
+    50.0
+  ],
+  "first_date": "2024-01-02",
+  "input_csv": "examples/data/sample_tqqq_qld_like.csv",
+  "last_date": "2024-01-11",
+  "research_only": true,
+  "row_count": 8,
+  "rows": [
+    {
+      "average_exposure": 0.0,
+      "buy_and_hold_total_return": 0.01691542288557213,
+      "fee_bps": 0.0,
+      "max_drawdown": 0.0,
+      "modeled_entries": 0,
+      "modeled_exits": 0,
+      "modeled_exposure_changes": 0,
+      "period_count": 7,
+      "periods_in_market": 0,
+      "strategy_minus_buy_and_hold_return": -0.01691542288557213,
+      "total_fee_drag": 0.0,
+      "total_return": 0.0
+    },
+    {
+      "average_exposure": 0.0,
+      "buy_and_hold_total_return": 0.01691542288557213,
+      "fee_bps": 5.0,
+      "max_drawdown": 0.0,
+      "modeled_entries": 0,
+      "modeled_exits": 0,
+      "modeled_exposure_changes": 0,
+      "period_count": 7,
+      "periods_in_market": 0,
+      "strategy_minus_buy_and_hold_return": -0.01691542288557213,
+      "total_fee_drag": 0.0,
+      "total_return": 0.0
+    },
+    {
+      "average_exposure": 0.0,
+      "buy_and_hold_total_return": 0.01691542288557213,
+      "fee_bps": 10.0,
+      "max_drawdown": 0.0,
+      "modeled_entries": 0,
+      "modeled_exits": 0,
+      "modeled_exposure_changes": 0,
+      "period_count": 7,
+      "periods_in_market": 0,
+      "strategy_minus_buy_and_hold_return": -0.01691542288557213,
+      "total_fee_drag": 0.0,
+      "total_return": 0.0
+    },
+    {
+      "average_exposure": 0.0,
+      "buy_and_hold_total_return": 0.01691542288557213,
+      "fee_bps": 25.0,
+      "max_drawdown": 0.0,
+      "modeled_entries": 0,
+      "modeled_exits": 0,
+      "modeled_exposure_changes": 0,
+      "period_count": 7,
+      "periods_in_market": 0,
+      "strategy_minus_buy_and_hold_return": -0.01691542288557213,
+      "total_fee_drag": 0.0,
+      "total_return": 0.0
+    },
+    {
+      "average_exposure": 0.0,
+      "buy_and_hold_total_return": 0.01691542288557213,
+      "fee_bps": 50.0,
+      "max_drawdown": 0.0,
+      "modeled_entries": 0,
+      "modeled_exits": 0,
+      "modeled_exposure_changes": 0,
+      "period_count": 7,
+      "periods_in_market": 0,
+      "strategy_minus_buy_and_hold_return": -0.01691542288557213,
+      "total_fee_drag": 0.0,
+      "total_return": 0.0
+    }
+  ],
+  "strategy_config": {
+    "long_window": 50,
+    "short_window": 20
+  },
+  "symbol": "QQQ_LIKE"
+}

@@ -4,12 +4,15 @@ Market Signal Lab is a public, research-only sandbox for reproducible trading-si
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
+The v1.2 fee sensitivity increment adds a research-only single-backtest comparison artifact under `reports/fee-sensitivity.md` and `reports/fee-sensitivity.json`. It reruns the bundled sample CSV with several `fee_bps` assumptions for the existing 20/50 moving-average settings and reports historical total return, buy-and-hold comparison, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and fee drag.
+
 The v1.0.0 readiness increment adds checked static fixture provenance for the bundled sample CSV, so generated sample reports, JSON payloads, and manifests label the data as synthetic, static, and research-only without performing live downloads.
 
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
 - [Static Sample Gallery](reports/index.html) - browser-openable links to the generated sample artifacts.
+- [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
 
 This is not a trading bot, signal service, forecast engine, or recommendation system.
@@ -102,6 +105,19 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
   --long-window 50 \
   --json-output reports/sample-report.json
 ```
+
+Fee sensitivity artifact:
+
+```bash
+python scripts/fee_sensitivity.py
+```
+
+This script reads the bundled sample CSV and writes
+`reports/fee-sensitivity.md` plus `reports/fee-sensitivity.json`. It is a
+research-only comparison of several `fee_bps` values for the existing 20/50
+moving-average single-backtest settings. In the bundled eight-row sample, the
+model has no exposure changes, so changing `fee_bps` does not change the
+reported return; the artifact states that caveat directly.
 
 Single backtest reports include `buy_and_hold_total_return` and
 `strategy_minus_buy_and_hold_return` metrics. These compare the strategy result
@@ -212,6 +228,7 @@ This project intentionally stays narrow:
 - It is built around CSV-based OHLC input and does not fetch market data automatically.
 - Performance metrics are educational and diagnostic, not investment advice.
 - Buy-and-hold benchmark metrics are historical diagnostics, not recommendations.
+- Fee sensitivity artifacts compare historical model assumptions only; they do not estimate real execution costs.
 - Exposure/trade review fields are historical model metadata, not advice or trade instructions.
 - Train/test sweep rankings and robustness flags are research diagnostics, not predictions or stability claims.
 - Outputs are reproducible artifacts for analysis, not execution signals for live systems.

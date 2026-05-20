@@ -16,9 +16,10 @@ Start there if you want the fastest review path:
 
 1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find the modeled exposure review.
 2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `exposure_trade_review` fields as structured research metadata.
-3. Open the split-sweep HTML sample to see the human-facing robustness table.
-4. Read the manifest to confirm the inputs and outputs behind the sample.
-5. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
+3. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
+4. Open the split-sweep HTML sample to see the human-facing robustness table.
+5. Read the manifest to confirm the inputs and outputs behind the sample.
+6. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
 
 ## Report Artifacts
 
@@ -27,6 +28,10 @@ Start there if you want the fastest review path:
 `reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, row count, `exposure_trade_review`, and `data_provenance` when adjacent fixture metadata exists. The single-backtest metric keys include `buy_and_hold_total_return` and `strategy_minus_buy_and_hold_return` as historical comparison diagnostics only. The `exposure_trade_review` object summarizes historical model exposure, exposure changes, modeled entries/exits, and modeled fee drag; it is review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions. Use this format when another script, notebook, or test needs structured output.
 
 `reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
+
+`reports/fee-sensitivity.md` is a research-only fee assumption comparison for the bundled single backtest. It reruns the existing 20/50 moving-average settings across several `fee_bps` values and shows historical total return, buy-and-hold total return, strategy-minus-buy-and-hold return, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and modeled fee drag. The bundled eight-row sample has no modeled exposure changes under the 20/50 settings, so the rows intentionally show no fee-driven return difference.
+
+`reports/fee-sensitivity.json` is the machine-readable version of the same fee sensitivity artifact. It records the input CSV, symbol, moving-average settings, tested `fee_bps` values, date range, row count, per-fee result rows, beginner caveats, and static fixture provenance when available.
 
 ## Sweep Artifacts
 
@@ -66,7 +71,7 @@ The selfcheck performs seven checks:
 
 1. Compiles the package and tests to catch syntax issues.
 2. Runs the test suite with `pytest`.
-3. Regenerates the sample report, manifest, sweep, split-sweep, JSON, and HTML artifacts under `reports/`.
+3. Regenerates the sample report, manifest, sweep, split-sweep, fee sensitivity, JSON, and HTML artifacts under `reports/`.
 4. Validates local Markdown, documentation, and gallery links.
 5. Checks the v0.9.0 static demo acceptance links.
 6. Checks public no-advice claim boundaries.
@@ -77,6 +82,8 @@ After it finishes, the expected generated files are:
 - `reports/sample-report.md`
 - `reports/sample-report.json`
 - `reports/sample-report.html`
+- `reports/fee-sensitivity.md`
+- `reports/fee-sensitivity.json`
 - `reports/index.html`
 - `reports/sample-sweep.md`
 - `reports/sample-sweep.json`

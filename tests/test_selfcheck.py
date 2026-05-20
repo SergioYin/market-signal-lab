@@ -19,6 +19,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "sample-report.html",
+        "fee-sensitivity.md",
+        "fee-sensitivity.json",
         "sample-sweep.html",
         "sample-sweep-split.html",
     }
@@ -95,11 +97,15 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v1.0.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.1.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.1.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.2.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.2.0.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/release-notes-v1.1.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.1.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.2.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.2.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -333,6 +339,78 @@ def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Pat
     assert "instructions to buy, sell, hold, or size a position" in review["note"]
 
 
+def test_selfcheck_regenerates_fee_sensitivity_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/fee-sensitivity.md"),
+        Path("reports/fee-sensitivity.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+
+    command = _fee_sensitivity_command()
+    assert "scripts/fee_sensitivity.py" in command
+    assert command[command.index("--markdown-output") + 1] == "reports/fee-sensitivity.md"
+    assert command[command.index("--json-output") + 1] == "reports/fee-sensitivity.json"
+
+
+def test_fee_sensitivity_artifact_is_reproducible(tmp_path: Path) -> None:
+    command = _fee_sensitivity_command()
+    output_paths = {
+        "reports/fee-sensitivity.md": tmp_path / "fee-sensitivity.md",
+        "reports/fee-sensitivity.json": tmp_path / "fee-sensitivity.json",
+    }
+    command = [str(output_paths.get(value, value)) for value in command]
+
+    result = subprocess.run(
+        command,
+        cwd=selfcheck.REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+
+    markdown = (tmp_path / "fee-sensitivity.md").read_text(encoding="utf-8")
+    payload = json.loads((tmp_path / "fee-sensitivity.json").read_text(encoding="utf-8"))
+
+    assert "# Fee Sensitivity Comparison" in markdown
+    assert "| fee_bps | total_return | buy_and_hold_total_return |" in markdown
+    assert "## Beginner Caveats" in markdown
+    assert "no modeled exposure changes" in markdown
+    assert "not investment advice" in markdown
+
+    assert payload["artifact"] == "fee_sensitivity"
+    assert payload["research_only"] is True
+    assert payload["input_csv"] == "examples/data/sample_tqqq_qld_like.csv"
+    assert payload["symbol"] == "QQQ_LIKE"
+    assert payload["strategy_config"] == {"short_window": 20, "long_window": 50}
+    assert payload["fee_bps_values"] == [0.0, 5.0, 10.0, 25.0, 50.0]
+    assert len(payload["rows"]) == 5
+    assert payload["data_provenance"]["data_kind"] == "synthetic_static_fixture"
+
+    for row in payload["rows"]:
+        assert set(row) == {
+            "fee_bps",
+            "total_return",
+            "buy_and_hold_total_return",
+            "strategy_minus_buy_and_hold_return",
+            "max_drawdown",
+            "modeled_exposure_changes",
+            "modeled_entries",
+            "modeled_exits",
+            "average_exposure",
+            "periods_in_market",
+            "period_count",
+            "total_fee_drag",
+        }
+        assert row["modeled_exposure_changes"] == 0
+        assert row["modeled_entries"] == 0
+        assert row["modeled_exits"] == 0
+        assert row["average_exposure"] == 0.0
+        assert row["total_fee_drag"] == 0.0
+
+
 def _single_backtest_command() -> list[str]:
     backtest_commands = [
         command
@@ -351,6 +429,16 @@ def _split_sweep_command() -> list[str]:
     ]
     assert len(split_commands) == 1
     return split_commands[0]
+
+
+def _fee_sensitivity_command() -> list[str]:
+    fee_commands = [
+        command
+        for command in selfcheck._sample_artifact_commands()
+        if "reports/fee-sensitivity.md" in command
+    ]
+    assert len(fee_commands) == 1
+    return fee_commands[0]
 
 
 def _write_demo_contract_fixture(

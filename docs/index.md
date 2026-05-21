@@ -22,6 +22,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 ## Release Notes
 
+- [v1.2.1 Release Notes](release-notes-v1.2.1.md)
+- [v1.2.1 Release Checklist](release-v1.2.1.md)
 - [v1.2.0 Release Notes](release-notes-v1.2.0.md)
 - [v1.2.0 Release Checklist](release-v1.2.0.md)
 - [v1.1.0 Release Notes](release-notes-v1.1.0.md)

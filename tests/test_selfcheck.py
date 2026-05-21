@@ -13,8 +13,13 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
+    assert "src=" not in gallery.lower()
+    assert "http://" not in gallery
+    assert "https://" not in gallery
     assert "research-only" in gallery
     assert "not investment advice" in gallery
+    assert "Open These First" in gallery
+    assert "no JavaScript, remote data, broker connection, or trading account" in gallery
 
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
@@ -68,6 +73,29 @@ def test_v090_demo_acceptance_contract_reports_empty_target(tmp_path: Path) -> N
     ]
 
 
+def test_v090_demo_acceptance_contract_rejects_remote_gallery_assets(
+    tmp_path: Path,
+) -> None:
+    _write_demo_contract_fixture(
+        tmp_path,
+        '<a href="../docs/split-sweep-walkthrough.md">Walkthrough</a>\n'
+        '<a href="sample-sweep-split.html">HTML split sweep</a>\n'
+        '<a href="sample-sweep-split.md">Markdown split sweep</a>\n'
+        '<a href="sample-sweep-split.json">JSON split sweep</a>\n'
+        '<a HREF = "https://example.com/report.html">Remote report</a>\n'
+        '<img SRC = "//example.com/chart.png" alt="Remote chart">\n',
+    )
+
+    issues = selfcheck.find_v090_demo_acceptance_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: static demo must use relative local links and assets, "
+        "found https://example.com/report.html",
+        "reports/index.html: static demo must use relative local links and assets, "
+        "found //example.com/chart.png",
+    ]
+
+
 def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
     expected_artifacts = {
         Path("reports/sample-sweep-split.md"),
@@ -99,6 +127,8 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v1.1.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.2.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.2.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_public_claim_sources_include_v110_release_docs() -> None:
@@ -106,6 +136,8 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/release-v1.1.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.2.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.2.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:

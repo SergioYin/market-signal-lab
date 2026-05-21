@@ -250,6 +250,12 @@ def _caveats() -> list[str]:
             "making market claims."
         ),
         (
+            "The TQQQ/QLD-like fixture labels do not make this a real leveraged "
+            "ETF model. Daily-reset path dependency, fund expenses, financing "
+            "costs, tracking differences, taxes, liquidity, and market impact are "
+            "outside this fee_bps comparison."
+        ),
+        (
             "The existing 20/50 moving-average setup has no modeled exposure "
             "changes on this eight-row sample, so changing fee_bps does not change "
             "the reported return in this artifact."

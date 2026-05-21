@@ -10,7 +10,7 @@ For plain-language definitions of report metrics, including buy-and-hold compari
 
 For a beginner walkthrough of the split-sweep robustness report, including how to read `train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and `robustness_flag` without treating them as advice, see the [Split Sweep Walkthrough](split-sweep-walkthrough.md).
 
-`reports/index.html` is a static no-JavaScript gallery that links to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page.
+[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page.
 
 Start there if you want the fastest review path:
 
@@ -29,7 +29,7 @@ Start there if you want the fastest review path:
 
 `reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
 
-`reports/fee-sensitivity.md` is a research-only fee assumption comparison for the bundled single backtest. It reruns the existing 20/50 moving-average settings across several `fee_bps` values and shows historical total return, buy-and-hold total return, strategy-minus-buy-and-hold return, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and modeled fee drag. The bundled eight-row sample has no modeled exposure changes under the 20/50 settings, so the rows intentionally show no fee-driven return difference.
+`reports/fee-sensitivity.md` is a research-only fee assumption comparison for the bundled single backtest. It reruns the existing 20/50 moving-average settings across several `fee_bps` values and shows historical total return, buy-and-hold total return, strategy-minus-buy-and-hold return, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and modeled fee drag. The bundled eight-row sample has no modeled exposure changes under the 20/50 settings, so the rows intentionally show no fee-driven return difference. For leveraged ETF-like fixture labels, this comparison is still not a real fund-cost or daily-reset behavior model.
 
 `reports/fee-sensitivity.json` is the machine-readable version of the same fee sensitivity artifact. It records the input CSV, symbol, moving-average settings, tested `fee_bps` values, date range, row count, per-fee result rows, beginner caveats, and static fixture provenance when available.
 

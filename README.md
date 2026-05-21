@@ -11,7 +11,7 @@ The v1.0.0 readiness increment adds checked static fixture provenance for the bu
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
-- [Static Sample Gallery](reports/index.html) - browser-openable links to the generated sample artifacts.
+- [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
 - [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
 

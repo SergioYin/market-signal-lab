@@ -12,6 +12,7 @@
 - `scripts/fee_sensitivity.py` generates `reports/fee-sensitivity.json`.
 - Selfcheck includes the new artifacts in reproducibility and public-claim checks.
 - README, documentation map, artifact gallery, and static report gallery link the new artifacts.
+- Demo polish keeps the static gallery no-JavaScript and local-only, clarifies the review path, and documents leveraged ETF-like fixture limits.
 
 ## Release Notes
 

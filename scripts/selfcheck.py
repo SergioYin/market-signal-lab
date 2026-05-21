@@ -34,6 +34,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.0.0.md"),
     Path("docs/release-notes-v1.1.0.md"),
     Path("docs/release-notes-v1.2.0.md"),
+    Path("docs/release-notes-v1.2.1.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -44,6 +45,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.0.0.md"),
     Path("docs/release-v1.1.0.md"),
     Path("docs/release-v1.2.0.md"),
+    Path("docs/release-v1.2.1.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -101,10 +103,11 @@ GALLERY_HTML = """<!doctype html>
 </head>
 <body>
   <h1>Market Signal Lab Sample Reports</h1>
-  <p><strong>Why this demo exists:</strong> it gives reviewers a complete, reproducible artifact trail before they run the CLI: human-readable reports, machine-readable JSON, static HTML pages, and a manifest that records the sample inputs and outputs.</p>
-  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data. They are research-only review aids, not investment advice, not recommendations, and not evidence of future performance.</p>
-  <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
-  <h2>Start Here</h2>
+  <p><strong>Start with the artifact trail:</strong> this static gallery shows the checked-in outputs before you run the CLI: human-readable reports, machine-readable JSON, browser-openable HTML, and the manifest that records the sample inputs and outputs.</p>
+  <p><strong>What to inspect first:</strong> open the artifact notes for a map, the sample manifest for reproducibility, and the split-sweep walkthrough if you are reading train/test robustness fields for the first time.</p>
+  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, and not evidence of future performance.</p>
+  <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
+  <h2>Open These First</h2>
   <ul>
     <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
     <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
@@ -141,7 +144,8 @@ GALLERY_HTML = """<!doctype html>
 
 
 MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
-HTML_HREF_RE = re.compile(r"\bhref=[\"']([^\"']+)[\"']", re.IGNORECASE)
+HTML_HREF_RE = re.compile(r"\bhref\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
+HTML_SRC_RE = re.compile(r"\bsrc\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
 FENCED_BLOCK_RE = re.compile(r"(^|\n)```.*?(\n```|$)", re.DOTALL)
 
 
@@ -304,6 +308,12 @@ def find_v090_demo_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
         links = _local_links_for_source(relative_source, text)
         if relative_source.suffix == ".html" and "<script" in text.lower():
             issues.append(f"{relative_source}: static demo must not include scripts")
+        if relative_source.suffix == ".html":
+            for target in _html_remote_or_absolute_references(text):
+                issues.append(
+                    f"{relative_source}: static demo must use relative local links "
+                    f"and assets, found {target}"
+                )
 
         for target in required_targets:
             if target not in links:
@@ -435,6 +445,18 @@ def _local_links_for_source(relative_source: Path, text: str) -> set[str]:
         for target in _raw_links_for_source(relative_source, text)
         if not _is_external_or_anchor_only_link(_normalize_markdown_link_target(target))
     }
+
+
+def _html_remote_or_absolute_references(text: str) -> list[str]:
+    targets = [
+        _normalize_markdown_link_target(target)
+        for target in (*HTML_HREF_RE.findall(text), *HTML_SRC_RE.findall(text))
+    ]
+    return [
+        target
+        for target in targets
+        if target.startswith(("http://", "https://", "//", "/"))
+    ]
 
 
 def _sample_artifact_commands() -> list[list[str]]:

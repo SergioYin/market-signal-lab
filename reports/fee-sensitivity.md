@@ -25,6 +25,7 @@ Research-only comparison for the bundled static sample CSV. This artifact does n
 
 - Fee sensitivity here means rerunning the same historical model with different basis-point assumptions; it is not an estimate of real broker costs, spreads, taxes, liquidity, or market impact.
 - The bundled sample is intentionally tiny and synthetic. Its numbers are useful for checking artifact shape and reproducibility, not for making market claims.
+- The TQQQ/QLD-like fixture labels do not make this a real leveraged ETF model. Daily-reset path dependency, fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact are outside this fee_bps comparison.
 - The existing 20/50 moving-average setup has no modeled exposure changes on this eight-row sample, so changing fee_bps does not change the reported return in this artifact.
 - Modeled exposure changes, entries, exits, and fee drag are historical model metadata only. They are not executed trades or instructions.
 - Buy-and-hold comparison fields are same-period historical context only; they are not recommendations or evidence of future performance.

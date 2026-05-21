@@ -12,6 +12,7 @@ Market Signal Lab v1.2.0 adds a focused, research-only fee sensitivity artifact 
 ## Documentation
 
 - README, documentation map, artifact gallery, and static report gallery now link the fee sensitivity Markdown and JSON artifacts.
+- Demo polish clarifies the static gallery review path, adds a leveraged ETF-like fixture caveat, and keeps selfcheck guarding against remote gallery links or assets.
 - Selfcheck regenerates the new artifacts and includes them in public-safe claim checks.
 
 ## Boundaries

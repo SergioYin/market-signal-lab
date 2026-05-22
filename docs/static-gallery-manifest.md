@@ -1,12 +1,13 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.3.2. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.3.4. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
 ## First-Screen Links
 
 - [Root landing](../index.html)
+- [Cold review checklist](cold-review-checklist.md)
 - [Static gallery entry page](../reports/index.html)
 - [Static demo manifest](static-gallery-manifest.md)
 - [Artifact gallery notes](artifact-gallery.md)

@@ -264,6 +264,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.3.4 Release Notes](docs/release-notes-v1.3.4.md)
+- [v1.3.4 Release Checklist](docs/release-v1.3.4.md)
 - [v1.3.3 Release Notes](docs/release-notes-v1.3.3.md)
 - [v1.3.3 Release Checklist](docs/release-v1.3.3.md)
 - [v1.3.2 Release Notes](docs/release-notes-v1.3.2.md)

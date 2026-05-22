@@ -41,6 +41,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.3.1.md"),
     Path("docs/release-notes-v1.3.2.md"),
     Path("docs/release-notes-v1.3.3.md"),
+    Path("docs/release-notes-v1.3.4.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -56,6 +57,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.3.1.md"),
     Path("docs/release-v1.3.2.md"),
     Path("docs/release-v1.3.3.md"),
+    Path("docs/release-v1.3.4.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -149,6 +151,7 @@ GALLERY_HTML = """<!doctype html>
   <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
   <h2>Open These First</h2>
   <ul>
+    <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
     <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
     <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
     <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>

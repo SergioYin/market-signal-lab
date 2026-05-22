@@ -8,8 +8,6 @@
 
 - **short_window**: 20
 - **long_window**: 50
-- **symbol**: QQQ_LIKE
-- **fee_bps**: 10.0000
 
 - **fee_bps**: 10.0000
 
@@ -22,7 +20,6 @@
 - **as_of_date**: 2026-05-18
 - **limitations**: Synthetic rows are not broker, exchange, fund-provider, vendor, or live-feed data., Placeholder symbols QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE are example-shaped labels, not real instrument histories., Leveraged ETF-like rows do not model fund mechanics, fees, tracking differences, financing costs, taxes, liquidity, or market impact., Use only for deterministic research artifact checks; do not use for advice, recommendations, predictions, or market claims.
 - **metadata_path**: examples/data/sample_tqqq_qld_like.csv.provenance.json
-- **research_only**: true
 
 ## output_paths
 

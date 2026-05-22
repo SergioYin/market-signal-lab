@@ -96,7 +96,6 @@ def test_render_manifest_markdown_renders_nested_sections() -> None:
         "## sweep_config\n"
         "\n"
         "- **short_windows**: 2, 3\n"
-        "- **fee_bps**: 0.0000\n"
         "\n"
         "- **fee_bps**: 0.0000\n"
         "\n"

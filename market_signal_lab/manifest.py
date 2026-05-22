@@ -48,13 +48,16 @@ def build_manifest(
 
 def render_manifest_markdown(manifest: Mapping[str, Any]) -> str:
     """Render an experiment manifest dictionary as Markdown."""
-
     lines = ["# Experiment Manifest", ""]
+    top_level_keys = set(manifest)
     for key, value in manifest.items():
         if isinstance(value, Mapping):
             if lines[-1] != "":
                 lines.append("")
-            lines.extend([f"## {key}", "", *_render_mapping(value), ""])
+            duplicate_keys = top_level_keys.intersection(value)
+            lines.extend(
+                [f"## {key}", "", *_render_mapping(value, skip_keys=duplicate_keys), ""]
+            )
         else:
             lines.append(f"- **{key}**: {_format_value(value)}")
 
@@ -71,11 +74,12 @@ def _normalize_output_paths(
     }
 
 
-def _render_mapping(values: Mapping[str, Any]) -> list[str]:
-    if not values:
+def _render_mapping(values: Mapping[str, Any], *, skip_keys: set[str] | None = None) -> list[str]:
+    filtered_items = [(key, value) for key, value in values.items() if key not in (skip_keys or set())]
+    if not filtered_items:
         return ["- None"]
 
-    return [f"- **{key}**: {_format_value(value)}" for key, value in values.items()]
+    return [f"- **{key}**: {_format_value(value)}" for key, value in filtered_items]
 
 
 def _format_value(value: Any) -> str:

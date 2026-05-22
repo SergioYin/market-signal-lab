@@ -27,6 +27,18 @@ def test_project_metadata_declares_mit_license_file() -> None:
     assert "Permission is hereby granted, free of charge" in license_text
 
 
+def test_project_metadata_declares_public_package_context() -> None:
+    pyproject = (PROJECT_ROOT / "pyproject.toml").read_text()
+
+    assert 'readme = "README.md"' in pyproject
+    assert 'authors = [{ name = "SergioYin" }]' in pyproject
+    assert '"backtesting"' in pyproject
+    assert "[project.urls]" in pyproject
+    assert 'Homepage = "https://sergioyin.github.io/market-signal-lab/"' in pyproject
+    assert 'Repository = "https://github.com/SergioYin/market-signal-lab"' in pyproject
+    assert 'market-signal-lab = "market_signal_lab.cli:main"' in pyproject
+
+
 def test_package_version_matches_project_metadata() -> None:
     pyproject = (PROJECT_ROOT / "pyproject.toml").read_text()
     match = re.search(r'^version = "([^"]+)"$', pyproject, re.MULTILINE)

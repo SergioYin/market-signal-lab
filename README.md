@@ -255,6 +255,7 @@ Planned improvements (not guaranteed):
 Before using any findings, read:
 
 - [Documentation Map](docs/index.md)
+- [Cold Review Checklist](docs/cold-review-checklist.md)
 - [Risk Boundaries](docs/risk-boundaries.md)
 - [Metric Guide](docs/metric-guide.md)
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md)
@@ -263,6 +264,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.3.3 Release Notes](docs/release-notes-v1.3.3.md)
+- [v1.3.3 Release Checklist](docs/release-v1.3.3.md)
 - [v1.3.2 Release Notes](docs/release-notes-v1.3.2.md)
 - [v1.3.2 Release Checklist](docs/release-v1.3.2.md)
 - [v1.3.1 Release Notes](docs/release-notes-v1.3.1.md)

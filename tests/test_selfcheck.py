@@ -28,6 +28,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "fee-sensitivity.json",
         "sample-sweep.html",
         "sample-sweep-split.html",
+        "../docs/static-gallery-manifest.md",
     }
     for link in expected_links:
         assert f'href="{link}"' in gallery
@@ -96,6 +97,77 @@ def test_v090_demo_acceptance_contract_rejects_remote_gallery_assets(
     ]
 
 
+def test_v130_static_gallery_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_v130_static_gallery_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_v130_static_gallery_contract_requires_manifest_link(tmp_path: Path) -> None:
+    _write_v130_gallery_fixture(tmp_path, omit_link="../docs/static-gallery-manifest.md")
+
+    issues = selfcheck.find_v130_static_gallery_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: missing v1.3 gallery link to ../docs/static-gallery-manifest.md"
+    ]
+
+
+def test_v130_static_gallery_contract_rejects_remote_assets(tmp_path: Path) -> None:
+    _write_v130_gallery_fixture(
+        tmp_path,
+        extra_html='<link rel="stylesheet" href=/assets/site.css>\n'
+        '<img src="https://example.com/chart.png" alt="Remote chart">\n',
+    )
+
+    issues = selfcheck.find_v130_static_gallery_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found /assets/site.css",
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found https://example.com/chart.png",
+    ]
+
+
+def test_v130_static_gallery_contract_rejects_common_remote_asset_attrs(
+    tmp_path: Path,
+) -> None:
+    _write_v130_gallery_fixture(
+        tmp_path,
+        extra_html='<video poster="file:preview.png"></video>\n'
+        '<img srcset="local-small.png 1x, //example.com/chart.png 2x" alt="Chart">\n',
+    )
+
+    issues = selfcheck.find_v130_static_gallery_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found file:preview.png",
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found //example.com/chart.png",
+    ]
+
+
+def test_v130_static_gallery_contract_rejects_non_local_schemes(
+    tmp_path: Path,
+) -> None:
+    _write_v130_gallery_fixture(
+        tmp_path,
+        extra_html='<a href=javascript:alert(1)>Action</a>\n'
+        '<img src="data:image/png;base64,abc" alt="Inline">\n',
+    )
+
+    issues = selfcheck.find_v130_static_gallery_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found javascript:alert(1)",
+        "reports/index.html: static gallery must use relative local links and assets, "
+        "found data:image/png;base64,abc",
+    ]
+
+
 def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
     expected_artifacts = {
         Path("reports/sample-sweep-split.md"),
@@ -129,6 +201,9 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v1.2.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/static-gallery-manifest.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_public_claim_sources_include_v110_release_docs() -> None:
@@ -138,6 +213,9 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/release-v1.2.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/static-gallery-manifest.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -494,3 +572,40 @@ def _write_demo_contract_fixture(
     (reports_dir / "sample-sweep-split.html").write_text("<h1>Split</h1>\n", encoding="utf-8")
     (reports_dir / "sample-sweep-split.md").write_text("# Split\n", encoding="utf-8")
     (reports_dir / "sample-sweep-split.json").write_text(json_text, encoding="utf-8")
+
+
+def _write_v130_gallery_fixture(
+    tmp_path: Path,
+    *,
+    omit_link: str | None = None,
+    extra_html: str = "",
+) -> None:
+    docs_dir = tmp_path / "docs"
+    reports_dir = tmp_path / "reports"
+    docs_dir.mkdir()
+    reports_dir.mkdir()
+
+    for doc_name in (
+        "artifact-gallery.md",
+        "static-gallery-manifest.md",
+        "split-sweep-walkthrough.md",
+    ):
+        (docs_dir / doc_name).write_text(f"# {doc_name}\n", encoding="utf-8")
+
+    report_names = {
+        target
+        for target in selfcheck.V130_STATIC_GALLERY_LINKS
+        if not target.startswith("../docs/")
+    }
+    for report_name in report_names:
+        (reports_dir / report_name).write_text(f"{report_name}\n", encoding="utf-8")
+
+    links = [
+        target
+        for target in selfcheck.V130_STATIC_GALLERY_LINKS
+        if target != omit_link
+    ]
+    html = extra_html + "\n".join(
+        f'<a href="{target}">{target}</a>' for target in links
+    )
+    (reports_dir / "index.html").write_text(html, encoding="utf-8")

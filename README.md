@@ -4,6 +4,8 @@ Market Signal Lab is a public, research-only sandbox for reproducible trading-si
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
+The v1.3 promotion increment makes the cold-user first screen explicit: start with the static gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the checked-in demo uses local relative links, no JavaScript, and no external assets.
+
 The v1.2 fee sensitivity increment adds a research-only single-backtest comparison artifact under `reports/fee-sensitivity.md` and `reports/fee-sensitivity.json`. It reruns the bundled sample CSV with several `fee_bps` assumptions for the existing 20/50 moving-average settings and reports historical total return, buy-and-hold comparison, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and fee drag.
 
 The v1.0.0 readiness increment adds checked static fixture provenance for the bundled sample CSV, so generated sample reports, JSON payloads, and manifests label the data as synthetic, static, and research-only without performing live downloads.
@@ -12,12 +14,17 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
 - [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
+- [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
 - [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
 
 This is not a trading bot, signal service, forecast engine, or recommendation system.
 
 Worth saving if you want a compact reference for how to package research outputs with visible assumptions, static artifacts, and no execution surface.
+
+## First inspection path
+
+Before installing anything, open [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: it links to the checked-in sample reports, JSON payloads, manifests, and caveat docs using local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 ## What you get in 60 seconds
 
@@ -255,6 +262,13 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.3.0 Release Notes](docs/release-notes-v1.3.0.md)
+- [v1.3.0 Release Checklist](docs/release-v1.3.0.md)
+- [v1.2.1 Release Notes](docs/release-notes-v1.2.1.md)
+- [v1.2.1 Release Checklist](docs/release-v1.2.1.md)
+- [v1.2.0 Release Notes](docs/release-notes-v1.2.0.md)
+- [v1.2.0 Release Checklist](docs/release-v1.2.0.md)
 - [v1.1 Release Notes](docs/release-notes-v1.1.0.md)
 - [v0.9.0 Release Notes](docs/release-notes-v0.9.0.md)
 - [v0.9.0 Release Checklist](docs/release-v0.9.0.md)

@@ -23,6 +23,7 @@ DOC_LINK_SOURCES = (
     Path("docs/data-provenance.md"),
     Path("docs/example-data.md"),
     Path("docs/metric-guide.md"),
+    Path("docs/static-gallery-manifest.md"),
     Path("docs/split-sweep-walkthrough.md"),
     Path("docs/release-notes-v0.3.0.md"),
     Path("docs/release-notes-v0.4.0.md"),
@@ -35,6 +36,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.1.0.md"),
     Path("docs/release-notes-v1.2.0.md"),
     Path("docs/release-notes-v1.2.1.md"),
+    Path("docs/release-notes-v1.3.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -46,6 +48,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.1.0.md"),
     Path("docs/release-v1.2.0.md"),
     Path("docs/release-v1.2.1.md"),
+    Path("docs/release-v1.3.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -67,6 +70,23 @@ V090_DEMO_LINK_CONTRACT = {
         "sample-sweep-split.json",
     ),
 }
+V130_STATIC_GALLERY_LINKS = (
+    "../docs/artifact-gallery.md",
+    "../docs/static-gallery-manifest.md",
+    "../docs/split-sweep-walkthrough.md",
+    "sample-manifest.md",
+    "sample-report.html",
+    "sample-report.md",
+    "sample-report.json",
+    "fee-sensitivity.md",
+    "fee-sensitivity.json",
+    "sample-sweep.html",
+    "sample-sweep.md",
+    "sample-sweep.json",
+    "sample-sweep-split.html",
+    "sample-sweep-split.md",
+    "sample-sweep-split.json",
+)
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
@@ -109,6 +129,7 @@ GALLERY_HTML = """<!doctype html>
   <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
   <h2>Open These First</h2>
   <ul>
+    <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
     <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
     <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
     <li><a href="sample-manifest.md">Sample manifest</a></li>
@@ -145,7 +166,14 @@ GALLERY_HTML = """<!doctype html>
 
 MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_HREF_RE = re.compile(r"\bhref\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
-HTML_SRC_RE = re.compile(r"\bsrc\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
+HTML_REFERENCE_ATTR_RE = re.compile(
+    r"\b(?:href|src|poster)\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))",
+    re.IGNORECASE,
+)
+HTML_SRCSET_ATTR_RE = re.compile(
+    r"\bsrcset\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))",
+    re.IGNORECASE,
+)
 FENCED_BLOCK_RE = re.compile(r"(^|\n)```.*?(\n```|$)", re.DOTALL)
 
 
@@ -191,10 +219,13 @@ def run_docs_link_check() -> bool:
 
 
 def run_demo_acceptance_check() -> bool:
-    print("5) Checking v0.9.0 static demo acceptance links...")
-    issues = find_v090_demo_acceptance_issues(REPO_ROOT)
+    print("5) Checking static demo acceptance links...")
+    issues = [
+        *find_v090_demo_acceptance_issues(REPO_ROOT),
+        *find_v130_static_gallery_issues(REPO_ROOT),
+    ]
     if issues:
-        print("v0.9.0 static demo acceptance check failed")
+        print("Static demo acceptance check failed")
         for issue in issues:
             print(f"- {issue}")
         return False
@@ -329,6 +360,37 @@ def find_v090_demo_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
     return issues
 
 
+def find_v130_static_gallery_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    relative_source = Path("reports/index.html")
+    source = repo_root / relative_source
+    if not source.exists():
+        return [f"{relative_source}: source file is missing"]
+
+    text = source.read_text(encoding="utf-8")
+    issues: list[str] = []
+    lowered = text.lower()
+    if "<script" in lowered:
+        issues.append(f"{relative_source}: static gallery must not include scripts")
+    for target in _html_remote_or_absolute_references(text):
+        issues.append(
+            f"{relative_source}: static gallery must use relative local links "
+            f"and assets, found {target}"
+        )
+
+    links = _local_links_for_source(relative_source, text)
+    for target in V130_STATIC_GALLERY_LINKS:
+        if target not in links:
+            issues.append(f"{relative_source}: missing v1.3 gallery link to {target}")
+            continue
+        link_path = _local_markdown_link_path(repo_root, source, target)
+        if not link_path.exists():
+            issues.append(f"{relative_source}: broken v1.3 gallery link to {target}")
+        elif link_path.stat().st_size == 0:
+            issues.append(f"{relative_source}: v1.3 gallery link target is empty: {target}")
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -450,13 +512,45 @@ def _local_links_for_source(relative_source: Path, text: str) -> set[str]:
 def _html_remote_or_absolute_references(text: str) -> list[str]:
     targets = [
         _normalize_markdown_link_target(target)
-        for target in (*HTML_HREF_RE.findall(text), *HTML_SRC_RE.findall(text))
+        for target in (
+            *_html_reference_attr_values(text),
+            *_html_srcset_reference_values(text),
+        )
     ]
     return [
         target
         for target in targets
-        if target.startswith(("http://", "https://", "//", "/"))
+        if _is_non_local_html_reference(target)
     ]
+
+
+def _html_reference_attr_values(text: str) -> list[str]:
+    return [_first_present_group(match) for match in HTML_REFERENCE_ATTR_RE.findall(text)]
+
+
+def _html_srcset_reference_values(text: str) -> list[str]:
+    values: list[str] = []
+    for raw_srcset in (
+        _first_present_group(match) for match in HTML_SRCSET_ATTR_RE.findall(text)
+    ):
+        for candidate in raw_srcset.split(","):
+            reference = candidate.strip().split(None, 1)[0]
+            if reference:
+                values.append(reference)
+    return values
+
+
+def _first_present_group(groups: tuple[str, str, str]) -> str:
+    return next((group for group in groups if group), "")
+
+
+def _is_non_local_html_reference(target: str) -> bool:
+    if target.startswith("#"):
+        return False
+    return (
+        target.startswith(("//", "/"))
+        or re.match(r"^[a-z][a-z0-9+.-]*:", target, re.IGNORECASE) is not None
+    )
 
 
 def _sample_artifact_commands() -> list[list[str]]:
@@ -548,7 +642,7 @@ def main() -> int:
         ("pytest", run_pytest),
         ("sample artifact generation", run_sample_artifact_generation),
         ("documentation/gallery link check", run_docs_link_check),
-        ("v0.9.0 static demo acceptance check", run_demo_acceptance_check),
+        ("static demo acceptance check", run_demo_acceptance_check),
         ("public claim boundary check", run_public_claim_check),
         ("static fixture provenance check", run_fixture_provenance_check),
     ]

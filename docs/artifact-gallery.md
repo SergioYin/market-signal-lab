@@ -10,7 +10,7 @@ For plain-language definitions of report metrics, including buy-and-hold compari
 
 For a beginner walkthrough of the split-sweep robustness report, including how to read `train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and `robustness_flag` without treating them as advice, see the [Split Sweep Walkthrough](split-sweep-walkthrough.md).
 
-[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page.
+[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
 
 Start there if you want the fastest review path:
 

@@ -5,6 +5,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 ## Start Here
 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
+- [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Exposure/trade review sample](../reports/sample-report.md) - fastest way to inspect the new modeled exposure review in the checked-in single backtest report.
 - [Static Sample Gallery](../reports/index.html) - no-JavaScript first screen for the checked-in demo artifacts.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
@@ -24,6 +25,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 ## Release Notes
 
+- [v1.3.1 Release Notes](release-notes-v1.3.1.md)
+- [v1.3.1 Release Checklist](release-v1.3.1.md)
 - [v1.3.0 Release Notes](release-notes-v1.3.0.md)
 - [v1.3.0 Release Checklist](release-v1.3.0.md)
 - [v1.2.1 Release Notes](release-notes-v1.2.1.md)

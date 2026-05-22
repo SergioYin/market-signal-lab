@@ -37,6 +37,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.2.0.md"),
     Path("docs/release-notes-v1.2.1.md"),
     Path("docs/release-notes-v1.3.0.md"),
+    Path("docs/release-notes-v1.3.1.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -49,13 +50,27 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.2.0.md"),
     Path("docs/release-v1.2.1.md"),
     Path("docs/release-v1.3.0.md"),
+    Path("docs/release-v1.3.1.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
     Path("examples/data/sample_tqqq_qld_like.csv.provenance.json"),
 )
 HTML_LINK_SOURCES = (
+    Path("index.html"),
     Path("reports/index.html"),
+)
+V131_ROOT_LANDING_LINKS = (
+    "reports/index.html",
+    "docs/index.md",
+    "README.md",
+    "docs/static-gallery-manifest.md",
+    "docs/artifact-gallery.md",
+    "docs/split-sweep-walkthrough.md",
+    "docs/risk-boundaries.md",
+    "docs/data-provenance.md",
+    "docs/release-notes-v1.3.1.md",
+    "docs/release-v1.3.1.md",
 )
 V090_DEMO_LINK_CONTRACT = {
     Path("docs/split-sweep-walkthrough.md"): (
@@ -102,7 +117,7 @@ SAMPLE_ARTIFACTS = (
     Path("reports/fee-sensitivity.md"),
     Path("reports/fee-sensitivity.json"),
 )
-PUBLIC_CLAIM_SOURCES = DOC_LINK_SOURCES + SAMPLE_ARTIFACTS
+PUBLIC_CLAIM_SOURCES = (Path("index.html"),) + DOC_LINK_SOURCES + SAMPLE_ARTIFACTS
 FORBIDDEN_PUBLIC_CLAIM_RE = re.compile(
     r"\b("
     r"should\s+(buy|sell|hold|trade)|"
@@ -223,6 +238,7 @@ def run_demo_acceptance_check() -> bool:
     issues = [
         *find_v090_demo_acceptance_issues(REPO_ROOT),
         *find_v130_static_gallery_issues(REPO_ROOT),
+        *find_v131_root_landing_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -387,6 +403,37 @@ def find_v130_static_gallery_issues(repo_root: Path = REPO_ROOT) -> list[str]:
             issues.append(f"{relative_source}: broken v1.3 gallery link to {target}")
         elif link_path.stat().st_size == 0:
             issues.append(f"{relative_source}: v1.3 gallery link target is empty: {target}")
+
+    return issues
+
+
+def find_v131_root_landing_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    relative_source = Path("index.html")
+    source = repo_root / relative_source
+    if not source.exists():
+        return [f"{relative_source}: source file is missing"]
+
+    text = source.read_text(encoding="utf-8")
+    issues: list[str] = []
+    lowered = text.lower()
+    if "<script" in lowered:
+        issues.append(f"{relative_source}: root landing must not include scripts")
+    for target in _html_remote_or_absolute_references(text):
+        issues.append(
+            f"{relative_source}: root landing must use relative local links "
+            f"and assets, found {target}"
+        )
+
+    links = _local_links_for_source(relative_source, text)
+    for target in V131_ROOT_LANDING_LINKS:
+        if target not in links:
+            issues.append(f"{relative_source}: missing v1.3.1 landing link to {target}")
+            continue
+        link_path = _local_markdown_link_path(repo_root, source, target)
+        if not link_path.exists():
+            issues.append(f"{relative_source}: broken v1.3.1 landing link to {target}")
+        elif link_path.stat().st_size == 0:
+            issues.append(f"{relative_source}: v1.3.1 landing link target is empty: {target}")
 
     return issues
 

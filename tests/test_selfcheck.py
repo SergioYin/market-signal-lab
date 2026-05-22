@@ -34,6 +34,55 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         assert f'href="{link}"' in gallery
 
 
+def test_v131_root_landing_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_v131_root_landing_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_v131_root_landing_is_static_and_local() -> None:
+    assert Path("index.html") in selfcheck.HTML_LINK_SOURCES
+    assert Path("index.html") in selfcheck.PUBLIC_CLAIM_SOURCES
+
+    landing = Path("index.html").read_text(encoding="utf-8")
+    assert "<script" not in landing.lower()
+    assert "src=" not in landing.lower()
+    assert "http://" not in landing
+    assert "https://" not in landing
+    assert "reports/index.html" in landing
+    assert "docs/index.md" in landing
+    assert "docs/static-gallery-manifest.md" in landing
+    assert "does not connect to brokers" in landing
+    assert "investment advice" in landing
+
+
+def test_v131_root_landing_contract_requires_gallery_link(tmp_path: Path) -> None:
+    _write_v131_landing_fixture(tmp_path, omit_link="reports/index.html")
+
+    issues = selfcheck.find_v131_root_landing_issues(tmp_path)
+
+    assert issues == [
+        "index.html: missing v1.3.1 landing link to reports/index.html"
+    ]
+
+
+def test_v131_root_landing_contract_rejects_remote_assets(tmp_path: Path) -> None:
+    _write_v131_landing_fixture(
+        tmp_path,
+        extra_html='<link rel="stylesheet" href="/assets/site.css">\n'
+        '<img src="https://example.com/chart.png" alt="Remote chart">\n',
+    )
+
+    issues = selfcheck.find_v131_root_landing_issues(tmp_path)
+
+    assert issues == [
+        "index.html: root landing must use relative local links and assets, "
+        "found /assets/site.css",
+        "index.html: root landing must use relative local links and assets, "
+        "found https://example.com/chart.png",
+    ]
+
+
 def test_v090_demo_acceptance_contract_accepts_current_tree() -> None:
     issues = selfcheck.find_v090_demo_acceptance_issues(selfcheck.REPO_ROOT)
 
@@ -204,6 +253,8 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/static-gallery-manifest.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.3.1.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.3.1.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_public_claim_sources_include_v110_release_docs() -> None:
@@ -216,6 +267,8 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/static-gallery-manifest.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.3.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.3.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -609,3 +662,39 @@ def _write_v130_gallery_fixture(
         f'<a href="{target}">{target}</a>' for target in links
     )
     (reports_dir / "index.html").write_text(html, encoding="utf-8")
+
+
+def _write_v131_landing_fixture(
+    tmp_path: Path,
+    *,
+    omit_link: str | None = None,
+    extra_html: str = "",
+) -> None:
+    docs_dir = tmp_path / "docs"
+    reports_dir = tmp_path / "reports"
+    docs_dir.mkdir()
+    reports_dir.mkdir()
+
+    (tmp_path / "README.md").write_text("# README\n", encoding="utf-8")
+    (reports_dir / "index.html").write_text("<h1>Gallery</h1>\n", encoding="utf-8")
+    for doc_name in (
+        "index.md",
+        "static-gallery-manifest.md",
+        "artifact-gallery.md",
+        "split-sweep-walkthrough.md",
+        "risk-boundaries.md",
+        "data-provenance.md",
+        "release-notes-v1.3.1.md",
+        "release-v1.3.1.md",
+    ):
+        (docs_dir / doc_name).write_text(f"# {doc_name}\n", encoding="utf-8")
+
+    links = [
+        target
+        for target in selfcheck.V131_ROOT_LANDING_LINKS
+        if target != omit_link
+    ]
+    html = extra_html + "\n".join(
+        f'<a href="{target}">{target}</a>' for target in links
+    )
+    (tmp_path / "index.html").write_text(html, encoding="utf-8")

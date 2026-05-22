@@ -4,7 +4,7 @@ Market Signal Lab is a public, research-only sandbox for reproducible trading-si
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
-The v1.3 promotion increment makes the cold-user first screen explicit: start with the static gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the checked-in demo uses local relative links, no JavaScript, and no external assets.
+The v1.3 promotion increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
 
 The v1.2 fee sensitivity increment adds a research-only single-backtest comparison artifact under `reports/fee-sensitivity.md` and `reports/fee-sensitivity.json`. It reruns the bundled sample CSV with several `fee_bps` assumptions for the existing 20/50 moving-average settings and reports historical total return, buy-and-hold comparison, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and fee drag.
 
@@ -24,7 +24,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: it links to the checked-in sample reports, JSON payloads, manifests, and caveat docs using local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: it links to the checked-in sample reports, JSON payloads, manifests, and caveat docs using local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 ## What you get in 60 seconds
 
@@ -263,6 +263,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.3.2 Release Notes](docs/release-notes-v1.3.2.md)
+- [v1.3.2 Release Checklist](docs/release-v1.3.2.md)
 - [v1.3.1 Release Notes](docs/release-notes-v1.3.1.md)
 - [v1.3.1 Release Checklist](docs/release-v1.3.1.md)
 - [v1.3.0 Release Notes](docs/release-notes-v1.3.0.md)

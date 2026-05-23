@@ -1,0 +1,11 @@
+{
+  "csv_path": "examples/data/sample_tqqq_qld_like.csv",
+  "symbol": "QQQ_LIKE",
+  "short_window": 20,
+  "long_window": 50,
+  "fee_bps": 10.0,
+  "output": "reports/sample-report.md",
+  "json_output": "reports/sample-report.json",
+  "html_output": "reports/sample-report.html",
+  "manifest_output": "reports/sample-manifest.md"
+}

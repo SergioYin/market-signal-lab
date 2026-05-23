@@ -5,7 +5,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-from market_signal_lab.report import EXPOSURE_TRADE_REVIEW_NOTE
+from market_signal_lab.report import (
+    EXPOSURE_TRADE_REVIEW_NOTE,
+    SCENARIO_RISK_COMPARISON_KEYS,
+    SCENARIO_RISK_DRAWDOWN_KEYS,
+    SCENARIO_RISK_EXPOSURE_KEYS,
+    SCENARIO_RISK_FEE_DRAG_KEYS,
+    SCENARIO_RISK_INTERPRETATION_KEYS,
+    SCENARIO_RISK_INTERPRETATION_NOTE,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -25,7 +33,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 1.3.5\n"
+    assert result.stdout == "market-signal-lab 1.4.0\n"
     assert result.stderr == ""
 
 
@@ -141,6 +149,26 @@ def test_cli_writes_backtest_json_report(tmp_path: Path) -> None:
         "research_only": True,
         "note": EXPOSURE_TRADE_REVIEW_NOTE,
     }
+    interpretation = payload["scenario_risk_interpretation"]
+    assert interpretation["research_only"] is True
+    assert interpretation["historical_diagnostics_only"] is True
+    assert interpretation["note"] == SCENARIO_RISK_INTERPRETATION_NOTE
+    assert interpretation["exposure"]["period_count"] == 3
+    assert interpretation["exposure"]["average_exposure"] == 1 / 3
+    assert interpretation["exposure"]["percent_periods_in_market"] == 1 / 3
+    assert "Higher exposure" in interpretation["exposure"]["summary"]
+    assert interpretation["drawdown"]["max_drawdown"] == 0.0
+    assert "peak-to-trough decline" in interpretation["drawdown"]["summary"]
+    assert interpretation["fee_drag"]["total_fee_drag"] == 0.0
+    assert "historical cost assumption" in interpretation["fee_drag"]["summary"]
+    comparison = interpretation["buy_and_hold_comparison"]
+    assert abs(comparison["strategy_total_return"] - (1 / 102)) < 1e-12
+    assert abs(comparison["buy_and_hold_total_return"] - 0.03) < 1e-12
+    assert (
+        abs(comparison["strategy_minus_buy_and_hold_return"] + 0.02019607843137261)
+        < 1e-12
+    )
+    assert "same period" in comparison["summary"]
     assert payload["first_date"] == "2024-01-01"
     assert payload["last_date"] == "2024-01-04"
     assert payload["row_count"] == 4
@@ -287,6 +315,72 @@ def test_cli_loads_backtest_config_file(tmp_path: Path) -> None:
         "symbol": "AAA",
         "fee_bps": 1.5,
     }
+
+
+def test_checked_single_backtest_config_outputs_scenario_risk_fields(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "sample-report.md"
+    json_path = tmp_path / "sample-report.json"
+    html_path = tmp_path / "sample-report.html"
+    manifest_path = tmp_path / "sample-manifest.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            "examples/configs/single-backtest-report.json",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+            "--html-output",
+            str(html_path),
+            "--manifest-output",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    html = html_path.read_text(encoding="utf-8")
+    manifest = manifest_path.read_text(encoding="utf-8")
+
+    assert "## Scenario/Risk Interpretation" in markdown
+    assert "Historical diagnostics only" in markdown
+    assert "<h2>Scenario/Risk Interpretation</h2>" in html
+    assert "examples/data/sample_tqqq_qld_like.csv" in manifest
+    assert "synthetic_static_fixture" in manifest
+
+    assert payload["strategy_config"] == {
+        "short_window": 20,
+        "long_window": 50,
+        "symbol": "QQQ_LIKE",
+        "fee_bps": 10.0,
+    }
+    assert payload["data_provenance"]["data_kind"] == "synthetic_static_fixture"
+    interpretation = payload["scenario_risk_interpretation"]
+    assert interpretation["research_only"] is True
+    assert interpretation["historical_diagnostics_only"] is True
+    assert set(interpretation) == SCENARIO_RISK_INTERPRETATION_KEYS
+    assert set(interpretation["exposure"]) == SCENARIO_RISK_EXPOSURE_KEYS
+    assert set(interpretation["drawdown"]) == SCENARIO_RISK_DRAWDOWN_KEYS
+    assert set(interpretation["fee_drag"]) == SCENARIO_RISK_FEE_DRAG_KEYS
+    assert (
+        set(interpretation["buy_and_hold_comparison"])
+        == SCENARIO_RISK_COMPARISON_KEYS
+    )
+    assert interpretation["note"] == SCENARIO_RISK_INTERPRETATION_NOTE
+    assert "Historical diagnostics only" in interpretation["note"]
+    assert "not investment advice" in interpretation["note"]
 
 
 def test_cli_flags_override_config_values(tmp_path: Path) -> None:

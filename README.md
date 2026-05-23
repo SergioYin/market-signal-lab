@@ -4,6 +4,8 @@ Market Signal Lab is a public, research-only sandbox for reproducible trading-si
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
+The scenario/risk interpretation section adds a beginner-readable `## Scenario/Risk Interpretation` block to single backtest Markdown/HTML reports and a `scenario_risk_interpretation` object to JSON. It summarizes exposure, max drawdown, modeled fee drag, and same-period buy-and-hold comparison as historical diagnostics only. It is not advice, not a forecast, not trading guidance, and not a broker connection or execution feature.
+
 The v1.3 promotion increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
 
 The v1.2 fee sensitivity increment adds a research-only single-backtest comparison artifact under `reports/fee-sensitivity.md` and `reports/fee-sensitivity.json`. It reruns the bundled sample CSV with several `fee_bps` assumptions for the existing 20/50 moving-average settings and reports historical total return, buy-and-hold comparison, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and fee drag.
@@ -15,6 +17,8 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
 - [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
 - [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
+- [Single Backtest Report](reports/sample-report.md) - includes `## Scenario/Risk Interpretation` and modeled exposure review sections for the bundled research-only sample.
+- [Single Backtest JSON](reports/sample-report.json) - includes `scenario_risk_interpretation` and `exposure_trade_review` objects for the same run.
 - [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
 
@@ -24,7 +28,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: it links to the checked-in sample reports, JSON payloads, manifests, and caveat docs using local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only and use local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 ## What you get in 60 seconds
 
@@ -132,6 +136,14 @@ with a simple same-period buy-and-hold baseline over the supplied CSV. They are
 historical research diagnostics only, not advice to buy, hold, sell, or follow
 the strategy.
 
+Single backtest Markdown and HTML reports also include
+`## Scenario/Risk Interpretation`. The matching JSON export includes
+`scenario_risk_interpretation`. This generated section is a plain-language
+summary of historical exposure, drawdown, modeled fee drag, and the same-period
+buy-and-hold comparison so cold readers can understand the report shape. It does
+not recommend an action, predict performance, connect to a broker, or provide a
+real-time execution cue.
+
 Manifest:
 
 ```bash
@@ -237,6 +249,7 @@ This project intentionally stays narrow:
 - Buy-and-hold benchmark metrics are historical diagnostics, not recommendations.
 - Fee sensitivity artifacts compare historical model assumptions only; they do not estimate real execution costs.
 - Exposure/trade review fields are historical model metadata, not advice or trade instructions.
+- Scenario/risk interpretation fields are historical diagnostics, not advice, forecasts, broker guidance, or real-time execution cues.
 - Train/test sweep rankings and robustness flags are research diagnostics, not predictions or stability claims.
 - Outputs are reproducible artifacts for analysis, not execution signals for live systems.
 
@@ -257,6 +270,7 @@ Before using any findings, read:
 - [Documentation Map](docs/index.md)
 - [Cold Review Checklist](docs/cold-review-checklist.md)
 - [Risk Boundaries](docs/risk-boundaries.md)
+- [Scenario/Risk Glossary](docs/scenario-risk-glossary.md)
 - [Metric Guide](docs/metric-guide.md)
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md)
 - [Example Data and Synthetic Data Caveats](docs/example-data.md)
@@ -264,6 +278,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.4.0 Release Notes](docs/release-notes-v1.4.0.md)
+- [v1.4.0 Release Checklist](docs/release-v1.4.0.md)
 - [v1.3.5 Release Notes](docs/release-notes-v1.3.5.md)
 - [v1.3.5 Release Checklist](docs/release-v1.3.5.md)
 - [v1.3.4 Release Notes](docs/release-notes-v1.3.4.md)

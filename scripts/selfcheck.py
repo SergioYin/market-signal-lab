@@ -24,6 +24,7 @@ DOC_LINK_SOURCES = (
     Path("docs/data-provenance.md"),
     Path("docs/example-data.md"),
     Path("docs/metric-guide.md"),
+    Path("docs/scenario-risk-glossary.md"),
     Path("docs/static-gallery-manifest.md"),
     Path("docs/split-sweep-walkthrough.md"),
     Path("docs/release-notes-v0.3.0.md"),
@@ -43,6 +44,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.3.3.md"),
     Path("docs/release-notes-v1.3.4.md"),
     Path("docs/release-notes-v1.3.5.md"),
+    Path("docs/release-notes-v1.4.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -60,6 +62,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.3.3.md"),
     Path("docs/release-v1.3.4.md"),
     Path("docs/release-v1.3.5.md"),
+    Path("docs/release-v1.4.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -111,6 +114,10 @@ V130_STATIC_GALLERY_LINKS = (
     "sample-sweep-split.md",
     "sample-sweep-split.json",
 )
+V130_STATIC_GALLERY_REQUIRED_TEXT = (
+    "Scenario/Risk Interpretation",
+    "scenario_risk_interpretation",
+)
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
@@ -148,7 +155,7 @@ GALLERY_HTML = """<!doctype html>
 <body>
   <h1>Market Signal Lab Sample Reports</h1>
   <p><strong>Start with the artifact trail:</strong> this static gallery shows the checked-in outputs before you run the CLI: human-readable reports, machine-readable JSON, browser-openable HTML, and the manifest that records the sample inputs and outputs.</p>
-  <p><strong>What to inspect first:</strong> open the artifact notes for a map, the sample manifest for reproducibility, and the split-sweep walkthrough if you are reading train/test robustness fields for the first time.</p>
+  <p><strong>What to inspect first:</strong> open the artifact notes for a map, the single backtest report for the Scenario/Risk Interpretation section, the sample manifest for reproducibility, and the split-sweep walkthrough if you are reading train/test robustness fields for the first time.</p>
   <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, and not evidence of future performance.</p>
   <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
   <h2>Open These First</h2>
@@ -160,6 +167,7 @@ GALLERY_HTML = """<!doctype html>
     <li><a href="sample-manifest.md">Sample manifest</a></li>
   </ul>
   <h2>Single Backtest</h2>
+  <p>The single backtest report includes a Scenario/Risk Interpretation section. The matching JSON includes scenario_risk_interpretation. These are historical diagnostics only, not advice, forecasts, broker guidance, or real-time execution cues.</p>
   <ul>
     <li><a href="sample-report.html">HTML report</a></li>
     <li><a href="sample-report.md">Markdown report</a></li>
@@ -404,6 +412,12 @@ def find_v130_static_gallery_issues(repo_root: Path = REPO_ROOT) -> list[str]:
         )
 
     links = _local_links_for_source(relative_source, text)
+    for required_text in V130_STATIC_GALLERY_REQUIRED_TEXT:
+        if required_text not in text:
+            issues.append(
+                f"{relative_source}: missing v1.3 gallery inventory text "
+                f"{required_text}"
+            )
     for target in V130_STATIC_GALLERY_LINKS:
         if target not in links:
             issues.append(f"{relative_source}: missing v1.3 gallery link to {target}")
@@ -616,23 +630,8 @@ def _sample_artifact_commands() -> list[list[str]]:
             sys.executable,
             "-m",
             "market_signal_lab.cli",
-            str(CSV_PATH),
-            "--symbol",
-            "QQQ_LIKE",
-            "--short-window",
-            "20",
-            "--long-window",
-            "50",
-            "--fee-bps",
-            "10.0",
-            "--output",
-            "reports/sample-report.md",
-            "--json-output",
-            "reports/sample-report.json",
-            "--html-output",
-            "reports/sample-report.html",
-            "--manifest-output",
-            "reports/sample-manifest.md",
+            "--config",
+            "examples/configs/single-backtest-report.json",
         ],
         [
             sys.executable,

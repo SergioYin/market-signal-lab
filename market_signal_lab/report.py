@@ -14,6 +14,40 @@ EXPOSURE_TRADE_REVIEW_NOTE = (
     "investment advice, trading guidance, executed trades, or instructions "
     "to buy, sell, hold, or size a position."
 )
+SCENARIO_RISK_INTERPRETATION_NOTE = (
+    "Historical diagnostics only; this scenario/risk interpretation is not "
+    "investment advice, trading guidance, a prediction, or a broker connection "
+    "or execution feature."
+)
+SCENARIO_RISK_INTERPRETATION_KEYS = frozenset(
+    {
+        "research_only",
+        "historical_diagnostics_only",
+        "note",
+        "exposure",
+        "drawdown",
+        "fee_drag",
+        "buy_and_hold_comparison",
+    }
+)
+SCENARIO_RISK_EXPOSURE_KEYS = frozenset(
+    {
+        "period_count",
+        "average_exposure",
+        "percent_periods_in_market",
+        "summary",
+    }
+)
+SCENARIO_RISK_DRAWDOWN_KEYS = frozenset({"max_drawdown", "summary"})
+SCENARIO_RISK_FEE_DRAG_KEYS = frozenset({"total_fee_drag", "summary"})
+SCENARIO_RISK_COMPARISON_KEYS = frozenset(
+    {
+        "strategy_total_return",
+        "buy_and_hold_total_return",
+        "strategy_minus_buy_and_hold_return",
+        "summary",
+    }
+)
 METRIC_LABELS = {
     "total_return": "Strategy total return",
     "buy_and_hold_total_return": "Buy-and-hold total return",
@@ -50,6 +84,12 @@ def render_experiment_report(
         "## Modeled Exposure Review",
         "",
         *_render_exposure_trade_review(build_exposure_trade_review(backtest_curve)),
+        "",
+        "## Scenario/Risk Interpretation",
+        "",
+        *_render_scenario_risk_interpretation(
+            build_scenario_risk_interpretation(backtest_curve, metrics)
+        ),
         "",
         "## Metrics",
         "",
@@ -137,6 +177,85 @@ def build_exposure_trade_review(
         "total_fee_drag": sum(record.fee for record in period_records),
         "research_only": True,
         "note": EXPOSURE_TRADE_REVIEW_NOTE,
+    }
+
+
+def build_scenario_risk_interpretation(
+    backtest_curve: Sequence[EquityCurveRecord],
+    metrics: Mapping[str, float],
+) -> dict[str, Any]:
+    """Build beginner-readable historical diagnostics for one backtest output."""
+
+    exposure_review = build_exposure_trade_review(backtest_curve)
+    strategy_total_return = float(
+        metrics.get("total_return", _curve_total_return(backtest_curve))
+    )
+    buy_and_hold_total = float(metrics.get("buy_and_hold_total_return", 0.0))
+    return_gap = float(
+        metrics.get(
+            "strategy_minus_buy_and_hold_return",
+            strategy_total_return - buy_and_hold_total,
+        )
+    )
+    max_drawdown_value = float(metrics.get("max_drawdown", 0.0))
+    total_fee_drag = float(exposure_review["total_fee_drag"])
+
+    exposure_summary = (
+        "No close-to-close periods were available, so exposure could not be "
+        "interpreted."
+        if exposure_review["period_count"] == 0
+        else (
+            "The model was exposed to the market for "
+            f"{_format_percent(exposure_review['percent_periods_in_market'])} "
+            "of reviewed periods. Higher exposure means the historical result "
+            "depended more on market moves; lower exposure means more periods "
+            "were modeled as cash."
+        )
+    )
+    drawdown_summary = (
+        "The worst modeled peak-to-trough decline was "
+        f"{_format_percent(max_drawdown_value)}. Larger negative drawdowns "
+        "mean the historical equity curve had larger interim losses."
+    )
+    fee_drag_summary = (
+        "Modeled fee drag summed to "
+        f"{_format_percent(total_fee_drag)} across reviewed periods. This is "
+        "a simplified historical cost assumption, not a complete estimate of taxes, "
+        "spreads, market impact, or broker execution."
+    )
+    comparison_summary = (
+        "Strategy minus buy-and-hold was "
+        f"{_format_percent(return_gap)} over the same period. "
+        "A positive gap means the model beat buy-and-hold in this historical "
+        "sample; a negative gap means it lagged."
+    )
+
+    return {
+        "research_only": True,
+        "historical_diagnostics_only": True,
+        "note": SCENARIO_RISK_INTERPRETATION_NOTE,
+        "exposure": {
+            "period_count": exposure_review["period_count"],
+            "average_exposure": exposure_review["average_exposure"],
+            "percent_periods_in_market": exposure_review[
+                "percent_periods_in_market"
+            ],
+            "summary": exposure_summary,
+        },
+        "drawdown": {
+            "max_drawdown": max_drawdown_value,
+            "summary": drawdown_summary,
+        },
+        "fee_drag": {
+            "total_fee_drag": total_fee_drag,
+            "summary": fee_drag_summary,
+        },
+        "buy_and_hold_comparison": {
+            "strategy_total_return": strategy_total_return,
+            "buy_and_hold_total_return": buy_and_hold_total,
+            "strategy_minus_buy_and_hold_return": return_gap,
+            "summary": comparison_summary,
+        },
     }
 
 
@@ -273,6 +392,22 @@ def _render_exposure_trade_review(review: Mapping[str, Any]) -> list[str]:
     ]
 
 
+def _render_scenario_risk_interpretation(review: Mapping[str, Any]) -> list[str]:
+    if not review:
+        return ["- No scenario/risk interpretation available."]
+
+    return [
+        f"- {review['note']}",
+        f"- **Exposure**: {review['exposure']['summary']}",
+        f"- **Drawdown**: {review['drawdown']['summary']}",
+        f"- **Fee drag**: {review['fee_drag']['summary']}",
+        (
+            "- **Buy-and-hold comparison**: "
+            f"{review['buy_and_hold_comparison']['summary']}"
+        ),
+    ]
+
+
 def _render_metrics(metrics: Mapping[str, float]) -> list[str]:
     if not metrics:
         return ["- No metrics provided."]
@@ -360,6 +495,15 @@ def _format_percent(value: float) -> str:
 
 def _format_date(value: date) -> str:
     return value.isoformat()
+
+
+def _curve_total_return(backtest_curve: Sequence[EquityCurveRecord]) -> float:
+    if not backtest_curve:
+        return 0.0
+
+    first = backtest_curve[0]
+    last = backtest_curve[-1]
+    return last.equity / first.equity - 1
 
 
 def _ratio(numerator: int, denominator: int) -> float:

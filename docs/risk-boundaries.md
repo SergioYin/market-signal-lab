@@ -4,6 +4,7 @@
 - It does **not** provide investment advice, trading recommendations, forecasts, or instructions to buy, sell, or hold.
 - It has **no broker/exchange connection** and cannot place orders.
 - Backtests are historical analyses, not forecasts. A strategy that worked in-sample can fail in live markets.
+- Scenario/risk diagnostics such as exposure, modeled entries/exits, fee drag, drawdown, and buy-and-hold gap are defined in the [Scenario/Risk Glossary](scenario-risk-glossary.md). They are historical diagnostics only, not advice or execution cues.
 - Synthetic leveraged ETF-like behavior differs from cash positions and can deviate sharply from expectations. The sample data and reports are simplified research fixtures, not a complete model of real fund mechanics, fees, tracking error, borrowing costs, taxes, liquidity, or market impact.
 - For **TQQQ/QLD** in particular:
   - Returns are path-dependent because leveraged ETFs generally reset exposure daily. A multi-day result cannot be estimated by simply multiplying the underlying index's start-to-end return.

@@ -27,6 +27,14 @@
 - **Modeled exits**: 0.
 - **Total fee drag**: 0.00% summed across periods.
 
+## Scenario/Risk Interpretation
+
+- Historical diagnostics only; this scenario/risk interpretation is not investment advice, trading guidance, a prediction, or a broker connection or execution feature.
+- **Exposure**: The model was exposed to the market for 0.00% of reviewed periods. Higher exposure means the historical result depended more on market moves; lower exposure means more periods were modeled as cash.
+- **Drawdown**: The worst modeled peak-to-trough decline was 0.00%. Larger negative drawdowns mean the historical equity curve had larger interim losses.
+- **Fee drag**: Modeled fee drag summed to 0.00% across reviewed periods. This is a simplified historical cost assumption, not a complete estimate of taxes, spreads, market impact, or broker execution.
+- **Buy-and-hold comparison**: Strategy minus buy-and-hold was -1.69% over the same period. A positive gap means the model beat buy-and-hold in this historical sample; a negative gap means it lagged.
+
 ## Metrics
 
 - **Strategy total return**: 0.00%

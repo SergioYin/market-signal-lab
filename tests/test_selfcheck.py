@@ -19,6 +19,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "research-only" in gallery
     assert "not investment advice" in gallery
     assert "Open These First" in gallery
+    for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
+        assert required_text in gallery
     assert "no JavaScript, remote data, broker connection, or trading account" in gallery
 
     expected_links = {
@@ -162,6 +164,21 @@ def test_v130_static_gallery_contract_requires_manifest_link(tmp_path: Path) -> 
     ]
 
 
+def test_v130_static_gallery_contract_requires_scenario_risk_inventory(
+    tmp_path: Path,
+) -> None:
+    _write_v130_gallery_fixture(tmp_path, include_required_text=False)
+
+    issues = selfcheck.find_v130_static_gallery_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: missing v1.3 gallery inventory text "
+        "Scenario/Risk Interpretation",
+        "reports/index.html: missing v1.3 gallery inventory text "
+        "scenario_risk_interpretation",
+    ]
+
+
 def test_v130_static_gallery_contract_rejects_remote_assets(tmp_path: Path) -> None:
     _write_v130_gallery_fixture(
         tmp_path,
@@ -255,6 +272,7 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.3.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.3.1.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/scenario-risk-glossary.md") in selfcheck.DOC_LINK_SOURCES
 
 
 def test_public_claim_sources_include_v110_release_docs() -> None:
@@ -269,6 +287,25 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/release-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.3.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.3.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/scenario-risk-glossary.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+
+
+def test_scenario_risk_glossary_defines_beginner_diagnostics() -> None:
+    glossary = Path("docs/scenario-risk-glossary.md").read_text(encoding="utf-8")
+
+    for term in (
+        "Exposure",
+        "Modeled entry",
+        "Modeled exit",
+        "Fee drag",
+        "Drawdown",
+        "Buy-and-hold gap",
+    ):
+        assert f"**{term}**" in glossary
+
+    assert "research-only historical review aids" in glossary
+    assert "not investment advice" in glossary
+    assert "not evidence of future performance" in glossary
 
 
 def test_split_sweep_walkthrough_sets_public_demo_boundaries() -> None:
@@ -449,7 +486,9 @@ def test_split_sweep_sample_artifact_has_split_diagnostics(tmp_path: Path) -> No
         assert result["robustness"]["robustness_flag"] in {"fragile", "not_flagged"}
 
 
-def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Path) -> None:
+def test_single_backtest_sample_artifact_has_exposure_and_scenario_risk_review(
+    tmp_path: Path,
+) -> None:
     command = _single_backtest_command()
     output_paths = {
         "reports/sample-report.md": tmp_path / "sample-report.md",
@@ -457,7 +496,17 @@ def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Pat
         "reports/sample-report.html": tmp_path / "sample-report.html",
         "reports/sample-manifest.md": tmp_path / "sample-manifest.md",
     }
-    command = [str(output_paths.get(value, value)) for value in command]
+    command = [
+        *command,
+        "--output",
+        str(output_paths["reports/sample-report.md"]),
+        "--json-output",
+        str(output_paths["reports/sample-report.json"]),
+        "--html-output",
+        str(output_paths["reports/sample-report.html"]),
+        "--manifest-output",
+        str(output_paths["reports/sample-manifest.md"]),
+    ]
 
     result = subprocess.run(
         command,
@@ -474,11 +523,15 @@ def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Pat
     payload = json.loads((tmp_path / "sample-report.json").read_text())
 
     assert "## Modeled Exposure Review" in markdown
+    assert "## Scenario/Risk Interpretation" in markdown
     assert "- **Modeled entries**:" in markdown
     assert "- **Modeled exits**:" in markdown
+    assert "- **Buy-and-hold comparison**:" in markdown
     assert "<h2>Modeled Exposure Review</h2>" in html
+    assert "<h2>Scenario/Risk Interpretation</h2>" in html
     assert "Modeled entries" in html
     assert "Modeled exits" in html
+    assert "Buy-and-hold comparison" in html
 
     review = payload["exposure_trade_review"]
     assert set(review) == {
@@ -500,6 +553,42 @@ def test_single_backtest_sample_artifact_has_exposure_trade_review(tmp_path: Pat
     assert "not investment advice" in review["note"]
     assert "trading guidance" in review["note"]
     assert "instructions to buy, sell, hold, or size a position" in review["note"]
+
+    interpretation = payload["scenario_risk_interpretation"]
+    assert set(interpretation) == {
+        "research_only",
+        "historical_diagnostics_only",
+        "note",
+        "exposure",
+        "drawdown",
+        "fee_drag",
+        "buy_and_hold_comparison",
+    }
+    assert interpretation["research_only"] is True
+    assert interpretation["historical_diagnostics_only"] is True
+    assert "not investment advice" in interpretation["note"]
+    assert "trading guidance" in interpretation["note"]
+    assert "prediction" in interpretation["note"]
+    assert "broker connection or execution feature" in interpretation["note"]
+    assert "summary" in interpretation["exposure"]
+    assert "summary" in interpretation["drawdown"]
+    assert "summary" in interpretation["fee_drag"]
+    assert "summary" in interpretation["buy_and_hold_comparison"]
+
+    readme = Path("README.md").read_text(encoding="utf-8")
+    gallery_notes = Path("docs/artifact-gallery.md").read_text(encoding="utf-8")
+    docs_index = Path("docs/index.md").read_text(encoding="utf-8")
+    static_gallery = Path("reports/index.html").read_text(encoding="utf-8")
+    static_manifest = Path("docs/static-gallery-manifest.md").read_text(encoding="utf-8")
+    for public_doc in (
+        readme,
+        gallery_notes,
+        docs_index,
+        static_gallery,
+        static_manifest,
+    ):
+        assert "Scenario/Risk Interpretation" in public_doc
+        assert "scenario_risk_interpretation" in public_doc
 
 
 def test_selfcheck_regenerates_fee_sensitivity_artifacts() -> None:
@@ -578,7 +667,7 @@ def _single_backtest_command() -> list[str]:
     backtest_commands = [
         command
         for command in selfcheck._sample_artifact_commands()
-        if "reports/sample-report.md" in command
+        if "examples/configs/single-backtest-report.json" in command
     ]
     assert len(backtest_commands) == 1
     return backtest_commands[0]
@@ -632,6 +721,7 @@ def _write_v130_gallery_fixture(
     *,
     omit_link: str | None = None,
     extra_html: str = "",
+    include_required_text: bool = True,
 ) -> None:
     docs_dir = tmp_path / "docs"
     reports_dir = tmp_path / "reports"
@@ -658,7 +748,12 @@ def _write_v130_gallery_fixture(
         for target in selfcheck.V130_STATIC_GALLERY_LINKS
         if target != omit_link
     ]
-    html = extra_html + "\n".join(
+    inventory_text = (
+        "Scenario/Risk Interpretation scenario_risk_interpretation\n"
+        if include_required_text
+        else ""
+    )
+    html = inventory_text + extra_html + "\n".join(
         f'<a href="{target}">{target}</a>' for target in links
     )
     (reports_dir / "index.html").write_text(html, encoding="utf-8")

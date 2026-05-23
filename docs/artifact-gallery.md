@@ -14,8 +14,8 @@ For a beginner walkthrough of the split-sweep robustness report, including how t
 
 Start there if you want the fastest review path:
 
-1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find the modeled exposure review.
-2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `exposure_trade_review` fields as structured research metadata.
+1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
+2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
 3. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
 4. Open the split-sweep HTML sample to see the human-facing robustness table.
 5. Read the manifest to confirm the inputs and outputs behind the sample.
@@ -23,9 +23,9 @@ Start there if you want the fastest review path:
 
 ## Report Artifacts
 
-`reports/sample-report.md` is the human-readable Markdown backtest report. It shows the moving-average strategy configuration, backtest date range, starting and ending equity, exposure changes, a modeled exposure review, summary metrics, same-period buy-and-hold comparison fields, static fixture provenance when available, risk notes, and backtest caveats.
+`reports/sample-report.md` is the human-readable Markdown backtest report. It shows the moving-average strategy configuration, backtest date range, starting and ending equity, exposure changes, a modeled exposure review, the generated `## Scenario/Risk Interpretation` section, summary metrics, same-period buy-and-hold comparison fields, static fixture provenance when available, risk notes, and backtest caveats. The scenario/risk section translates exposure, max drawdown, modeled fee drag, and same-period buy-and-hold comparison into plain-language historical diagnostics only. It is not advice, not a forecast, not trading guidance, and not a broker connection or execution feature.
 
-`reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, row count, `exposure_trade_review`, and `data_provenance` when adjacent fixture metadata exists. The single-backtest metric keys include `buy_and_hold_total_return` and `strategy_minus_buy_and_hold_return` as historical comparison diagnostics only. The `exposure_trade_review` object summarizes historical model exposure, exposure changes, modeled entries/exits, and modeled fee drag; it is review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions. Use this format when another script, notebook, or test needs structured output.
+`reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, row count, `exposure_trade_review`, `scenario_risk_interpretation`, and `data_provenance` when adjacent fixture metadata exists. The single-backtest metric keys include `buy_and_hold_total_return` and `strategy_minus_buy_and_hold_return` as historical comparison diagnostics only. The `scenario_risk_interpretation` object contains `exposure`, `drawdown`, `fee_drag`, and `buy_and_hold_comparison` summaries for readers or downstream checks that need the same generated interpretation in structured form. The `exposure_trade_review` object summarizes historical model exposure, exposure changes, modeled entries/exits, and modeled fee drag; it is review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions. Use this format when another script, notebook, or test needs structured output.
 
 `reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
 

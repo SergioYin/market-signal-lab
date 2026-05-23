@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.3.5. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.4.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -19,6 +19,7 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Single backtest HTML](../reports/sample-report.html)
 - [Single backtest Markdown](../reports/sample-report.md)
 - [Single backtest JSON](../reports/sample-report.json)
+- Single backtest interpretation inventory: the Markdown/HTML reports include `## Scenario/Risk Interpretation`, and the JSON report includes `scenario_risk_interpretation`.
 - [Fee sensitivity Markdown](../reports/fee-sensitivity.md)
 - [Fee sensitivity JSON](../reports/fee-sensitivity.json)
 - [Parameter sweep HTML](../reports/sample-sweep.html)

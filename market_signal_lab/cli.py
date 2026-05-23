@@ -31,6 +31,7 @@ from market_signal_lab.metrics import (
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
 from market_signal_lab.report import (
     build_exposure_trade_review,
+    build_scenario_risk_interpretation,
     render_experiment_report,
 )
 from market_signal_lab.split import TrainTestSplit, split_train_test
@@ -364,11 +365,16 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
         data_provenance=provenance,
     )
     exposure_trade_review = build_exposure_trade_review(backtest_curve)
+    scenario_risk_interpretation = build_scenario_risk_interpretation(
+        backtest_curve,
+        metrics,
+    )
 
     json_payload = {
         "strategy_config": strategy_config,
         "metrics": metrics,
         "exposure_trade_review": exposure_trade_review,
+        "scenario_risk_interpretation": scenario_risk_interpretation,
         "first_date": bars[0].date.isoformat() if bars else None,
         "last_date": bars[-1].date.isoformat() if bars else None,
         "row_count": len(bars),

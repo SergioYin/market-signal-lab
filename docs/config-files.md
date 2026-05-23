@@ -54,3 +54,20 @@ train/test rank and `robustness_flag` label diagnostics. In JSON outputs,
 returns appear as `train_metrics.total_return` and `test_metrics.total_return`.
 Those outputs are research artifacts only: they are not broker instructions,
 trading recommendations, forecasts, or evidence of future performance.
+
+To regenerate the checked-in single-backtest report and its structured
+scenario/risk interpretation fields without any live market fetches, use the
+bundled synthetic fixture config:
+
+```bash
+market-signal-lab --config examples/configs/single-backtest-report.json
+```
+
+That config reads only `examples/data/sample_tqqq_qld_like.csv`, filters the
+synthetic `QQQ_LIKE` rows, and writes the Markdown, JSON, HTML, and manifest
+artifacts under `reports/`. The Markdown/HTML outputs include
+`## Scenario/Risk Interpretation`; the JSON output includes
+`scenario_risk_interpretation` with `exposure`, `drawdown`, `fee_drag`, and
+`buy_and_hold_comparison` sections. These fields are historical diagnostics for
+reviewing report shape only, not advice, forecasts, live signals, or broker
+instructions.

@@ -3,7 +3,14 @@ from datetime import date
 from market_signal_lab.backtest import EquityCurveRecord
 from market_signal_lab.report import (
     EXPOSURE_TRADE_REVIEW_NOTE,
+    SCENARIO_RISK_COMPARISON_KEYS,
+    SCENARIO_RISK_DRAWDOWN_KEYS,
+    SCENARIO_RISK_EXPOSURE_KEYS,
+    SCENARIO_RISK_FEE_DRAG_KEYS,
+    SCENARIO_RISK_INTERPRETATION_KEYS,
+    SCENARIO_RISK_INTERPRETATION_NOTE,
     build_exposure_trade_review,
+    build_scenario_risk_interpretation,
     render_experiment_report,
 )
 
@@ -30,7 +37,16 @@ def test_render_experiment_report_contains_backtest_caveats() -> None:
 
     assert "## Backtest Caveats" in report
     assert "## Modeled Exposure Review" in report
+    assert "## Scenario/Risk Interpretation" in report
     assert NOTE_LINE in report
+    assert f"- {SCENARIO_RISK_INTERPRETATION_NOTE}" in report
+    assert "- **Exposure**: The model was exposed to the market for 100.00%" in report
+    assert "- **Drawdown**: The worst modeled peak-to-trough decline" in report
+    assert "- **Fee drag**: Modeled fee drag summed to 0.00%" in report
+    assert (
+        "- **Buy-and-hold comparison**: Strategy minus buy-and-hold was 5.00% "
+        "over the same period."
+    ) in report
     assert "- **Periods in market**: 1 of 1 close-to-close periods (100.00%)." in report
     assert "- **Exposure changes**: 1." in report
     assert "- **Modeled entries**: 1." in report
@@ -132,6 +148,88 @@ def test_build_exposure_trade_review_summarizes_curve_for_json() -> None:
         "research_only": True,
         "note": EXPOSURE_TRADE_REVIEW_NOTE,
     }
+
+
+def test_build_scenario_risk_interpretation_summarizes_research_diagnostics() -> None:
+    interpretation = build_scenario_risk_interpretation(
+        [
+            EquityCurveRecord(
+                date=date(2024, 1, 1),
+                equity=1.0,
+                exposure=0.0,
+                market_return=0.0,
+                strategy_return=0.0,
+                fee=0.0,
+            ),
+            EquityCurveRecord(
+                date=date(2024, 1, 2),
+                equity=1.1,
+                exposure=1.0,
+                market_return=0.05,
+                strategy_return=0.099,
+                fee=0.001,
+            ),
+            EquityCurveRecord(
+                date=date(2024, 1, 3),
+                equity=1.045,
+                exposure=0.0,
+                market_return=-0.02,
+                strategy_return=-0.05,
+                fee=0.001,
+            ),
+        ],
+        {
+            "total_return": 0.045,
+            "buy_and_hold_total_return": 0.029,
+            "strategy_minus_buy_and_hold_return": 0.016,
+            "max_drawdown": -0.05,
+        },
+    )
+
+    assert set(interpretation) == SCENARIO_RISK_INTERPRETATION_KEYS
+    assert interpretation["research_only"] is True
+    assert interpretation["historical_diagnostics_only"] is True
+    assert interpretation["note"] == SCENARIO_RISK_INTERPRETATION_NOTE
+    assert set(interpretation["exposure"]) == SCENARIO_RISK_EXPOSURE_KEYS
+    assert interpretation["exposure"]["period_count"] == 2
+    assert interpretation["exposure"]["average_exposure"] == 0.5
+    assert interpretation["exposure"]["percent_periods_in_market"] == 0.5
+    assert "Higher exposure" in interpretation["exposure"]["summary"]
+    assert set(interpretation["drawdown"]) == SCENARIO_RISK_DRAWDOWN_KEYS
+    assert interpretation["drawdown"]["max_drawdown"] == -0.05
+    assert "larger interim losses" in interpretation["drawdown"]["summary"]
+    assert set(interpretation["fee_drag"]) == SCENARIO_RISK_FEE_DRAG_KEYS
+    assert interpretation["fee_drag"]["total_fee_drag"] == 0.002
+    assert "not a complete estimate" in interpretation["fee_drag"]["summary"]
+    comparison = interpretation["buy_and_hold_comparison"]
+    assert set(comparison) == SCENARIO_RISK_COMPARISON_KEYS
+    assert comparison["strategy_total_return"] == 0.045
+    assert comparison["buy_and_hold_total_return"] == 0.029
+    assert comparison["strategy_minus_buy_and_hold_return"] == 0.016
+    assert "same period" in comparison["summary"]
+
+
+def test_scenario_risk_report_labels_stay_clear_and_public_safe() -> None:
+    report = render_experiment_report(
+        strategy_config={"symbol": "AAA"},
+        backtest_curve=_curve(),
+        metrics={
+            "total_return": 0.10,
+            "buy_and_hold_total_return": 0.05,
+            "strategy_minus_buy_and_hold_return": 0.05,
+            "max_drawdown": -0.02,
+        },
+    )
+
+    assert "## Scenario/Risk Interpretation" in report
+    assert f"- {SCENARIO_RISK_INTERPRETATION_NOTE}" in report
+    assert "- **Exposure**:" in report
+    assert "- **Drawdown**:" in report
+    assert "- **Fee drag**:" in report
+    assert "- **Buy-and-hold comparison**:" in report
+    assert "not investment advice" in report
+    assert "a prediction" in report
+    assert "broker connection or execution feature" in report
 
 
 def test_exposure_trade_review_stays_stable_for_no_trade_case() -> None:

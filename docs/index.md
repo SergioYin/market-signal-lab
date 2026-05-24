@@ -12,6 +12,9 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Static Sample Gallery](../reports/index.html) - no-JavaScript first screen for the checked-in demo artifacts.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
+- [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
+- [Regime comparison JSON](../reports/regime-comparison.json) - machine-readable version of the same synthetic regime comparison.
+- [Regime comparison HTML](../reports/regime-comparison.html) - browser-openable view of the same checked-in artifact.
 - [Fee sensitivity sample](../reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Fee sensitivity JSON](../reports/fee-sensitivity.json) - structured output for the same fee sensitivity artifact.
 - [Risk Boundaries](risk-boundaries.md) - public no-advice and no-execution boundaries.
@@ -21,6 +24,10 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Example Data and Synthetic Data Caveats](example-data.md) - bundled sample-data limits.
 - [Data Provenance](data-provenance.md) - how local CSV input and placeholder symbols are handled.
 
+## Regime Comparison Boundary
+
+The regime-comparison artifacts use deterministic synthetic sample data and placeholder regime labels. Run `market-signal-lab --regime-comparison` from the repository root to write `reports/regime-comparison.md`, `reports/regime-comparison.json`, and `reports/regime-comparison.html`. Open the Markdown file first for review. These artifacts are research-only aids for comparing historical diagnostics across fixture scenarios; they are not investment advice, recommendations, forecasts, market classifications, or a guarantee of future returns.
+
 ## Workflows
 
 - [Config Files](config-files.md) - JSON config shape, precedence, and repeatable run examples.
@@ -28,6 +35,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 ## Release Notes
 
+- [v1.5.0 Release Notes](release-notes-v1.5.0.md)
+- [v1.5.0 Release Checklist](release-v1.5.0.md)
 - [v1.4.0 Release Notes](release-notes-v1.4.0.md)
 - [v1.4.0 Release Checklist](release-v1.4.0.md)
 - [v1.3.5 Release Notes](release-notes-v1.3.5.md)

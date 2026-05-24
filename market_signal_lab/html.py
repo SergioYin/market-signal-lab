@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from html import escape
 import re
 
@@ -16,11 +17,13 @@ RESEARCH_ONLY_WARNING = (
 def render_html_report(
     markdown_report: str,
     title: str = "Market Signal Lab Report",
+    artifact_links: Sequence[tuple[str, str]] = (),
 ) -> str:
     """Render a Markdown report string as a minimal static HTML artifact."""
 
     escaped_title = escape(title)
     escaped_warning = escape(RESEARCH_ONLY_WARNING)
+    artifact_links_html = _render_artifact_links(artifact_links)
     report_html = _render_supported_markdown(markdown_report)
     return (
         "<!doctype html>\n"
@@ -42,10 +45,34 @@ def render_html_report(
         "<body>\n"
         f"  <h1>{escaped_title}</h1>\n"
         f"  <p><strong>{escaped_warning}</strong></p>\n"
+        f"{artifact_links_html}"
         f"{report_html}"
         "</body>\n"
         "</html>\n"
     )
+
+
+def _render_artifact_links(artifact_links: Sequence[tuple[str, str]]) -> str:
+    if not artifact_links:
+        return ""
+
+    lines = [
+        "  <nav aria-label=\"Related artifacts\">",
+        "    <h2>Related Artifacts</h2>",
+        "    <ul>",
+    ]
+    for label, href in artifact_links:
+        lines.append(
+            f'      <li><a href="{escape(href, quote=True)}">'
+            f"{escape(label)}</a></li>"
+        )
+    lines.extend(
+        [
+            "    </ul>",
+            "  </nav>",
+        ]
+    )
+    return "\n".join(lines) + "\n"
 
 
 def _render_supported_markdown(markdown_report: str) -> str:

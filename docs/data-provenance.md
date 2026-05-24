@@ -1,8 +1,8 @@
 # Data Provenance
 
-The bundled CSV at `examples/data/sample_tqqq_qld_like.csv` is synthetic sample data. It was hand-authored for deterministic tests and examples, so every run can produce the same artifacts.
+The bundled CSVs at `examples/data/sample_tqqq_qld_like.csv` and `examples/data/sample_multi_regime.csv` are synthetic sample data. They are deterministic fixtures for tests and examples, so every run can produce the same artifacts.
 
-The adjacent metadata file `examples/data/sample_tqqq_qld_like.csv.provenance.json` labels the CSV as a `synthetic_static_fixture`. The CLI reads this file when present and includes the metadata in generated Markdown reports, JSON payloads, and experiment manifests. This is static provenance only; Market Signal Lab does not download, refresh, or validate live market data.
+The adjacent metadata files `examples/data/sample_tqqq_qld_like.csv.provenance.json` and `examples/data/sample_multi_regime.csv.provenance.json` label the CSVs as `synthetic_static_fixture` data. The CLI reads this file when present and includes the metadata in generated Markdown reports, JSON payloads, and experiment manifests. This is static provenance only; Market Signal Lab does not download, refresh, or validate live market data.
 
 | Field | Sample value | Meaning |
 | --- | --- | --- |
@@ -13,15 +13,20 @@ The adjacent metadata file `examples/data/sample_tqqq_qld_like.csv.provenance.js
 | `as_of_date` | `2026-05-18` | Static metadata date, not a market-data freshness claim. |
 | `limitations` | Synthetic/static caveats | Research-only limits that travel with generated artifacts. |
 
-The rows do not come from a broker, exchange, data vendor, fund provider, or live market feed. They are not historical prices, they do not model real fund mechanics, and they should not be used to make claims about actual market behavior.
+`sample_multi_regime.csv.provenance.json` also records a `regimes` list with placeholder symbol, regime name, description, generation assumptions, row count, and explicit `synthetic_only`, `not_predictive`, and `not_live_trading` flags for each deterministic synthetic scenario. These labels exist to make tests and examples easier to inspect; they are not data-quality certifications, forecasts, market classifications, broker guidance, live-trading signals, or recommendations.
+
+The rows do not come from a broker, exchange, data vendor, fund provider, or live market feed. They are not historical prices, they do not model real fund mechanics, and they should not be used to make claims about actual market behavior. For beginners, read every bundled backtest as a software-output example: it can show whether the command and reports work, but it cannot show whether a strategy will work with real money.
 
 The symbols are placeholders:
 
 - `QQQ_LIKE`
 - `QLD_LIKE`
 - `TQQQ_LIKE`
+- `BULL_REGIME`
+- `CHOPPY_REGIME`
+- `DRAWDOWN_RECOVERY_REGIME`
 
-The `_LIKE` names mean "example-shaped input," not real QQQ, QLD, or TQQQ data.
+The `_LIKE` names mean "example-shaped input," not real QQQ, QLD, or TQQQ data. The `_REGIME` names mean synthetic scenario paths for reproducible tests only.
 
 ## Bring Your Own CSV
 

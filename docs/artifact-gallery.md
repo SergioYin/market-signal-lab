@@ -16,10 +16,11 @@ Start there if you want the fastest review path:
 
 1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
 2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
-3. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
-4. Open the split-sweep HTML sample to see the human-facing robustness table.
-5. Read the manifest to confirm the inputs and outputs behind the sample.
-6. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
+3. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
+4. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
+5. Open the split-sweep HTML sample to see the human-facing robustness table.
+6. Read the manifest to confirm the inputs and outputs behind the sample.
+7. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
 
 ## Report Artifacts
 
@@ -32,6 +33,18 @@ Start there if you want the fastest review path:
 `reports/fee-sensitivity.md` is a research-only fee assumption comparison for the bundled single backtest. It reruns the existing 20/50 moving-average settings across several `fee_bps` values and shows historical total return, buy-and-hold total return, strategy-minus-buy-and-hold return, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and modeled fee drag. The bundled eight-row sample has no modeled exposure changes under the 20/50 settings, so the rows intentionally show no fee-driven return difference. For leveraged ETF-like fixture labels, this comparison is still not a real fund-cost or daily-reset behavior model.
 
 `reports/fee-sensitivity.json` is the machine-readable version of the same fee sensitivity artifact. It records the input CSV, symbol, moving-average settings, tested `fee_bps` values, date range, row count, per-fee result rows, beginner caveats, and static fixture provenance when available.
+
+## Regime Comparison Artifacts
+
+`reports/regime-comparison.md` is the human-readable side-by-side comparison for the bundled synthetic multi-regime fixture. It runs the checked bull, choppy, and drawdown-recovery configs and shows historical strategy return, buy-and-hold return, strategy-minus-buy-and-hold return, max drawdown, exposure, cash-time, exposure changes, and whipsaw rate. The interpretation section names which fixture had the highest or lowest diagnostic values inside this deterministic sample only.
+
+`reports/regime-comparison.json` is the structured version of the same comparison. It includes `comparison_config`, summary fields, and one row per synthetic regime with metrics, `exposure_trade_review`, `scenario_risk_interpretation`, data provenance, and regime-specific interpretation summaries.
+
+`reports/regime-comparison.html` is a browser-openable rendering of the Markdown comparison.
+
+Generate the checked comparison with `market-signal-lab --regime-comparison` from the repository root. For first review, open `reports/regime-comparison.md`; use the HTML file when you want a browser view and the JSON file when you need structured rows.
+
+These files use deterministic synthetic sample data from `examples/data/sample_multi_regime.csv`. The prices and regime labels are constructed fixtures for documentation, tests, and review, not real market history. They are not market classifications, investment advice, recommendations, forecasts, or a guarantee of future returns.
 
 ## Sweep Artifacts
 
@@ -82,6 +95,9 @@ After it finishes, the expected generated files are:
 - `reports/sample-report.md`
 - `reports/sample-report.json`
 - `reports/sample-report.html`
+- `reports/regime-comparison.md`
+- `reports/regime-comparison.json`
+- `reports/regime-comparison.html`
 - `reports/fee-sensitivity.md`
 - `reports/fee-sensitivity.json`
 - `reports/index.html`

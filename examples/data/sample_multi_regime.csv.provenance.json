@@ -1,0 +1,58 @@
+{
+  "dataset_label": "sample_multi_regime",
+  "data_kind": "synthetic_static_fixture",
+  "source": "Deterministically generated OHLC sample bundled with Market Signal Lab for offline multi-regime examples and tests.",
+  "created_date": "2026-05-25",
+  "as_of_date": "2026-05-25",
+  "limitations": [
+    "Synthetic rows are not broker, exchange, fund-provider, vendor, or live-feed data.",
+    "Regime labels are fixture scenarios for testing report behavior, not market classifications, predictions, live-trading signals, or recommendations.",
+    "Rows do not model slippage, liquidity, taxes, financing costs, corporate actions, survivorship effects, or market impact.",
+    "Use only for deterministic research artifact checks; do not use for advice, recommendations, predictions, or market claims."
+  ],
+  "regimes": [
+    {
+      "symbol": "BULL_REGIME",
+      "regime": "bull",
+      "description": "Monotonic upward path used to exercise trend-following examples.",
+      "assumptions": [
+        "Close prices increase every sample period by construction.",
+        "Open prices equal the prior close after the first row.",
+        "High and low prices are synthetic padding around open and close."
+      ],
+      "synthetic_only": true,
+      "not_predictive": true,
+      "not_live_trading": true,
+      "row_count": 12
+    },
+    {
+      "symbol": "CHOPPY_REGIME",
+      "regime": "choppy",
+      "description": "Alternating path that ends near flat after repeated reversals.",
+      "assumptions": [
+        "Close prices alternate around the starting level by construction.",
+        "Open prices equal the prior close after the first row.",
+        "High and low prices are synthetic padding around open and close."
+      ],
+      "synthetic_only": true,
+      "not_predictive": true,
+      "not_live_trading": true,
+      "row_count": 12
+    },
+    {
+      "symbol": "DRAWDOWN_RECOVERY_REGIME",
+      "regime": "drawdown_recovery",
+      "description": "Decline followed by recovery for drawdown diagnostics.",
+      "assumptions": [
+        "Close prices fall first and then recover by construction.",
+        "Open prices equal the prior close after the first row.",
+        "High and low prices are synthetic padding around open and close."
+      ],
+      "synthetic_only": true,
+      "not_predictive": true,
+      "not_live_trading": true,
+      "row_count": 12
+    }
+  ],
+  "research_only": true
+}

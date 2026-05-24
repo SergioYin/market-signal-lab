@@ -8,6 +8,8 @@ The scenario/risk interpretation section adds a beginner-readable `## Scenario/R
 
 The v1.3 promotion increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
 
+The regime-comparison artifact adds a cold-review path for the bundled synthetic bull, choppy, and drawdown-recovery fixtures. Start with `reports/regime-comparison.md`, then open `reports/regime-comparison.json` for the structured rows or `reports/regime-comparison.html` for a browser view. These files compare historical model diagnostics across deterministic synthetic regimes only; they are research-only artifacts, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.
+
 The v1.2 fee sensitivity increment adds a research-only single-backtest comparison artifact under `reports/fee-sensitivity.md` and `reports/fee-sensitivity.json`. It reruns the bundled sample CSV with several `fee_bps` assumptions for the existing 20/50 moving-average settings and reports historical total return, buy-and-hold comparison, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and fee drag.
 
 The v1.0.0 readiness increment adds checked static fixture provenance for the bundled sample CSV, so generated sample reports, JSON payloads, and manifests label the data as synthetic, static, and research-only without performing live downloads.
@@ -19,6 +21,8 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
 - [Single Backtest Report](reports/sample-report.md) - includes `## Scenario/Risk Interpretation` and modeled exposure review sections for the bundled research-only sample.
 - [Single Backtest JSON](reports/sample-report.json) - includes `scenario_risk_interpretation` and `exposure_trade_review` objects for the same run.
+- [Regime Comparison](reports/regime-comparison.md) - side-by-side research-only comparison of the bundled synthetic bull, choppy, and drawdown-recovery fixtures.
+- [Regime Comparison JSON](reports/regime-comparison.json) - structured version of the same synthetic regime comparison.
 - [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
 - [Split Sweep Walkthrough](docs/split-sweep-walkthrough.md) - how to read train/test ranks, return gaps, and `robustness_flag` labels as review diagnostics only.
 
@@ -28,7 +32,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only and use local relative paths only. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 ## What you get in 60 seconds
 
@@ -129,6 +133,21 @@ research-only comparison of several `fee_bps` values for the existing 20/50
 moving-average single-backtest settings. In the bundled eight-row sample, the
 model has no exposure changes, so changing `fee_bps` does not change the
 reported return; the artifact states that caveat directly.
+
+Regime comparison artifact:
+
+```bash
+market-signal-lab --regime-comparison
+```
+
+This writes `reports/regime-comparison.md`, `reports/regime-comparison.json`,
+and `reports/regime-comparison.html` from the bundled synthetic multi-regime
+fixture and checked configs. It compares bull, choppy, and drawdown-recovery
+placeholder regimes using historical strategy return, buy-and-hold return,
+drawdown, exposure, cash-time, exposure-change, and whipsaw diagnostics. The
+regime labels are fixture scenarios for review and tests, not market
+classifications, not recommendations, not forecasts, and not a guarantee of
+future returns.
 
 Single backtest reports include `buy_and_hold_total_return` and
 `strategy_minus_buy_and_hold_return` metrics. These compare the strategy result
@@ -278,6 +297,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.5.0 Release Notes](docs/release-notes-v1.5.0.md)
+- [v1.5.0 Release Checklist](docs/release-v1.5.0.md)
 - [v1.4.0 Release Notes](docs/release-notes-v1.4.0.md)
 - [v1.4.0 Release Checklist](docs/release-v1.4.0.md)
 - [v1.3.5 Release Notes](docs/release-notes-v1.3.5.md)

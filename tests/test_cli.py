@@ -33,7 +33,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 1.4.0\n"
+    assert result.stdout == "market-signal-lab 1.5.0\n"
     assert result.stderr == ""
 
 
@@ -381,6 +381,269 @@ def test_checked_single_backtest_config_outputs_scenario_risk_fields(
     assert interpretation["note"] == SCENARIO_RISK_INTERPRETATION_NOTE
     assert "Historical diagnostics only" in interpretation["note"]
     assert "not investment advice" in interpretation["note"]
+
+
+def test_checked_multi_regime_config_outputs_regime_provenance(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "multi-regime-bull-report.md"
+    json_path = tmp_path / "multi-regime-bull-report.json"
+    html_path = tmp_path / "multi-regime-bull-report.html"
+    manifest_path = tmp_path / "multi-regime-bull-manifest.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--config",
+            "examples/configs/multi-regime-bull-report.json",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+            "--html-output",
+            str(html_path),
+            "--manifest-output",
+            str(manifest_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    manifest = manifest_path.read_text(encoding="utf-8")
+
+    assert "BULL_REGIME (bull, 12 rows)" in markdown
+    assert "CHOPPY_REGIME (choppy, 12 rows)" in markdown
+    assert "DRAWDOWN_RECOVERY_REGIME (drawdown_recovery, 12 rows)" in markdown
+    assert payload["strategy_config"]["symbol"] == "BULL_REGIME"
+    assert payload["row_count"] == 12
+    assert payload["data_provenance"]["dataset_label"] == "sample_multi_regime"
+    assert payload["data_provenance"]["regimes"] == [
+        {
+            "symbol": "BULL_REGIME",
+            "regime": "bull",
+            "description": (
+                "Monotonic upward path used to exercise trend-following examples."
+            ),
+            "assumptions": [
+                "Close prices increase every sample period by construction.",
+                "Open prices equal the prior close after the first row.",
+                "High and low prices are synthetic padding around open and close.",
+            ],
+            "synthetic_only": True,
+            "not_predictive": True,
+            "not_live_trading": True,
+            "row_count": 12,
+        },
+        {
+            "symbol": "CHOPPY_REGIME",
+            "regime": "choppy",
+            "description": "Alternating path that ends near flat after repeated reversals.",
+            "assumptions": [
+                "Close prices alternate around the starting level by construction.",
+                "Open prices equal the prior close after the first row.",
+                "High and low prices are synthetic padding around open and close.",
+            ],
+            "synthetic_only": True,
+            "not_predictive": True,
+            "not_live_trading": True,
+            "row_count": 12,
+        },
+        {
+            "symbol": "DRAWDOWN_RECOVERY_REGIME",
+            "regime": "drawdown_recovery",
+            "description": "Decline followed by recovery for drawdown diagnostics.",
+            "assumptions": [
+                "Close prices fall first and then recover by construction.",
+                "Open prices equal the prior close after the first row.",
+                "High and low prices are synthetic padding around open and close.",
+            ],
+            "synthetic_only": True,
+            "not_predictive": True,
+            "not_live_trading": True,
+            "row_count": 12,
+        },
+    ]
+    assert "examples/data/sample_multi_regime.csv" in manifest
+    assert "sample_multi_regime" in manifest
+
+
+def test_cli_regime_comparison_writes_markdown_json_and_html(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "regime-comparison.md"
+    json_path = tmp_path / "regime-comparison.json"
+    html_path = tmp_path / "regime-comparison.html"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--regime-comparison",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+            "--html-output",
+            str(html_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == ""
+
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    html = html_path.read_text(encoding="utf-8")
+
+    assert "# Regime Comparison Report" in markdown
+    assert "BULL_REGIME" in markdown
+    assert "CHOPPY_REGIME" in markdown
+    assert "DRAWDOWN_RECOVERY_REGIME" in markdown
+    assert "Buy-and-hold comparison" in markdown
+    assert "Exposure/cash-time" in markdown
+    assert "Whipsaw" in markdown
+    assert "not investment advice" in markdown
+    assert "not a recommendation" in markdown
+    assert "not a prediction" in markdown
+
+    assert list(payload) == [
+        "comparison_config",
+        "assumptions",
+        "summary",
+        "caveats",
+        "regimes",
+    ]
+    assert list(payload["comparison_config"]) == [
+        "source_configs",
+        "research_only",
+        "note",
+    ]
+    assert list(payload["summary"]) == [
+        "best_strategy_total_return_symbol",
+        "best_buy_and_hold_total_return_symbol",
+        "largest_drawdown_symbol",
+        "highest_whipsaw_symbol",
+        "most_cash_time_symbol",
+        "research_only",
+    ]
+    assert payload["assumptions"] == [
+        (
+            "Bundled regime labels are deterministic synthetic-only fixture "
+            "scenarios, not market classifications, forecasts, or live-trading "
+            "signals."
+        ),
+        (
+            "Each row uses the configured moving-average settings and same-period "
+            "close-to-close buy-and-hold comparison."
+        ),
+        "Provenance is loaded from adjacent static fixture metadata when available.",
+    ]
+    assert payload["caveats"] == [
+        "This artifact uses synthetic static fixture data for research workflows only.",
+        (
+            "Results are hypothetical, historical, and sensitive to data, fees, "
+            "and chosen parameters."
+        ),
+        (
+            "Nothing in this JSON is investment advice, trading guidance, "
+            "a recommendation, a prediction, or a live-trading signal."
+        ),
+    ]
+    assert payload["comparison_config"]["research_only"] is True
+    assert payload["comparison_config"]["source_configs"] == [
+        "examples/configs/multi-regime-bull-report.json",
+        "examples/configs/multi-regime-choppy-report.json",
+        "examples/configs/multi-regime-drawdown-recovery-report.json",
+    ]
+    assert [row["regime_label"] for row in payload["regimes"]] == [
+        "bull",
+        "choppy",
+        "drawdown recovery",
+    ]
+    assert [row["symbol"] for row in payload["regimes"]] == [
+        "BULL_REGIME",
+        "CHOPPY_REGIME",
+        "DRAWDOWN_RECOVERY_REGIME",
+    ]
+    first_regime = payload["regimes"][0]
+    assert list(first_regime) == [
+        "source_config",
+        "csv_path",
+        "symbol",
+        "regime_label",
+        "generation_assumptions",
+        "strategy_config",
+        "metrics",
+        "exposure_trade_review",
+        "scenario_risk_interpretation",
+        "first_date",
+        "last_date",
+        "row_count",
+        "data_provenance",
+        "interpretation",
+        "research_only",
+        "synthetic_only",
+        "not_predictive",
+        "not_live_trading",
+    ]
+    assert first_regime["research_only"] is True
+    assert first_regime["synthetic_only"] is True
+    assert first_regime["not_predictive"] is True
+    assert first_regime["not_live_trading"] is True
+    assert first_regime["generation_assumptions"] == {
+        "source": "Monotonic upward path used to exercise trend-following examples.",
+        "assumptions": [
+            "Close prices increase every sample period by construction.",
+            "Open prices equal the prior close after the first row.",
+            "High and low prices are synthetic padding around open and close.",
+        ],
+        "synthetic_only": True,
+        "not_predictive": True,
+        "not_live_trading": True,
+    }
+    assert set(first_regime["metrics"]) == {
+        "total_return",
+        "buy_and_hold_total_return",
+        "strategy_minus_buy_and_hold_return",
+        "annualized_return",
+        "max_drawdown",
+        "volatility",
+        "sharpe_like",
+        "win_rate",
+    }
+    assert first_regime["metrics"]["buy_and_hold_total_return"] > 0
+    assert first_regime["data_provenance"]["dataset_label"] == "sample_multi_regime"
+    assert first_regime["data_provenance"]["research_only"] is True
+    assert first_regime["data_provenance"]["regimes"][0]["regime"] == "bull"
+    assert "percent_periods_in_cash" in first_regime["exposure_trade_review"]
+    assert "whipsaw_rate" in first_regime["interpretation"]
+    assert "drawdown_summary" in first_regime["interpretation"]
+    assert payload["summary"]["research_only"] is True
+
+    assert "<title>Regime Comparison - Market Signal Lab</title>" in html
+    assert "<h1>Regime Comparison - Market Signal Lab</h1>" in html
+    assert '<nav aria-label="Related artifacts">' in html
+    assert '<a href="regime-comparison.md">Markdown report</a>' in html
+    assert '<a href="regime-comparison.json">JSON data</a>' in html
+    assert "<h1>Regime Comparison Report</h1>" in html
+    assert "<th>strategy_return</th>" in html
+    assert "<h2>Caveats</h2>" in html
+    assert "Research-only" in html
+    assert "<script" not in html.lower()
+    assert "http://" not in html
+    assert "https://" not in html
 
 
 def test_cli_flags_override_config_values(tmp_path: Path) -> None:

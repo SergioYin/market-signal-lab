@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 import csv
 import json
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from typing import IO, Any, Iterable
+from typing import IO, Any
 
 REQUIRED_COLUMNS = ("date", "open", "high", "low", "close")
 
@@ -34,12 +35,13 @@ class StaticFixtureProvenance:
     as_of_date: str
     limitations: tuple[str, ...]
     metadata_path: str
+    regimes: tuple[dict[str, Any], ...] = ()
     research_only: bool = True
 
     def as_dict(self) -> dict[str, Any]:
         """Return a JSON-serializable provenance dictionary."""
 
-        return {
+        payload: dict[str, Any] = {
             "dataset_label": self.dataset_label,
             "data_kind": self.data_kind,
             "source": self.source,
@@ -49,6 +51,10 @@ class StaticFixtureProvenance:
             "metadata_path": self.metadata_path,
             "research_only": self.research_only,
         }
+        if self.regimes:
+            payload["regimes"] = [dict(regime) for regime in self.regimes]
+
+        return payload
 
 
 def load_ohlc_csv(source: str | Path | IO[str]) -> list[PriceBar]:
@@ -114,11 +120,7 @@ def _parse_static_fixture_provenance(
         values[key] = value
 
     limitations = raw.get("limitations")
-    if (
-        not isinstance(limitations, list)
-        or not limitations
-        or not all(isinstance(item, str) and item.strip() for item in limitations)
-    ):
+    if not _is_non_empty_string_list(limitations):
         raise ValueError(
             "Fixture provenance metadata field 'limitations' must be a non-empty "
             "list of strings"
@@ -143,6 +145,78 @@ def _parse_static_fixture_provenance(
         as_of_date=values["as_of_date"],
         limitations=tuple(limitations),
         metadata_path=str(metadata_path),
+        regimes=_parse_optional_regimes(raw),
+    )
+
+
+def _parse_optional_regimes(
+    raw: dict[str, Any],
+) -> tuple[dict[str, Any], ...]:
+    regimes = raw.get("regimes")
+    if regimes is None:
+        return ()
+    if not isinstance(regimes, list) or not regimes:
+        raise ValueError(
+            "Fixture provenance metadata field 'regimes' must be a non-empty "
+            "list of objects when provided"
+        )
+
+    parsed: list[dict[str, Any]] = []
+    for index, regime in enumerate(regimes, start=1):
+        if not isinstance(regime, dict):
+            raise ValueError(
+                "Fixture provenance metadata field 'regimes' must contain objects"
+            )
+        parsed.append(_parse_regime_metadata(regime, index))
+
+    return tuple(parsed)
+
+
+def _parse_regime_metadata(
+    raw: dict[str, Any],
+    index: int,
+) -> dict[str, Any]:
+    parsed: dict[str, Any] = {}
+    for key in ("symbol", "regime", "description"):
+        value = raw.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(
+                f"Fixture provenance metadata field 'regimes[{index}].{key}' "
+                "must be a non-empty string"
+            )
+        parsed[key] = value
+
+    assumptions = raw.get("assumptions")
+    if not _is_non_empty_string_list(assumptions):
+        raise ValueError(
+            f"Fixture provenance metadata field 'regimes[{index}].assumptions' "
+            "must be a non-empty list of strings"
+        )
+    parsed["assumptions"] = list(assumptions)
+
+    for key in ("synthetic_only", "not_predictive", "not_live_trading"):
+        if raw.get(key) is not True:
+            raise ValueError(
+                f"Fixture provenance metadata field 'regimes[{index}].{key}' "
+                "must be true"
+            )
+        parsed[key] = True
+
+    row_count = raw.get("row_count")
+    if not isinstance(row_count, int) or isinstance(row_count, bool) or row_count <= 0:
+        raise ValueError(
+            f"Fixture provenance metadata field 'regimes[{index}].row_count' "
+            "must be a positive integer"
+        )
+    parsed["row_count"] = row_count
+    return parsed
+
+
+def _is_non_empty_string_list(value: Any) -> bool:
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(item, str) and item.strip() for item in value)
     )
 
 

@@ -18,6 +18,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "https://" not in gallery
     assert "research-only" in gallery
     assert "not investment advice" in gallery
+    assert "not a guarantee of future returns" in gallery
+    assert "Regime Comparison" in gallery
     assert "Open These First" in gallery
     for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
         assert required_text in gallery
@@ -28,6 +30,9 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "sample-report.html",
         "fee-sensitivity.md",
         "fee-sensitivity.json",
+        "regime-comparison.html",
+        "regime-comparison.md",
+        "regime-comparison.json",
         "sample-sweep.html",
         "sample-sweep-split.html",
         "../docs/static-gallery-manifest.md",
@@ -290,6 +295,94 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/scenario-risk-glossary.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
+def test_doc_sources_include_latest_release_docs() -> None:
+    assert Path("docs/release-notes-v1.5.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.5.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.5.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.5.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+
+
+def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
+    expected_artifacts = {
+        Path("reports/regime-comparison.md"),
+        Path("reports/regime-comparison.json"),
+        Path("reports/regime-comparison.html"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert Path("reports/regime-comparison.html") in selfcheck.HTML_LINK_SOURCES
+
+    command = _regime_comparison_command()
+    assert command == [
+        selfcheck.sys.executable,
+        "-m",
+        "market_signal_lab.cli",
+        "--regime-comparison",
+    ]
+
+    for link in (
+        "regime-comparison.html",
+        "regime-comparison.md",
+        "regime-comparison.json",
+    ):
+        assert link in selfcheck.V130_STATIC_GALLERY_LINKS
+        assert f'href="{link}"' in selfcheck.GALLERY_HTML
+
+    readme = Path("README.md").read_text(encoding="utf-8")
+    docs_index = Path("docs/index.md").read_text(encoding="utf-8")
+    gallery_notes = Path("docs/artifact-gallery.md").read_text(encoding="utf-8")
+    for public_doc in (readme, docs_index, gallery_notes, selfcheck.GALLERY_HTML):
+        assert "regime comparison" in public_doc.lower()
+        assert "synthetic" in public_doc
+        assert "research-only" in public_doc
+        assert "guarantee of future returns" in public_doc
+
+    assert selfcheck.find_regime_comparison_html_issues(selfcheck.REPO_ROOT) == []
+
+
+def test_regime_comparison_html_selfcheck_rejects_remote_assets_and_missing_links(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+    (reports_dir / "regime-comparison.md").write_text("# Regime\n", encoding="utf-8")
+
+    (reports_dir / "regime-comparison.html").write_text(
+        "\n".join(
+            [
+                "<!doctype html>",
+                "<title>Regime Comparison - Market Signal Lab</title>",
+                "<h1>Regime Comparison - Market Signal Lab</h1>",
+                "<script src=\"remote.js\"></script>",
+                '<link rel="stylesheet" href="/assets/report.css">',
+                '<a href="regime-comparison.md">Markdown report</a>',
+                "<h2>Caveats</h2>",
+                "<p>synthetic and not investment advice; no live-trading signal.</p>",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_regime_comparison_html_issues(tmp_path)
+
+    assert issues == [
+        "reports/regime-comparison.html: regime comparison HTML must not include scripts",
+        (
+            "reports/regime-comparison.html: regime comparison HTML must use "
+            "relative local links and assets, found /assets/report.css"
+        ),
+        (
+            "reports/regime-comparison.html: missing regime comparison HTML text "
+            "Related Artifacts"
+        ),
+        (
+            "reports/regime-comparison.html: missing regime comparison HTML link "
+            "to regime-comparison.json"
+        ),
+    ]
+
+
 def test_scenario_risk_glossary_defines_beginner_diagnostics() -> None:
     glossary = Path("docs/scenario-risk-glossary.md").read_text(encoding="utf-8")
 
@@ -430,7 +523,56 @@ def test_fixture_provenance_check_reports_missing_metadata(tmp_path: Path) -> No
 
     assert issues == [
         "examples/data/sample_tqqq_qld_like.csv.provenance.json: "
-        "provenance metadata file is missing"
+        "provenance metadata file is missing",
+        "examples/data/sample_multi_regime.csv.provenance.json: "
+        "provenance metadata file is missing",
+    ]
+
+
+def test_fixture_provenance_check_requires_regime_public_trust_flags(
+    tmp_path: Path,
+) -> None:
+    data_dir = tmp_path / "examples" / "data"
+    data_dir.mkdir(parents=True)
+    for name in ("sample_tqqq_qld_like.csv", "sample_multi_regime.csv"):
+        (data_dir / name).write_text("date,open,high,low,close\n", encoding="utf-8")
+
+    base_metadata = {
+        "dataset_label": "sample",
+        "data_kind": "synthetic_static_fixture",
+        "source": "Synthetic fixture.",
+        "created_date": "2026-05-25",
+        "as_of_date": "2026-05-25",
+        "limitations": ["Synthetic-only; not live data."],
+        "research_only": True,
+    }
+    (data_dir / "sample_tqqq_qld_like.csv.provenance.json").write_text(
+        json.dumps(base_metadata),
+        encoding="utf-8",
+    )
+
+    multi_metadata = dict(base_metadata)
+    multi_metadata["regimes"] = [
+        {
+            "symbol": "BULL_REGIME",
+            "regime": "bull",
+            "description": "Synthetic upward fixture.",
+            "assumptions": ["Close prices increase by construction."],
+            "synthetic_only": True,
+            "not_predictive": True,
+            "row_count": 12,
+        }
+    ]
+    (data_dir / "sample_multi_regime.csv.provenance.json").write_text(
+        json.dumps(multi_metadata),
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_fixture_provenance_issues(tmp_path)
+
+    assert issues == [
+        "examples/data/sample_multi_regime.csv.provenance.json: "
+        "regimes[1].not_live_trading must be true"
     ]
 
 
@@ -691,6 +833,16 @@ def _fee_sensitivity_command() -> list[str]:
     ]
     assert len(fee_commands) == 1
     return fee_commands[0]
+
+
+def _regime_comparison_command() -> list[str]:
+    regime_commands = [
+        command
+        for command in selfcheck._sample_artifact_commands()
+        if "--regime-comparison" in command
+    ]
+    assert len(regime_commands) == 1
+    return regime_commands[0]
 
 
 def _write_demo_contract_fixture(

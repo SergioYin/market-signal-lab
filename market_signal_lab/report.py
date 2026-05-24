@@ -19,6 +19,11 @@ SCENARIO_RISK_INTERPRETATION_NOTE = (
     "investment advice, trading guidance, a prediction, or a broker connection "
     "or execution feature."
 )
+REGIME_COMPARISON_NOTE = (
+    "Research-only historical comparison of deterministic bundled fixtures; "
+    "not investment advice, not a recommendation, not a prediction, and not "
+    "a broker connection or execution feature."
+)
 SCENARIO_RISK_INTERPRETATION_KEYS = frozenset(
     {
         "research_only",
@@ -114,6 +119,119 @@ def render_experiment_report(
             "and any costs not explicitly included in the backtest."
         ),
     ]
+
+    return "\n".join(lines) + "\n"
+
+
+def render_regime_comparison_report(
+    regimes: Sequence[Mapping[str, Any]],
+    summary: Mapping[str, Any],
+) -> str:
+    """Render a Markdown comparison across deterministic bundled regimes."""
+
+    lines = [
+        "# Regime Comparison Report",
+        "",
+        f"- {REGIME_COMPARISON_NOTE}",
+        (
+            "- To reproduce this checked sample from the repository root, run "
+            "market-signal-lab --regime-comparison."
+        ),
+        (
+            "- Open reports/regime-comparison.md first for the readable "
+            "review, reports/regime-comparison.html for a browser view, or "
+            "reports/regime-comparison.json for structured data."
+        ),
+        "- Buy-and-hold values use the same close-to-close sample as each strategy run.",
+        "- Exposure and cash-time are historical model states, not trades or instructions.",
+        "",
+        "## Comparison Table",
+        "",
+        (
+            "| regime | symbol | strategy_return | buy_and_hold_return | "
+            "strategy_minus_buy_hold | max_drawdown | exposure | cash_time | "
+            "exposure_changes | whipsaw_rate |"
+        ),
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for regime in regimes:
+        metrics = regime["metrics"]
+        exposure = regime["exposure_trade_review"]
+        lines.append(
+            "| "
+            f"{regime['regime_label']} | "
+            f"{regime['symbol']} | "
+            f"{_format_percent(metrics['total_return'])} | "
+            f"{_format_percent(metrics['buy_and_hold_total_return'])} | "
+            f"{_format_percent(metrics['strategy_minus_buy_and_hold_return'])} | "
+            f"{_format_percent(metrics['max_drawdown'])} | "
+            f"{_format_percent(exposure['percent_periods_in_market'])} | "
+            f"{_format_percent(exposure['percent_periods_in_cash'])} | "
+            f"{exposure['exposure_changes']} | "
+            f"{_format_percent(regime['interpretation']['whipsaw_rate'])} |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            f"- **Best strategy total return**: {summary['best_strategy_total_return_symbol']}.",
+            (
+                "- **Best buy-and-hold total return**: "
+                f"{summary['best_buy_and_hold_total_return_symbol']}."
+            ),
+            f"- **Largest modeled drawdown**: {summary['largest_drawdown_symbol']}.",
+            f"- **Highest whipsaw pressure**: {summary['highest_whipsaw_symbol']}.",
+            f"- **Most cash time**: {summary['most_cash_time_symbol']}.",
+            "",
+        ]
+    )
+    for regime in regimes:
+        interpretation = regime["interpretation"]
+        assumptions = regime.get("generation_assumptions", {})
+        if not isinstance(assumptions, Mapping):
+            assumptions = {}
+        assumption_text = _format_inline_list(assumptions.get("assumptions", ()))
+        lines.extend(
+            [
+                f"## {regime['regime_label']} ({regime['symbol']})",
+                "",
+                "- **Synthetic-only label**: deterministic fixture scenario; "
+                "not historical market data, not predictive, and not live-trading use.",
+                f"- **Generation source**: {_format_value(assumptions.get('source'))}",
+                f"- **Generation assumptions**: {assumption_text}",
+                f"- **Buy-and-hold comparison**: {interpretation['buy_and_hold_summary']}",
+                f"- **Exposure/cash-time**: {interpretation['cash_time_summary']}",
+                f"- **Drawdown**: {interpretation['drawdown_summary']}",
+                f"- **Whipsaw**: {interpretation['whipsaw_summary']}",
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "## Caveats",
+            "",
+            (
+                "- This artifact uses deterministic bundled sample data for "
+                "research workflows only. The prices were constructed for "
+                "examples and tests; they are not real market prices."
+            ),
+            (
+                "- Results are hypothetical, historical, and sensitive to data, "
+                "fees, and chosen parameters."
+            ),
+            (
+                "- A synthetic backtest can show how the software behaves, but "
+                "it cannot show what will happen in live markets."
+            ),
+            (
+                "- Nothing in this report is investment advice, trading guidance, "
+                "a recommendation, a prediction, or a live-trading signal."
+            ),
+        ]
+    )
 
     return "\n".join(lines) + "\n"
 
@@ -314,6 +432,10 @@ def render_data_provenance_note(
     if limitations:
         lines.append(f"- **Limitations**: {_format_limitations(limitations)}")
 
+    regimes = data_provenance.get("regimes", ())
+    if regimes:
+        lines.append(f"- **Synthetic regimes**: {_format_regimes(regimes)}")
+
     return [*lines, ""]
 
 
@@ -325,12 +447,40 @@ def _render_mapping(values: Mapping[str, Any]) -> list[str]:
 
 
 def _format_limitations(limitations: Any) -> str:
-    if isinstance(limitations, Sequence) and not isinstance(
-        limitations,
-        (str, bytes, bytearray),
-    ):
+    if _is_non_text_sequence(limitations):
         return "; ".join(str(item) for item in limitations)
     return _format_value(limitations)
+
+
+def _format_inline_list(values: Any) -> str:
+    if _is_non_text_sequence(values):
+        parts = [str(item).strip().rstrip(".") for item in values]
+        return "; ".join(parts) + "."
+    return _format_value(values)
+
+
+def _format_regimes(regimes: Any) -> str:
+    if not _is_non_text_sequence(regimes):
+        return _format_value(regimes)
+
+    labels: list[str] = []
+    for regime in regimes:
+        if isinstance(regime, Mapping):
+            symbol = regime.get("symbol", "unknown")
+            regime_name = regime.get("regime", "unknown")
+            row_count = regime.get("row_count", "?")
+            labels.append(f"{symbol} ({regime_name}, {row_count} rows)")
+        else:
+            labels.append(str(regime))
+
+    return "; ".join(labels)
+
+
+def _is_non_text_sequence(value: Any) -> bool:
+    return isinstance(value, Sequence) and not isinstance(
+        value,
+        (str, bytes, bytearray),
+    )
 
 
 def _render_backtest_summary(

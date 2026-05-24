@@ -3,6 +3,7 @@ from datetime import date
 from market_signal_lab.backtest import EquityCurveRecord
 from market_signal_lab.report import (
     EXPOSURE_TRADE_REVIEW_NOTE,
+    REGIME_COMPARISON_NOTE,
     SCENARIO_RISK_COMPARISON_KEYS,
     SCENARIO_RISK_DRAWDOWN_KEYS,
     SCENARIO_RISK_EXPOSURE_KEYS,
@@ -12,6 +13,7 @@ from market_signal_lab.report import (
     build_exposure_trade_review,
     build_scenario_risk_interpretation,
     render_experiment_report,
+    render_regime_comparison_report,
 )
 
 NOTE_LINE = f"- {EXPOSURE_TRADE_REVIEW_NOTE}"
@@ -230,6 +232,70 @@ def test_scenario_risk_report_labels_stay_clear_and_public_safe() -> None:
     assert "not investment advice" in report
     assert "a prediction" in report
     assert "broker connection or execution feature" in report
+
+
+def test_render_regime_comparison_report_includes_required_interpretations() -> None:
+    report = render_regime_comparison_report(
+        [
+            {
+                "regime_label": "bull",
+                "symbol": "BULL_REGIME",
+                "metrics": {
+                    "total_return": 0.10,
+                    "buy_and_hold_total_return": 0.12,
+                    "strategy_minus_buy_and_hold_return": -0.02,
+                    "max_drawdown": -0.01,
+                },
+                "exposure_trade_review": {
+                    "percent_periods_in_market": 0.8,
+                    "percent_periods_in_cash": 0.2,
+                    "exposure_changes": 1,
+                },
+                "interpretation": {
+                    "whipsaw_rate": 0.1,
+                    "buy_and_hold_summary": "Strategy minus buy-and-hold was -2.00%.",
+                    "cash_time_summary": "The model spent 20.00% in cash.",
+                    "drawdown_summary": "The worst modeled peak-to-trough decline was -1.00%.",
+                    "whipsaw_summary": "Low switching pressure.",
+                },
+                "generation_assumptions": {
+                    "source": "Monotonic upward path used to exercise examples.",
+                    "assumptions": [
+                        "Close prices increase every sample period by construction.",
+                        "High and low prices are synthetic padding.",
+                    ],
+                    "synthetic_only": True,
+                    "not_predictive": True,
+                    "not_live_trading": True,
+                },
+            }
+        ],
+        {
+            "best_strategy_total_return_symbol": "BULL_REGIME",
+            "best_buy_and_hold_total_return_symbol": "BULL_REGIME",
+            "largest_drawdown_symbol": "BULL_REGIME",
+            "highest_whipsaw_symbol": "BULL_REGIME",
+            "most_cash_time_symbol": "BULL_REGIME",
+        },
+    )
+
+    assert "# Regime Comparison Report" in report
+    assert f"- {REGIME_COMPARISON_NOTE}" in report
+    assert "strategy_minus_buy_hold" in report
+    assert "cash_time" in report
+    assert "whipsaw_rate" in report
+    assert "## Interpretation" in report
+    assert "## bull (BULL_REGIME)" in report
+    assert "Synthetic-only label" in report
+    assert "not historical market data, not predictive, and not live-trading use" in report
+    assert "Close prices increase every sample period by construction" in report
+    assert "- **Buy-and-hold comparison**:" in report
+    assert "- **Exposure/cash-time**:" in report
+    assert "- **Drawdown**:" in report
+    assert "- **Whipsaw**:" in report
+    assert "not investment advice" in report
+    assert "not a recommendation" in report
+    assert "not a prediction" in report
 
 
 def test_exposure_trade_review_stays_stable_for_no_trade_case() -> None:

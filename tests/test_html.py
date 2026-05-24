@@ -36,3 +36,20 @@ def test_render_html_report_converts_markdown_tables() -> None:
     assert "<th>robustness_flag</th>" in html
     assert "<td>not_flagged</td>" in html
     assert "| rank | robustness_flag | train_test_return_gap |" not in html
+
+
+def test_render_html_report_can_include_escaped_local_artifact_links() -> None:
+    html = render_html_report(
+        "# Regime\n\n## Caveats\n\n- Local only.\n",
+        title="Regime <Comparison>",
+        artifact_links=(
+            ("Markdown <report>", "regime-comparison.md"),
+            ("JSON data", "nested/regime-comparison.json?x=<bad>"),
+        ),
+    )
+
+    assert "<title>Regime &lt;Comparison&gt;</title>" in html
+    assert '<nav aria-label="Related artifacts">' in html
+    assert '<a href="regime-comparison.md">Markdown &lt;report&gt;</a>' in html
+    assert 'href="nested/regime-comparison.json?x=&lt;bad&gt;"' in html
+    assert "<script" not in html.lower()

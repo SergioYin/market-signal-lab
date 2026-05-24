@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from io import StringIO
 from pathlib import Path
 import csv
 import json
+import os
 import sys
 from typing import Any
 
@@ -32,6 +33,7 @@ from market_signal_lab.manifest import build_manifest, render_manifest_markdown
 from market_signal_lab.report import (
     build_exposure_trade_review,
     build_scenario_risk_interpretation,
+    render_regime_comparison_report,
     render_experiment_report,
 )
 from market_signal_lab.split import TrainTestSplit, split_train_test
@@ -42,16 +44,29 @@ from market_signal_lab.sweep import (
     run_moving_average_sweep,
 )
 
+BUNDLED_REGIME_CONFIGS = (
+    Path("examples/configs/multi-regime-bull-report.json"),
+    Path("examples/configs/multi-regime-choppy-report.json"),
+    Path("examples/configs/multi-regime-drawdown-recovery-report.json"),
+)
+REGIME_COMPARISON_OUTPUT = Path("reports/regime-comparison.md")
+REGIME_COMPARISON_JSON_OUTPUT = Path("reports/regime-comparison.json")
+REGIME_COMPARISON_HTML_OUTPUT = Path("reports/regime-comparison.html")
+
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
     try:
-        args = _resolve_args(args, parser)
-        report, json_payload, manifest_payload = (
-            _run_sweep(args) if args.sweep else _run_backtest(args)
-        )
+        if args.regime_comparison:
+            args = _resolve_regime_comparison_args(args, parser)
+            report, json_payload, manifest_payload = _run_regime_comparison(args)
+        else:
+            args = _resolve_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_sweep(args) if args.sweep else _run_backtest(args)
+            )
         _write_outputs(args, report, json_payload, manifest_payload)
     except (OSError, ValueError, ArgumentTypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -75,7 +90,14 @@ def _write_outputs(
         _write_text(args.json_output, _compact_json(json_payload))
 
     if args.html_output:
-        _write_text(args.html_output, render_html_report(report))
+        _write_text(
+            args.html_output,
+            render_html_report(
+                report,
+                title=_html_report_title(args),
+                artifact_links=_html_artifact_links(args),
+            ),
+        )
 
     if args.manifest_output:
         _write_text(args.manifest_output, render_manifest_markdown(manifest_payload))
@@ -84,6 +106,30 @@ def _write_outputs(
 def _write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def _html_report_title(args: Namespace) -> str:
+    if getattr(args, "regime_comparison", False):
+        return "Regime Comparison - Market Signal Lab"
+    return "Market Signal Lab Report"
+
+
+def _html_artifact_links(args: Namespace) -> tuple[tuple[str, str], ...]:
+    if not getattr(args, "regime_comparison", False) or args.html_output is None:
+        return ()
+
+    links: list[tuple[str, str]] = []
+    for label, path in (
+        ("Markdown report", args.output),
+        ("JSON data", args.json_output),
+    ):
+        if path is not None:
+            links.append((label, _relative_output_link(args.html_output, path)))
+    return tuple(links)
+
+
+def _relative_output_link(source_path: Path, target_path: Path) -> str:
+    return os.path.relpath(target_path, start=source_path.parent).replace(os.sep, "/")
 
 
 def _build_parser() -> ArgumentParser:
@@ -148,6 +194,15 @@ def _build_parser() -> ArgumentParser:
         "--manifest-output",
         type=Path,
         help="Optional output file path for a Markdown experiment manifest.",
+    )
+    parser.add_argument(
+        "--regime-comparison",
+        action="store_true",
+        default=False,
+        help=(
+            "Run bundled bull/choppy/drawdown-recovery configs and write a "
+            "deterministic comparison artifact under reports by default."
+        ),
     )
     parser.add_argument(
         "--sweep",
@@ -220,6 +275,28 @@ def _resolve_args(args: Namespace, parser: ArgumentParser) -> Namespace:
             "--split-cutoff (config keys: split_ratio or split_cutoff)"
         )
 
+    return resolved
+
+
+def _resolve_regime_comparison_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--regime-comparison uses bundled configs and does not take csv_path")
+    if args.config is not None:
+        parser.error("--regime-comparison uses bundled configs and does not take --config")
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+
+    resolved.output = args.output or REGIME_COMPARISON_OUTPUT
+    resolved.json_output = args.json_output or REGIME_COMPARISON_JSON_OUTPUT
+    resolved.html_output = args.html_output or REGIME_COMPARISON_HTML_OUTPUT
+    resolved.manifest_output = args.manifest_output
+    resolved.configs = BUNDLED_REGIME_CONFIGS
+    resolved.regime_comparison = True
     return resolved
 
 
@@ -451,6 +528,207 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
     return report, json_payload, manifest_payload
 
 
+def _run_regime_comparison(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    regimes = []
+    for config_path in args.configs:
+        config_values = _load_config(config_path)
+        run_args = _args_from_config_values(config_values)
+        _, payload, _ = _run_backtest(run_args)
+        regimes.append(_build_regime_comparison_row(config_path, run_args, payload))
+
+    summary = _build_regime_comparison_summary(regimes)
+    report = render_regime_comparison_report(regimes, summary)
+    json_payload = {
+        "comparison_config": {
+            "source_configs": [str(path) for path in args.configs],
+            "research_only": True,
+            "note": (
+                "Bundled deterministic regime comparison; not investment advice, "
+                "not a recommendation, and not a prediction."
+            ),
+        },
+        "assumptions": [
+            (
+                "Bundled regime labels are deterministic synthetic-only fixture "
+                "scenarios, not market classifications, forecasts, or live-trading "
+                "signals."
+            ),
+            (
+                "Each row uses the configured moving-average settings and "
+                "same-period close-to-close buy-and-hold comparison."
+            ),
+            "Provenance is loaded from adjacent static fixture metadata when available.",
+        ],
+        "summary": summary,
+        "caveats": [
+            "This artifact uses synthetic static fixture data for research workflows only.",
+            (
+                "Results are hypothetical, historical, and sensitive to data, "
+                "fees, and chosen parameters."
+            ),
+            (
+                "Nothing in this JSON is investment advice, trading guidance, "
+                "a recommendation, a prediction, or a live-trading signal."
+            ),
+        ],
+        "regimes": regimes,
+    }
+    manifest_payload = build_manifest(
+        input_path=", ".join(str(path) for path in args.configs),
+        symbol=None,
+        mode="regime_comparison",
+        fee_bps=0.0,
+        output_paths=_output_paths(args),
+    )
+    return report, json_payload, manifest_payload
+
+
+def _args_from_config_values(config_values: Mapping[str, Any]) -> Namespace:
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, config_values.get(key, default))
+    if resolved.csv_path is None:
+        raise ValueError("Bundled regime config is missing csv_path")
+    if resolved.split_ratio is not None and resolved.split_cutoff is not None:
+        raise ValueError(
+            "Bundled regime config must choose only one validation split option"
+        )
+    return resolved
+
+
+def _build_regime_comparison_row(
+    config_path: Path,
+    run_args: Namespace,
+    payload: Mapping[str, Any],
+) -> dict[str, Any]:
+    symbol = str(payload["strategy_config"]["symbol"])
+    metrics = dict(payload["metrics"])
+    exposure = dict(payload["exposure_trade_review"])
+    scenario = dict(payload["scenario_risk_interpretation"])
+    return {
+        "source_config": str(config_path),
+        "csv_path": str(run_args.csv_path),
+        "symbol": symbol,
+        "regime_label": _regime_label(symbol),
+        "generation_assumptions": _regime_generation_assumptions(
+            payload.get("data_provenance"),
+            symbol,
+        ),
+        "strategy_config": dict(payload["strategy_config"]),
+        "metrics": metrics,
+        "exposure_trade_review": exposure,
+        "scenario_risk_interpretation": scenario,
+        "first_date": payload["first_date"],
+        "last_date": payload["last_date"],
+        "row_count": payload["row_count"],
+        "data_provenance": payload.get("data_provenance"),
+        "interpretation": _build_regime_interpretation(metrics, exposure),
+        "research_only": True,
+        "synthetic_only": True,
+        "not_predictive": True,
+        "not_live_trading": True,
+    }
+
+
+def _build_regime_interpretation(
+    metrics: Mapping[str, float],
+    exposure: Mapping[str, Any],
+) -> dict[str, Any]:
+    period_count = int(exposure["period_count"])
+    exposure_changes = int(exposure["exposure_changes"])
+    whipsaw_rate = _ratio(exposure_changes, period_count)
+    cash_time = float(exposure["percent_periods_in_cash"])
+    return_gap = float(metrics["strategy_minus_buy_and_hold_return"])
+    max_drawdown_value = float(metrics["max_drawdown"])
+    change_label = "change" if exposure_changes == 1 else "changes"
+
+    return {
+        "cash_time": cash_time,
+        "whipsaw_rate": whipsaw_rate,
+        "buy_and_hold_summary": (
+            "Strategy minus buy-and-hold was "
+            f"{_format_percent(return_gap)} over this deterministic sample."
+        ),
+        "cash_time_summary": (
+            "The model spent "
+            f"{_format_percent(cash_time)} of close-to-close periods in cash, "
+            "so lower exposure means more missed market movement and less time "
+            "bearing market risk in this sample."
+        ),
+        "drawdown_summary": (
+            "The worst modeled peak-to-trough decline was "
+            f"{_format_percent(max_drawdown_value)}; more negative values show "
+            "larger interim losses before recovery."
+        ),
+        "whipsaw_summary": (
+            f"{exposure_changes} exposure {change_label} across {period_count} periods "
+            f"produced a whipsaw rate of {_format_percent(whipsaw_rate)}. "
+            "Higher values indicate more historical switching between market "
+            "and cash states."
+        ),
+    }
+
+
+def _regime_generation_assumptions(
+    data_provenance: Any,
+    symbol: str,
+) -> dict[str, Any]:
+    fallback = {
+        "source": "No matching per-regime provenance metadata was found.",
+        "assumptions": [
+            "Treat this row as a research-only comparison row, not a forecast.",
+        ],
+        "synthetic_only": True,
+        "not_predictive": True,
+        "not_live_trading": True,
+    }
+    if not isinstance(data_provenance, Mapping):
+        return fallback
+
+    regimes = data_provenance.get("regimes")
+    if not _is_non_text_sequence(regimes):
+        return fallback
+
+    for regime in regimes:
+        if isinstance(regime, Mapping) and regime.get("symbol") == symbol:
+            return {
+                "source": str(regime.get("description", "")),
+                "assumptions": list(regime.get("assumptions", ())),
+                "synthetic_only": regime.get("synthetic_only") is True,
+                "not_predictive": regime.get("not_predictive") is True,
+                "not_live_trading": regime.get("not_live_trading") is True,
+            }
+
+    return fallback
+
+
+def _build_regime_comparison_summary(
+    regimes: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    best_strategy = max(regimes, key=lambda row: row["metrics"]["total_return"])
+    best_buy_hold = max(
+        regimes,
+        key=lambda row: row["metrics"]["buy_and_hold_total_return"],
+    )
+    largest_drawdown = min(regimes, key=lambda row: row["metrics"]["max_drawdown"])
+    highest_whipsaw = max(
+        regimes,
+        key=lambda row: row["interpretation"]["whipsaw_rate"],
+    )
+    most_cash = max(
+        regimes,
+        key=lambda row: row["exposure_trade_review"]["percent_periods_in_cash"],
+    )
+    return {
+        "best_strategy_total_return_symbol": best_strategy["symbol"],
+        "best_buy_and_hold_total_return_symbol": best_buy_hold["symbol"],
+        "largest_drawdown_symbol": largest_drawdown["symbol"],
+        "highest_whipsaw_symbol": highest_whipsaw["symbol"],
+        "most_cash_time_symbol": most_cash["symbol"],
+        "research_only": True,
+    }
+
+
 def _load_provenance_payload(csv_path: Path) -> dict[str, Any] | None:
     provenance = load_static_fixture_provenance(csv_path)
     if provenance is None:
@@ -524,6 +802,27 @@ def _partition_metadata(bars: Sequence[PriceBar]) -> dict[str, Any]:
         "last_date": bars[-1].date.isoformat(),
         "row_count": len(bars),
     }
+
+
+def _regime_label(symbol: str) -> str:
+    return symbol.lower().removesuffix("_regime").replace("_", " ")
+
+
+def _format_percent(value: float) -> str:
+    return f"{value * 100:.2f}%"
+
+
+def _ratio(numerator: int, denominator: int) -> float:
+    if denominator == 0:
+        return 0.0
+    return numerator / denominator
+
+
+def _is_non_text_sequence(value: Any) -> bool:
+    return isinstance(value, Sequence) and not isinstance(
+        value,
+        (str, bytes, bytearray),
+    )
 
 
 def _output_paths(args: Namespace) -> dict[str, Path | None]:

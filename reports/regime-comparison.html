@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Regime Comparison - Market Signal Lab</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Regime Comparison - Market Signal Lab</h1>
+  <p><strong>Research-only: this artifact is for historical market research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
+  <nav aria-label="Related artifacts">
+    <h2>Related Artifacts</h2>
+    <ul>
+      <li><a href="regime-comparison.md">Markdown report</a></li>
+      <li><a href="regime-comparison.json">JSON data</a></li>
+    </ul>
+  </nav>
+  <h1>Regime Comparison Report</h1>
+  <ul>
+    <li>Research-only historical comparison of deterministic bundled fixtures; not investment advice, not a recommendation, not a prediction, and not a broker connection or execution feature.</li>
+    <li>To reproduce this checked sample from the repository root, run market-signal-lab --regime-comparison.</li>
+    <li>Open reports/regime-comparison.md first for the readable review, reports/regime-comparison.html for a browser view, or reports/regime-comparison.json for structured data.</li>
+    <li>Buy-and-hold values use the same close-to-close sample as each strategy run.</li>
+    <li>Exposure and cash-time are historical model states, not trades or instructions.</li>
+  </ul>
+  <h2>Comparison Table</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>regime</th>
+          <th>symbol</th>
+          <th>strategy_return</th>
+          <th>buy_and_hold_return</th>
+          <th>strategy_minus_buy_hold</th>
+          <th>max_drawdown</th>
+          <th>exposure</th>
+          <th>cash_time</th>
+          <th>exposure_changes</th>
+          <th>whipsaw_rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>bull</td>
+          <td>BULL_REGIME</td>
+          <td>12.66%</td>
+          <td>19.20%</td>
+          <td>-6.54%</td>
+          <td>0.00%</td>
+          <td>63.64%</td>
+          <td>36.36%</td>
+          <td>1</td>
+          <td>9.09%</td>
+        </tr>
+        <tr>
+          <td>choppy</td>
+          <td>CHOPPY_REGIME</td>
+          <td>-1.48%</td>
+          <td>0.20%</td>
+          <td>-1.68%</td>
+          <td>-1.58%</td>
+          <td>27.27%</td>
+          <td>72.73%</td>
+          <td>2</td>
+          <td>18.18%</td>
+        </tr>
+        <tr>
+          <td>drawdown recovery</td>
+          <td>DRAWDOWN_RECOVERY_REGIME</td>
+          <td>13.08%</td>
+          <td>3.00%</td>
+          <td>10.08%</td>
+          <td>0.00%</td>
+          <td>27.27%</td>
+          <td>72.73%</td>
+          <td>1</td>
+          <td>9.09%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>Interpretation</h2>
+  <ul>
+    <li><strong>Best strategy total return</strong>: DRAWDOWN_RECOVERY_REGIME.</li>
+    <li><strong>Best buy-and-hold total return</strong>: BULL_REGIME.</li>
+    <li><strong>Largest modeled drawdown</strong>: CHOPPY_REGIME.</li>
+    <li><strong>Highest whipsaw pressure</strong>: CHOPPY_REGIME.</li>
+    <li><strong>Most cash time</strong>: CHOPPY_REGIME.</li>
+  </ul>
+  <h2>bull (BULL_REGIME)</h2>
+  <ul>
+    <li><strong>Synthetic-only label</strong>: deterministic fixture scenario; not historical market data, not predictive, and not live-trading use.</li>
+    <li><strong>Generation source</strong>: Monotonic upward path used to exercise trend-following examples.</li>
+    <li><strong>Generation assumptions</strong>: Close prices increase every sample period by construction; Open prices equal the prior close after the first row; High and low prices are synthetic padding around open and close.</li>
+    <li><strong>Buy-and-hold comparison</strong>: Strategy minus buy-and-hold was -6.54% over this deterministic sample.</li>
+    <li><strong>Exposure/cash-time</strong>: The model spent 36.36% of close-to-close periods in cash, so lower exposure means more missed market movement and less time bearing market risk in this sample.</li>
+    <li><strong>Drawdown</strong>: The worst modeled peak-to-trough decline was 0.00%; more negative values show larger interim losses before recovery.</li>
+    <li><strong>Whipsaw</strong>: 1 exposure change across 11 periods produced a whipsaw rate of 9.09%. Higher values indicate more historical switching between market and cash states.</li>
+  </ul>
+  <h2>choppy (CHOPPY_REGIME)</h2>
+  <ul>
+    <li><strong>Synthetic-only label</strong>: deterministic fixture scenario; not historical market data, not predictive, and not live-trading use.</li>
+    <li><strong>Generation source</strong>: Alternating path that ends near flat after repeated reversals.</li>
+    <li><strong>Generation assumptions</strong>: Close prices alternate around the starting level by construction; Open prices equal the prior close after the first row; High and low prices are synthetic padding around open and close.</li>
+    <li><strong>Buy-and-hold comparison</strong>: Strategy minus buy-and-hold was -1.68% over this deterministic sample.</li>
+    <li><strong>Exposure/cash-time</strong>: The model spent 72.73% of close-to-close periods in cash, so lower exposure means more missed market movement and less time bearing market risk in this sample.</li>
+    <li><strong>Drawdown</strong>: The worst modeled peak-to-trough decline was -1.58%; more negative values show larger interim losses before recovery.</li>
+    <li><strong>Whipsaw</strong>: 2 exposure changes across 11 periods produced a whipsaw rate of 18.18%. Higher values indicate more historical switching between market and cash states.</li>
+  </ul>
+  <h2>drawdown recovery (DRAWDOWN_RECOVERY_REGIME)</h2>
+  <ul>
+    <li><strong>Synthetic-only label</strong>: deterministic fixture scenario; not historical market data, not predictive, and not live-trading use.</li>
+    <li><strong>Generation source</strong>: Decline followed by recovery for drawdown diagnostics.</li>
+    <li><strong>Generation assumptions</strong>: Close prices fall first and then recover by construction; Open prices equal the prior close after the first row; High and low prices are synthetic padding around open and close.</li>
+    <li><strong>Buy-and-hold comparison</strong>: Strategy minus buy-and-hold was 10.08% over this deterministic sample.</li>
+    <li><strong>Exposure/cash-time</strong>: The model spent 72.73% of close-to-close periods in cash, so lower exposure means more missed market movement and less time bearing market risk in this sample.</li>
+    <li><strong>Drawdown</strong>: The worst modeled peak-to-trough decline was 0.00%; more negative values show larger interim losses before recovery.</li>
+    <li><strong>Whipsaw</strong>: 1 exposure change across 11 periods produced a whipsaw rate of 9.09%. Higher values indicate more historical switching between market and cash states.</li>
+  </ul>
+  <h2>Caveats</h2>
+  <ul>
+    <li>This artifact uses deterministic bundled sample data for research workflows only. The prices were constructed for examples and tests; they are not real market prices.</li>
+    <li>Results are hypothetical, historical, and sensitive to data, fees, and chosen parameters.</li>
+    <li>A synthetic backtest can show how the software behaves, but it cannot show what will happen in live markets.</li>
+    <li>Nothing in this report is investment advice, trading guidance, a recommendation, a prediction, or a live-trading signal.</li>
+  </ul>
+</body>
+</html>

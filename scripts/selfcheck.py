@@ -45,6 +45,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.3.4.md"),
     Path("docs/release-notes-v1.3.5.md"),
     Path("docs/release-notes-v1.4.0.md"),
+    Path("docs/release-notes-v1.5.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -63,14 +64,17 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.3.4.md"),
     Path("docs/release-v1.3.5.md"),
     Path("docs/release-v1.4.0.md"),
+    Path("docs/release-v1.5.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
     Path("examples/data/sample_tqqq_qld_like.csv.provenance.json"),
+    Path("examples/data/sample_multi_regime.csv.provenance.json"),
 )
 HTML_LINK_SOURCES = (
     Path("index.html"),
     Path("reports/index.html"),
+    Path("reports/regime-comparison.html"),
 )
 V131_ROOT_LANDING_LINKS = (
     "reports/index.html",
@@ -107,6 +111,9 @@ V130_STATIC_GALLERY_LINKS = (
     "sample-report.json",
     "fee-sensitivity.md",
     "fee-sensitivity.json",
+    "regime-comparison.html",
+    "regime-comparison.md",
+    "regime-comparison.json",
     "sample-sweep.html",
     "sample-sweep.md",
     "sample-sweep.json",
@@ -118,12 +125,28 @@ V130_STATIC_GALLERY_REQUIRED_TEXT = (
     "Scenario/Risk Interpretation",
     "scenario_risk_interpretation",
 )
+REGIME_COMPARISON_HTML_REQUIRED_LINKS = (
+    "regime-comparison.md",
+    "regime-comparison.json",
+)
+REGIME_COMPARISON_HTML_REQUIRED_TEXT = (
+    "<title>Regime Comparison - Market Signal Lab</title>",
+    "<h1>Regime Comparison - Market Signal Lab</h1>",
+    "Related Artifacts",
+    "Caveats",
+    "synthetic",
+    "not investment advice",
+    "live-trading signal",
+)
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
     Path("reports/sample-report.html"),
     Path("reports/sample-manifest.md"),
+    Path("reports/regime-comparison.md"),
+    Path("reports/regime-comparison.json"),
+    Path("reports/regime-comparison.html"),
     Path("reports/sample-sweep.md"),
     Path("reports/sample-sweep.json"),
     Path("reports/sample-sweep.html"),
@@ -156,8 +179,9 @@ GALLERY_HTML = """<!doctype html>
   <h1>Market Signal Lab Sample Reports</h1>
   <p><strong>Start with the artifact trail:</strong> this static gallery shows the checked-in outputs before you run the CLI: human-readable reports, machine-readable JSON, browser-openable HTML, and the manifest that records the sample inputs and outputs.</p>
   <p><strong>What to inspect first:</strong> open the artifact notes for a map, the single backtest report for the Scenario/Risk Interpretation section, the sample manifest for reproducibility, and the split-sweep walkthrough if you are reading train/test robustness fields for the first time.</p>
-  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, and not evidence of future performance.</p>
+  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
   <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
+  <p><strong>Regime-comparison limits:</strong> the bull, choppy, and drawdown-recovery labels are deterministic fixture scenarios for research review and tests. They are not market classifications, recommendations, forecasts, or a guarantee of future returns.</p>
   <h2>Open These First</h2>
   <ul>
     <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
@@ -174,6 +198,13 @@ GALLERY_HTML = """<!doctype html>
     <li><a href="sample-report.json">JSON report</a></li>
     <li><a href="fee-sensitivity.md">Fee sensitivity Markdown</a></li>
     <li><a href="fee-sensitivity.json">Fee sensitivity JSON</a></li>
+  </ul>
+  <h2>Regime Comparison</h2>
+  <p>The regime comparison uses the bundled synthetic multi-regime fixture to compare bull, choppy, and drawdown-recovery placeholder scenarios. First-time reviewers should open the Markdown artifact first, or run <code>market-signal-lab --regime-comparison</code> from the repository root to regenerate the Markdown, JSON, and HTML outputs. It is a historical diagnostic artifact only, not advice, not a forecast, and not a guarantee of future returns.</p>
+  <ul>
+    <li><a href="regime-comparison.html">HTML regime comparison</a></li>
+    <li><a href="regime-comparison.md">Markdown regime comparison</a></li>
+    <li><a href="regime-comparison.json">JSON regime comparison</a></li>
   </ul>
   <h2>Parameter Sweep</h2>
   <ul>
@@ -212,7 +243,6 @@ FENCED_BLOCK_RE = re.compile(r"(^|\n)```.*?(\n```|$)", re.DOTALL)
 
 def run_compileall() -> bool:
     print("1) Running Python compilation check...")
-    # Compile the library and tests to catch syntax/import-time issues.
     ok = compileall.compile_dir(str(REPO_ROOT / "market_signal_lab"), quiet=1)
     ok &= compileall.compile_dir(str(REPO_ROOT / "tests"), quiet=1)
     return bool(ok)
@@ -257,6 +287,7 @@ def run_demo_acceptance_check() -> bool:
         *find_v090_demo_acceptance_issues(REPO_ROOT),
         *find_v130_static_gallery_issues(REPO_ROOT),
         *find_v131_root_landing_issues(REPO_ROOT),
+        *find_regime_comparison_html_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -319,7 +350,10 @@ def run_sample_artifact_generation() -> bool:
             print(f"Empty sample artifact: {artifact}")
             return False
 
-    print("Created sample report gallery, report, manifest, sweep, split sweep, fee sensitivity, and HTML artifacts.")
+    print(
+        "Created sample report gallery, report, manifest, sweep, split sweep, "
+        "fee sensitivity, regime comparison, and HTML artifacts."
+    )
     return True
 
 
@@ -462,6 +496,49 @@ def find_v131_root_landing_issues(repo_root: Path = REPO_ROOT) -> list[str]:
     return issues
 
 
+def find_regime_comparison_html_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    relative_source = Path("reports/regime-comparison.html")
+    source = repo_root / relative_source
+    if not source.exists():
+        return [f"{relative_source}: source file is missing"]
+
+    text = source.read_text(encoding="utf-8")
+    issues: list[str] = []
+    lowered = text.lower()
+    if "<script" in lowered:
+        issues.append(f"{relative_source}: regime comparison HTML must not include scripts")
+    for target in _html_remote_or_absolute_references(text):
+        issues.append(
+            f"{relative_source}: regime comparison HTML must use relative local "
+            f"links and assets, found {target}"
+        )
+
+    links = _local_links_for_source(relative_source, text)
+    for required_text in REGIME_COMPARISON_HTML_REQUIRED_TEXT:
+        if required_text not in text:
+            issues.append(
+                f"{relative_source}: missing regime comparison HTML text "
+                f"{required_text}"
+            )
+    for target in REGIME_COMPARISON_HTML_REQUIRED_LINKS:
+        if target not in links:
+            issues.append(
+                f"{relative_source}: missing regime comparison HTML link to {target}"
+            )
+            continue
+        link_path = _local_markdown_link_path(repo_root, source, target)
+        if not link_path.exists():
+            issues.append(
+                f"{relative_source}: broken regime comparison HTML link to {target}"
+            )
+        elif link_path.stat().st_size == 0:
+            issues.append(
+                f"{relative_source}: regime comparison HTML link target is empty: {target}"
+            )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -513,20 +590,58 @@ def find_fixture_provenance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
         if raw.get("research_only") is not True:
             issues.append(f"{relative_path}: research_only must be true")
         limitations = raw.get("limitations")
-        if (
-            not isinstance(limitations, list)
-            or not limitations
-            or not all(isinstance(item, str) and item.strip() for item in limitations)
-        ):
+        if not _is_non_empty_string_list(limitations):
             issues.append(
                 f"{relative_path}: limitations must be a non-empty list of strings"
             )
+
+        regimes = raw.get("regimes")
+        if regimes is not None:
+            if not isinstance(regimes, list) or not regimes:
+                issues.append(f"{relative_path}: regimes must be a non-empty list")
+            else:
+                for index, regime in enumerate(regimes, start=1):
+                    if not isinstance(regime, dict):
+                        issues.append(
+                            f"{relative_path}: regimes[{index}] must be an object"
+                        )
+                        continue
+                    for key in ("symbol", "regime", "description"):
+                        if not isinstance(regime.get(key), str) or not regime[key].strip():
+                            issues.append(
+                                f"{relative_path}: regimes[{index}].{key} "
+                                "must be a non-empty string"
+                            )
+                    assumptions = regime.get("assumptions")
+                    if not _is_non_empty_string_list(assumptions):
+                        issues.append(
+                            f"{relative_path}: regimes[{index}].assumptions "
+                            "must be a non-empty list of strings"
+                        )
+                    for key in (
+                        "synthetic_only",
+                        "not_predictive",
+                        "not_live_trading",
+                    ):
+                        if regime.get(key) is not True:
+                            issues.append(
+                                f"{relative_path}: regimes[{index}].{key} "
+                                "must be true"
+                            )
 
         csv_path = path.with_name(path.name.removesuffix(".provenance.json"))
         if not csv_path.exists():
             issues.append(f"{relative_path}: source CSV is missing")
 
     return issues
+
+
+def _is_non_empty_string_list(value: object) -> bool:
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(item, str) and item.strip() for item in value)
+    )
 
 
 def _is_negated_public_claim(line: str, match: re.Match[str]) -> bool:
@@ -688,6 +803,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/fee-sensitivity.md",
             "--json-output",
             "reports/fee-sensitivity.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--regime-comparison",
         ],
     ]
 

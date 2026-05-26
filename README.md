@@ -6,7 +6,7 @@ The v1.1 exposure/trade review increment adds historical model-exposure metadata
 
 The scenario/risk interpretation section adds a beginner-readable `## Scenario/Risk Interpretation` block to single backtest Markdown/HTML reports and a `scenario_risk_interpretation` object to JSON. It summarizes exposure, max drawdown, modeled fee drag, and same-period buy-and-hold comparison as historical diagnostics only. It is not advice, not a forecast, not trading guidance, and not a broker connection or execution feature.
 
-The v1.3 promotion increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
+The v1.6.0 static gallery dashboard increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the dashboard cards to jump to the single report, regime comparison, fee sensitivity, split sweep, and manifest artifact paths. Use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
 
 The regime-comparison artifact adds a cold-review path for the bundled synthetic bull, choppy, and drawdown-recovery fixtures. Start with `reports/regime-comparison.md`, then open `reports/regime-comparison.json` for the structured rows or `reports/regime-comparison.html` for a browser view. These files compare historical model diagnostics across deterministic synthetic regimes only; they are research-only artifacts, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.
 
@@ -33,6 +33,8 @@ Worth saving if you want a compact reference for how to package research outputs
 ## First inspection path
 
 Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+
+The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
 ## What you get in 60 seconds
 
@@ -297,6 +299,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.6.0 Release Notes](docs/release-notes-v1.6.0.md)
+- [v1.6.0 Release Checklist](docs/release-v1.6.0.md)
 - [v1.5.0 Release Notes](docs/release-notes-v1.5.0.md)
 - [v1.5.0 Release Checklist](docs/release-v1.5.0.md)
 - [v1.4.0 Release Notes](docs/release-notes-v1.4.0.md)

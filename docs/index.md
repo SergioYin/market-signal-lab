@@ -9,7 +9,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
-- [Static Sample Gallery](../reports/index.html) - no-JavaScript first screen for the checked-in demo artifacts.
+- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, regime comparison, fee sensitivity, split sweep, and manifest.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
@@ -35,6 +35,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.6.0 Release Notes](release-notes-v1.6.0.md)
+- [v1.6.0 Release Checklist](release-v1.6.0.md)
 - [v1.5.0 Release Notes](release-notes-v1.5.0.md)
 - [v1.5.0 Release Checklist](release-v1.5.0.md)
 - [v1.4.0 Release Notes](release-notes-v1.4.0.md)

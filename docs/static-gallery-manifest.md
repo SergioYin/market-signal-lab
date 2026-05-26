@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.5.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.6.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -13,6 +13,16 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Artifact gallery notes](artifact-gallery.md)
 - [Split-sweep walkthrough](split-sweep-walkthrough.md)
 - [Sample manifest](../reports/sample-manifest.md)
+
+## Dashboard Cards
+
+The checked-in [Static Sample Gallery](../reports/index.html) starts with a compact no-JavaScript dashboard. Each card shows the repository artifact path as visible text and links only to local relative targets:
+
+- Single report: `reports/sample-report.html`, with links to [HTML](../reports/sample-report.html), [Markdown](../reports/sample-report.md), and [JSON](../reports/sample-report.json).
+- Regime comparison: `reports/regime-comparison.html`, with links to [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
+- Fee sensitivity: `reports/fee-sensitivity.md`, with links to [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
+- Split sweep: `reports/sample-sweep-split.html`, with links to [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), [JSON](../reports/sample-sweep-split.json), and the [walkthrough](split-sweep-walkthrough.md).
+- Manifest: `reports/sample-manifest.md`, with links to [Sample manifest](../reports/sample-manifest.md) and this static demo manifest.
 
 ## Demo Artifacts
 

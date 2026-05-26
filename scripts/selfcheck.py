@@ -46,6 +46,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.3.5.md"),
     Path("docs/release-notes-v1.4.0.md"),
     Path("docs/release-notes-v1.5.0.md"),
+    Path("docs/release-notes-v1.6.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -65,6 +66,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.3.5.md"),
     Path("docs/release-v1.4.0.md"),
     Path("docs/release-v1.5.0.md"),
+    Path("docs/release-v1.6.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -125,6 +127,33 @@ V130_STATIC_GALLERY_REQUIRED_TEXT = (
     "Scenario/Risk Interpretation",
     "scenario_risk_interpretation",
 )
+V160_STATIC_DASHBOARD_CARDS = {
+    "single-report": (
+        "Single Report",
+        "reports/sample-report.html",
+        ("sample-report.html", "sample-report.md", "sample-report.json"),
+    ),
+    "regime-comparison": (
+        "Regime Comparison",
+        "reports/regime-comparison.html",
+        ("regime-comparison.html", "regime-comparison.md", "regime-comparison.json"),
+    ),
+    "fee-sensitivity": (
+        "Fee Sensitivity",
+        "reports/fee-sensitivity.md",
+        ("fee-sensitivity.md", "fee-sensitivity.json"),
+    ),
+    "split-sweep": (
+        "Split Sweep",
+        "reports/sample-sweep-split.html",
+        ("sample-sweep-split.html", "sample-sweep-split.md", "sample-sweep-split.json"),
+    ),
+    "manifest": (
+        "Manifest",
+        "reports/sample-manifest.md",
+        ("sample-manifest.md", "../docs/static-gallery-manifest.md"),
+    ),
+}
 REGIME_COMPARISON_HTML_REQUIRED_LINKS = (
     "regime-comparison.md",
     "regime-comparison.json",
@@ -174,55 +203,75 @@ GALLERY_HTML = """<!doctype html>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Market Signal Lab Sample Reports</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.45; margin: 0; color: #1f2328; background: #ffffff; }
+    main { max-width: 1120px; margin: 0 auto; padding: 1.25rem; }
+    h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
+    h2 { font-size: 1.05rem; margin: 1.25rem 0 0.45rem; }
+    p { margin: 0.45rem 0; }
+    a { color: #0969da; }
+    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+    .dashboard-card { border: 1px solid #d0d7de; border-radius: 8px; padding: 0.85rem; background: #f6f8fa; }
+    .dashboard-card h2 { margin-top: 0; }
+    .artifact-path { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; color: #57606a; overflow-wrap: anywhere; }
+    .artifact-links { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.65rem; }
+    .artifact-links a { border: 1px solid #d0d7de; border-radius: 6px; padding: 0.2rem 0.45rem; background: #ffffff; text-decoration: none; }
+  </style>
 </head>
 <body>
-  <h1>Market Signal Lab Sample Reports</h1>
-  <p><strong>Start with the artifact trail:</strong> this static gallery shows the checked-in outputs before you run the CLI: human-readable reports, machine-readable JSON, browser-openable HTML, and the manifest that records the sample inputs and outputs.</p>
-  <p><strong>What to inspect first:</strong> open the artifact notes for a map, the single backtest report for the Scenario/Risk Interpretation section, the sample manifest for reproducibility, and the split-sweep walkthrough if you are reading train/test robustness fields for the first time.</p>
-  <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
-  <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
-  <p><strong>Regime-comparison limits:</strong> the bull, choppy, and drawdown-recovery labels are deterministic fixture scenarios for research review and tests. They are not market classifications, recommendations, forecasts, or a guarantee of future returns.</p>
-  <h2>Open These First</h2>
-  <ul>
-    <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
-    <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
-    <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
-    <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
-    <li><a href="sample-manifest.md">Sample manifest</a></li>
-  </ul>
-  <h2>Single Backtest</h2>
-  <p>The single backtest report includes a Scenario/Risk Interpretation section. The matching JSON includes scenario_risk_interpretation. These are historical diagnostics only, not advice, forecasts, broker guidance, or real-time execution cues.</p>
-  <ul>
-    <li><a href="sample-report.html">HTML report</a></li>
-    <li><a href="sample-report.md">Markdown report</a></li>
-    <li><a href="sample-report.json">JSON report</a></li>
-    <li><a href="fee-sensitivity.md">Fee sensitivity Markdown</a></li>
-    <li><a href="fee-sensitivity.json">Fee sensitivity JSON</a></li>
-  </ul>
-  <h2>Regime Comparison</h2>
-  <p>The regime comparison uses the bundled synthetic multi-regime fixture to compare bull, choppy, and drawdown-recovery placeholder scenarios. First-time reviewers should open the Markdown artifact first, or run <code>market-signal-lab --regime-comparison</code> from the repository root to regenerate the Markdown, JSON, and HTML outputs. It is a historical diagnostic artifact only, not advice, not a forecast, and not a guarantee of future returns.</p>
-  <ul>
-    <li><a href="regime-comparison.html">HTML regime comparison</a></li>
-    <li><a href="regime-comparison.md">Markdown regime comparison</a></li>
-    <li><a href="regime-comparison.json">JSON regime comparison</a></li>
-  </ul>
-  <h2>Parameter Sweep</h2>
-  <ul>
-    <li><a href="sample-sweep.html">HTML sweep</a></li>
-    <li><a href="sample-sweep.md">Markdown sweep</a></li>
-    <li><a href="sample-sweep.json">JSON sweep</a></li>
-  </ul>
-  <h2>Split Sweep</h2>
-  <p><a href="../docs/split-sweep-walkthrough.md">Beginner walkthrough for reading split-sweep robustness fields</a></p>
-  <ul>
-    <li><a href="sample-sweep-split.html">HTML split sweep</a></li>
-    <li><a href="sample-sweep-split.md">Markdown split sweep</a></li>
-    <li><a href="sample-sweep-split.json">JSON split sweep</a></li>
-  </ul>
-  <h2>Reproduction</h2>
-  <ul>
-    <li><a href="sample-manifest.md">Sample manifest</a></li>
-  </ul>
+  <main>
+    <h1>Market Signal Lab Sample Reports</h1>
+    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The first-screen cards expose the local artifact paths for the single report, regime comparison, fee sensitivity, split sweep, and manifest.</p>
+    <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
+    <section class="dashboard" aria-label="Static artifact dashboard">
+      <article class="dashboard-card" data-artifact="single-report">
+        <h2>Single Report</h2>
+        <p class="artifact-path">reports/sample-report.html</p>
+        <p>Scenario/Risk Interpretation in HTML plus matching scenario_risk_interpretation JSON.</p>
+        <p class="artifact-links"><a href="sample-report.html">HTML</a><a href="sample-report.md">Markdown</a><a href="sample-report.json">JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="regime-comparison">
+        <h2>Regime Comparison</h2>
+        <p class="artifact-path">reports/regime-comparison.html</p>
+        <p>Synthetic bull, choppy, and drawdown-recovery fixture diagnostics.</p>
+        <p class="artifact-links"><a href="regime-comparison.html">HTML</a><a href="regime-comparison.md">Markdown</a><a href="regime-comparison.json">JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="fee-sensitivity">
+        <h2>Fee Sensitivity</h2>
+        <p class="artifact-path">reports/fee-sensitivity.md</p>
+        <p>Research-only fee_bps assumption comparison for the single backtest settings.</p>
+        <p class="artifact-links"><a href="fee-sensitivity.md">Markdown</a><a href="fee-sensitivity.json">JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="split-sweep">
+        <h2>Split Sweep</h2>
+        <p class="artifact-path">reports/sample-sweep-split.html</p>
+        <p>Train/test ranking, return-gap, and robustness_flag diagnostics.</p>
+        <p class="artifact-links"><a href="sample-sweep-split.html">HTML</a><a href="sample-sweep-split.md">Markdown</a><a href="sample-sweep-split.json">JSON</a><a href="../docs/split-sweep-walkthrough.md">Walkthrough</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="manifest">
+        <h2>Manifest</h2>
+        <p class="artifact-path">reports/sample-manifest.md</p>
+        <p>Reproduction record plus static gallery contract for local relative links.</p>
+        <p class="artifact-links"><a href="sample-manifest.md">Sample</a><a href="../docs/static-gallery-manifest.md">Static Demo</a></p>
+      </article>
+    </section>
+    <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
+    <p><strong>Regime-comparison limits:</strong> the bull, choppy, and drawdown-recovery labels are deterministic fixture scenarios for research review and tests. They are not market classifications, recommendations, forecasts, or a guarantee of future returns.</p>
+    <h2>Open These First</h2>
+    <ul>
+      <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
+      <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
+      <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
+      <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
+      <li><a href="sample-manifest.md">Sample manifest</a></li>
+    </ul>
+    <h2>Parameter Sweep</h2>
+    <ul>
+      <li><a href="sample-sweep.html">HTML sweep</a></li>
+      <li><a href="sample-sweep.md">Markdown sweep</a></li>
+      <li><a href="sample-sweep.json">JSON sweep</a></li>
+    </ul>
+  </main>
 </body>
 </html>
 """
@@ -287,6 +336,7 @@ def run_demo_acceptance_check() -> bool:
         *find_v090_demo_acceptance_issues(REPO_ROOT),
         *find_v130_static_gallery_issues(REPO_ROOT),
         *find_v131_root_landing_issues(REPO_ROOT),
+        *find_v160_static_dashboard_issues(REPO_ROOT),
         *find_regime_comparison_html_issues(REPO_ROOT),
     ]
     if issues:
@@ -461,6 +511,46 @@ def find_v130_static_gallery_issues(repo_root: Path = REPO_ROOT) -> list[str]:
             issues.append(f"{relative_source}: broken v1.3 gallery link to {target}")
         elif link_path.stat().st_size == 0:
             issues.append(f"{relative_source}: v1.3 gallery link target is empty: {target}")
+
+    return issues
+
+
+def find_v160_static_dashboard_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    relative_source = Path("reports/index.html")
+    source = repo_root / relative_source
+    if not source.exists():
+        return [f"{relative_source}: source file is missing"]
+
+    text = source.read_text(encoding="utf-8")
+    issues: list[str] = []
+    if "v1.6.0 static artifact dashboard" not in text:
+        issues.append(f"{relative_source}: missing v1.6 dashboard heading text")
+    if 'aria-label="Static artifact dashboard"' not in text:
+        issues.append(f"{relative_source}: missing v1.6 dashboard landmark")
+
+    links = _local_links_for_source(relative_source, text)
+    for card_id, (title, visible_path, required_links) in V160_STATIC_DASHBOARD_CARDS.items():
+        if f'data-artifact="{card_id}"' not in text:
+            issues.append(f"{relative_source}: missing v1.6 dashboard card {card_id}")
+        if f"<h2>{title}</h2>" not in text:
+            issues.append(f"{relative_source}: missing v1.6 dashboard title {title}")
+        if visible_path not in text:
+            issues.append(
+                f"{relative_source}: missing v1.6 dashboard artifact path {visible_path}"
+            )
+        for target in required_links:
+            if target not in links:
+                issues.append(
+                    f"{relative_source}: missing v1.6 dashboard link to {target}"
+                )
+                continue
+            link_path = _local_markdown_link_path(repo_root, source, target)
+            if not link_path.exists():
+                issues.append(f"{relative_source}: broken v1.6 dashboard link to {target}")
+            elif link_path.stat().st_size == 0:
+                issues.append(
+                    f"{relative_source}: v1.6 dashboard link target is empty: {target}"
+                )
 
     return issues
 

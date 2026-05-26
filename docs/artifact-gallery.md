@@ -10,7 +10,7 @@ For plain-language definitions of report metrics, including buy-and-hold compari
 
 For a beginner walkthrough of the split-sweep robustness report, including how to read `train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and `robustness_flag` without treating them as advice, see the [Split Sweep Walkthrough](split-sweep-walkthrough.md).
 
-[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
+[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. Its v1.6.0 first screen is a compact dashboard with visible artifact paths for `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
 
 Start there if you want the fastest review path:
 
@@ -86,7 +86,7 @@ The selfcheck performs seven checks:
 2. Runs the test suite with `pytest`.
 3. Regenerates the sample report, manifest, sweep, split-sweep, fee sensitivity, JSON, and HTML artifacts under `reports/`.
 4. Validates local Markdown, documentation, and gallery links.
-5. Checks the v0.9.0 static demo acceptance links.
+5. Checks the v0.9.0 static demo acceptance links and the v1.6.0 dashboard contract.
 6. Checks public no-advice claim boundaries.
 7. Checks static fixture provenance metadata.
 

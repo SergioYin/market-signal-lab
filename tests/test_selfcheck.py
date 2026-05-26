@@ -21,9 +21,19 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "not a guarantee of future returns" in gallery
     assert "Regime Comparison" in gallery
     assert "Open These First" in gallery
+    assert "v1.6.0 static artifact dashboard" in gallery
+    assert 'aria-label="Static artifact dashboard"' in gallery
     for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
         assert required_text in gallery
     assert "no JavaScript, remote data, broker connection, or trading account" in gallery
+    for card_id, (title, visible_path, required_links) in (
+        selfcheck.V160_STATIC_DASHBOARD_CARDS.items()
+    ):
+        assert f'data-artifact="{card_id}"' in gallery
+        assert f"<h2>{title}</h2>" in gallery
+        assert visible_path in gallery
+        for link in required_links:
+            assert f'href="{link}"' in gallery
 
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
@@ -239,6 +249,88 @@ def test_v130_static_gallery_contract_rejects_non_local_schemes(
     ]
 
 
+def test_v160_static_dashboard_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_v160_static_dashboard_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
+    reports_dir = tmp_path / "reports"
+    docs_dir = tmp_path / "docs"
+    reports_dir.mkdir()
+    docs_dir.mkdir()
+    for path in (
+        reports_dir / "sample-report.html",
+        reports_dir / "sample-report.md",
+        reports_dir / "sample-report.json",
+        reports_dir / "regime-comparison.html",
+        reports_dir / "regime-comparison.md",
+        reports_dir / "regime-comparison.json",
+        reports_dir / "fee-sensitivity.md",
+        reports_dir / "fee-sensitivity.json",
+        reports_dir / "sample-sweep-split.html",
+        reports_dir / "sample-sweep-split.md",
+        reports_dir / "sample-sweep-split.json",
+        reports_dir / "sample-manifest.md",
+        docs_dir / "static-gallery-manifest.md",
+    ):
+        path.write_text("artifact\n", encoding="utf-8")
+    (reports_dir / "index.html").write_text(
+        '<main aria-label="Static artifact dashboard">\n'
+        "<p>v1.6.0 static artifact dashboard</p>\n"
+        '<article data-artifact="single-report"><h2>Single Report</h2>\n'
+        '<p>reports/sample-report.html</p>\n'
+        '<a href="sample-report.html">HTML</a>\n'
+        '<a href="sample-report.md">Markdown</a>\n'
+        '<a href="sample-report.json">JSON</a></article>\n'
+        "</main>\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_v160_static_dashboard_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: missing v1.6 dashboard card regime-comparison",
+        "reports/index.html: missing v1.6 dashboard title Regime Comparison",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/regime-comparison.html"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to regime-comparison.html",
+        "reports/index.html: missing v1.6 dashboard link to regime-comparison.md",
+        "reports/index.html: missing v1.6 dashboard link to regime-comparison.json",
+        "reports/index.html: missing v1.6 dashboard card fee-sensitivity",
+        "reports/index.html: missing v1.6 dashboard title Fee Sensitivity",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/fee-sensitivity.md"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.md",
+        "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.json",
+        "reports/index.html: missing v1.6 dashboard card split-sweep",
+        "reports/index.html: missing v1.6 dashboard title Split Sweep",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/sample-sweep-split.html"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.html",
+        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.md",
+        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.json",
+        "reports/index.html: missing v1.6 dashboard card manifest",
+        "reports/index.html: missing v1.6 dashboard title Manifest",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/sample-manifest.md"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to sample-manifest.md",
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "../docs/static-gallery-manifest.md"
+        ),
+    ]
+
+
 def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
     expected_artifacts = {
         Path("reports/sample-sweep-split.md"),
@@ -300,6 +392,10 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.5.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.5.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.5.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.6.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.6.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.6.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.6.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:

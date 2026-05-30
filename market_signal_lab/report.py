@@ -344,8 +344,8 @@ def build_scenario_risk_interpretation(
     comparison_summary = (
         "Strategy minus buy-and-hold was "
         f"{_format_percent(return_gap)} over the same period. "
-        "A positive gap means the model beat buy-and-hold in this historical "
-        "sample; a negative gap means it lagged."
+        "A positive gap means the model finished above buy-and-hold in this "
+        "historical sample; a negative gap means it finished below it."
     )
 
     return {

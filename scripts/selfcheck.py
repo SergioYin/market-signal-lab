@@ -47,6 +47,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.4.0.md"),
     Path("docs/release-notes-v1.5.0.md"),
     Path("docs/release-notes-v1.6.0.md"),
+    Path("docs/release-notes-v1.7.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -67,6 +68,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.4.0.md"),
     Path("docs/release-v1.5.0.md"),
     Path("docs/release-v1.6.0.md"),
+    Path("docs/release-v1.7.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -111,6 +113,8 @@ V130_STATIC_GALLERY_LINKS = (
     "sample-report.html",
     "sample-report.md",
     "sample-report.json",
+    "pretrade-packet.md",
+    "pretrade-packet.json",
     "fee-sensitivity.md",
     "fee-sensitivity.json",
     "regime-comparison.html",
@@ -132,6 +136,11 @@ V160_STATIC_DASHBOARD_CARDS = {
         "Single Report",
         "reports/sample-report.html",
         ("sample-report.html", "sample-report.md", "sample-report.json"),
+    ),
+    "pretrade-packet": (
+        "Pre-Trade Packet",
+        "reports/pretrade-packet.md",
+        ("pretrade-packet.md", "pretrade-packet.json"),
     ),
     "regime-comparison": (
         "Regime Comparison",
@@ -167,12 +176,56 @@ REGIME_COMPARISON_HTML_REQUIRED_TEXT = (
     "not investment advice",
     "live-trading signal",
 )
+PRETRADE_PACKET_JSON = Path("reports/pretrade-packet.json")
+PRETRADE_PACKET_MARKDOWN = Path("reports/pretrade-packet.md")
+PRETRADE_PACKET_TOP_LEVEL_KEYS = (
+    "packet_type",
+    "schema_version",
+    "research_only",
+    "historical_diagnostics_only",
+    "no_broker_or_live_data",
+    "note",
+    "source",
+    "strategy_config",
+    "assumptions",
+    "historical_diagnostics",
+    "beginner_checklist",
+    "risk_boundaries",
+)
+PRETRADE_PACKET_REQUIRED_METRICS = (
+    "total_return",
+    "buy_and_hold_total_return",
+    "strategy_minus_buy_and_hold_return",
+    "max_drawdown",
+)
+PRETRADE_PACKET_REQUIRED_EXPOSURE = (
+    "period_count",
+    "average_exposure",
+    "percent_periods_in_market",
+    "exposure_changes",
+    "entries_to_market",
+    "exits_to_cash",
+    "total_fee_drag",
+    "research_only",
+    "note",
+)
+PRETRADE_PACKET_MARKDOWN_SECTIONS = (
+    "# Pre-Trade Research Packet",
+    "## Source",
+    "## Assumptions",
+    "## Historical Diagnostics",
+    "## Scenario/Risk Interpretation",
+    "## Beginner Checklist",
+    "## Risk Boundaries",
+)
 SAMPLE_ARTIFACTS = (
     Path("reports/index.html"),
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
     Path("reports/sample-report.html"),
     Path("reports/sample-manifest.md"),
+    Path("reports/pretrade-packet.md"),
+    Path("reports/pretrade-packet.json"),
     Path("reports/regime-comparison.md"),
     Path("reports/regime-comparison.json"),
     Path("reports/regime-comparison.html"),
@@ -221,7 +274,7 @@ GALLERY_HTML = """<!doctype html>
 <body>
   <main>
     <h1>Market Signal Lab Sample Reports</h1>
-    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The first-screen cards expose the local artifact paths for the single report, regime comparison, fee sensitivity, split sweep, and manifest.</p>
+    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The v1.7.0 pre-trade packet card keeps the first-screen cards local and static for the single report, pre-trade packet, regime comparison, fee sensitivity, split sweep, and manifest.</p>
     <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
     <section class="dashboard" aria-label="Static artifact dashboard">
       <article class="dashboard-card" data-artifact="single-report">
@@ -229,6 +282,12 @@ GALLERY_HTML = """<!doctype html>
         <p class="artifact-path">reports/sample-report.html</p>
         <p>Scenario/Risk Interpretation in HTML plus matching scenario_risk_interpretation JSON.</p>
         <p class="artifact-links"><a href="sample-report.html">HTML</a><a href="sample-report.md">Markdown</a><a href="sample-report.json">JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="pretrade-packet">
+        <h2>Pre-Trade Packet</h2>
+        <p class="artifact-path">reports/pretrade-packet.md</p>
+        <p>Research-only assumptions, historical diagnostics, beginner checklist, and risk boundaries.</p>
+        <p class="artifact-links"><a href="pretrade-packet.md">Packet Markdown</a><a href="pretrade-packet.json">Packet JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="regime-comparison">
         <h2>Regime Comparison</h2>
@@ -338,6 +397,7 @@ def run_demo_acceptance_check() -> bool:
         *find_v131_root_landing_issues(REPO_ROOT),
         *find_v160_static_dashboard_issues(REPO_ROOT),
         *find_regime_comparison_html_issues(REPO_ROOT),
+        *find_pretrade_packet_acceptance_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -401,8 +461,9 @@ def run_sample_artifact_generation() -> bool:
             return False
 
     print(
-        "Created sample report gallery, report, manifest, sweep, split sweep, "
-        "fee sensitivity, regime comparison, and HTML artifacts."
+        "Created sample report gallery, report, pre-trade packet, manifest, "
+        "sweep, split sweep, fee sensitivity, regime comparison, and HTML "
+        "artifacts."
     )
     return True
 
@@ -629,6 +690,215 @@ def find_regime_comparison_html_issues(repo_root: Path = REPO_ROOT) -> list[str]
     return issues
 
 
+def find_pretrade_packet_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / PRETRADE_PACKET_JSON
+    markdown_path = repo_root / PRETRADE_PACKET_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(f"{PRETRADE_PACKET_JSON}: packet JSON is missing")
+        packet: object = {}
+    else:
+        try:
+            packet = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(f"{PRETRADE_PACKET_JSON}: invalid JSON: {exc.msg}")
+            packet = {}
+
+    if not isinstance(packet, dict):
+        issues.append(f"{PRETRADE_PACKET_JSON}: packet must be a JSON object")
+        packet = {}
+
+    _extend_missing_key_issues(
+        issues,
+        PRETRADE_PACKET_JSON,
+        packet,
+        PRETRADE_PACKET_TOP_LEVEL_KEYS,
+    )
+
+    if packet.get("packet_type") != "pretrade_research_packet":
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: packet_type must be pretrade_research_packet"
+        )
+    if packet.get("schema_version") != "1.0":
+        issues.append(f"{PRETRADE_PACKET_JSON}: schema_version must be 1.0")
+    for key in (
+        "research_only",
+        "historical_diagnostics_only",
+        "no_broker_or_live_data",
+    ):
+        if packet.get(key) is not True:
+            issues.append(f"{PRETRADE_PACKET_JSON}: {key} must be true")
+
+    note = packet.get("note")
+    if not _contains_all_terms(
+        note,
+        ("not investment advice", "not trading guidance", "not a broker"),
+    ):
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: note must preserve research-only non-advice wording"
+        )
+
+    source = _dict_value(packet.get("source"))
+    expected_source = {
+        "input_path": str(CSV_PATH),
+        "first_date": "2024-01-02",
+        "last_date": "2024-01-11",
+        "row_count": 8,
+    }
+    for key, expected in expected_source.items():
+        if source.get(key) != expected:
+            issues.append(
+                f"{PRETRADE_PACKET_JSON}: source.{key} must be {expected!r}"
+            )
+
+    strategy_config = _dict_value(packet.get("strategy_config"))
+    expected_strategy = {
+        "symbol": "QQQ_LIKE",
+        "short_window": 20,
+        "long_window": 50,
+        "fee_bps": 10.0,
+    }
+    for key, expected in expected_strategy.items():
+        if strategy_config.get(key) != expected:
+            issues.append(
+                f"{PRETRADE_PACKET_JSON}: strategy_config.{key} must be {expected!r}"
+            )
+
+    assumptions = packet.get("assumptions")
+    if not _is_non_empty_string_list(assumptions) or len(assumptions) < 5:
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: assumptions must include the packet scope assumptions"
+        )
+
+    diagnostics = _dict_value(packet.get("historical_diagnostics"))
+    metrics = _dict_value(diagnostics.get("metrics"))
+    exposure = _dict_value(diagnostics.get("exposure_trade_review"))
+    scenario = _dict_value(diagnostics.get("scenario_risk_interpretation"))
+    _extend_missing_key_issues(
+        issues,
+        PRETRADE_PACKET_JSON,
+        metrics,
+        PRETRADE_PACKET_REQUIRED_METRICS,
+        prefix="historical_diagnostics.metrics",
+    )
+    _extend_missing_key_issues(
+        issues,
+        PRETRADE_PACKET_JSON,
+        exposure,
+        PRETRADE_PACKET_REQUIRED_EXPOSURE,
+        prefix="historical_diagnostics.exposure_trade_review",
+    )
+    if exposure.get("research_only") is not True:
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: historical_diagnostics.exposure_trade_review.research_only must be true"
+        )
+    if (
+        scenario.get("research_only") is not True
+        or scenario.get("historical_diagnostics_only") is not True
+    ):
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: scenario_risk_interpretation must preserve research-only historical flags"
+        )
+    for key in ("exposure", "drawdown", "fee_drag", "buy_and_hold_comparison"):
+        value = scenario.get(key)
+        if (
+            not isinstance(value, dict)
+            or not isinstance(value.get("summary"), str)
+            or not value["summary"].strip()
+        ):
+            issues.append(
+                f"{PRETRADE_PACKET_JSON}: scenario_risk_interpretation.{key}.summary must be a non-empty string"
+            )
+
+    checklist = packet.get("beginner_checklist")
+    if not isinstance(checklist, list) or len(checklist) < 7:
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: beginner_checklist must include the seven review items"
+        )
+    else:
+        for index, item in enumerate(checklist, start=1):
+            if not isinstance(item, dict):
+                issues.append(
+                    f"{PRETRADE_PACKET_JSON}: beginner_checklist[{index}] must be an object"
+                )
+                continue
+            if not isinstance(item.get("item"), str) or not item["item"].strip():
+                issues.append(
+                    f"{PRETRADE_PACKET_JSON}: beginner_checklist[{index}].item must be a non-empty string"
+                )
+            if item.get("status") != "review_required":
+                issues.append(
+                    f"{PRETRADE_PACKET_JSON}: beginner_checklist[{index}].status must be review_required"
+                )
+
+    boundaries = _dict_value(packet.get("risk_boundaries"))
+    for key in (
+        "non_advice",
+        "sample_backtest_limits",
+        "leveraged_etf_like",
+        "scope_limits",
+    ):
+        if not isinstance(boundaries.get(key), str) or not boundaries[key].strip():
+            issues.append(
+                f"{PRETRADE_PACKET_JSON}: risk_boundaries.{key} must be a non-empty string"
+            )
+    if not _contains_all_terms(
+        boundaries.get("sample_backtest_limits"),
+        ("supplied historical rows", "simplified assumptions", "future returns"),
+    ):
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: risk_boundaries.sample_backtest_limits must preserve sample/backtest limitation wording"
+        )
+    if not _contains_all_terms(
+        boundaries.get("leveraged_etf_like"),
+        ("daily reset", "path-dependent", "losses"),
+    ):
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: risk_boundaries.leveraged_etf_like must preserve leveraged ETF-like risk wording"
+        )
+    if not _contains_all_terms(
+        boundaries.get("scope_limits"),
+        ("no broker", "live-data", "order routing", "recommendation"),
+    ):
+        issues.append(
+            f"{PRETRADE_PACKET_JSON}: risk_boundaries.scope_limits must preserve scope limits"
+        )
+
+    if not markdown_path.exists():
+        issues.append(f"{PRETRADE_PACKET_MARKDOWN}: packet Markdown is missing")
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(f"{PRETRADE_PACKET_MARKDOWN}: packet Markdown is empty")
+
+    for required_text in PRETRADE_PACKET_MARKDOWN_SECTIONS:
+        if required_text not in markdown:
+            issues.append(
+                f"{PRETRADE_PACKET_MARKDOWN}: missing packet section {required_text}"
+            )
+    for required_text in (
+        str(CSV_PATH),
+        "2024-01-02 to 2024-01-11",
+        "Rows reviewed**: 8",
+        "Strategy minus buy-and-hold return",
+        "Leveraged ETF-like boundary",
+        "Scope limits",
+        "not investment advice",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{PRETRADE_PACKET_MARKDOWN}: missing packet text {required_text}"
+            )
+    if markdown.count("- [ ] ") < 7:
+        issues.append(
+            f"{PRETRADE_PACKET_MARKDOWN}: packet Markdown must render the seven checklist items"
+        )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -734,6 +1004,33 @@ def _is_non_empty_string_list(value: object) -> bool:
     )
 
 
+def _dict_value(value: object) -> dict[str, object]:
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
+def _extend_missing_key_issues(
+    issues: list[str],
+    relative_path: Path,
+    value: dict[str, object],
+    required_keys: tuple[str, ...],
+    *,
+    prefix: str = "",
+) -> None:
+    for key in required_keys:
+        if key not in value:
+            dotted_key = f"{prefix}.{key}" if prefix else key
+            issues.append(f"{relative_path}: missing {dotted_key}")
+
+
+def _contains_all_terms(value: object, terms: tuple[str, ...]) -> bool:
+    if not isinstance(value, str):
+        return False
+    lowered = value.lower()
+    return all(term in lowered for term in terms)
+
+
 def _is_negated_public_claim(line: str, match: re.Match[str]) -> bool:
     claim = match.group(0).lower()
     prefix = line[max(0, match.start() - 80) : match.start()].lower()
@@ -837,6 +1134,25 @@ def _sample_artifact_commands() -> list[list[str]]:
             "market_signal_lab.cli",
             "--config",
             "examples/configs/single-backtest-report.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(CSV_PATH),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "20",
+            "--long-window",
+            "50",
+            "--fee-bps",
+            "10.0",
+            "--pretrade-packet",
+            "--output",
+            "reports/pretrade-packet.md",
+            "--json-output",
+            "reports/pretrade-packet.json",
         ],
         [
             sys.executable,

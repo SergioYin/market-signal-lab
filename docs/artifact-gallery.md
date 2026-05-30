@@ -10,17 +10,18 @@ For plain-language definitions of report metrics, including buy-and-hold compari
 
 For a beginner walkthrough of the split-sweep robustness report, including how to read `train_rank`, `test_rank`, `rank_delta`, `train_test_return_gap`, and `robustness_flag` without treating them as advice, see the [Split Sweep Walkthrough](split-sweep-walkthrough.md).
 
-[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. Its v1.6.0 first screen is a compact dashboard with visible artifact paths for `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
+[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. Its v1.6.0 first screen is a compact dashboard with visible artifact paths for `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`; v1.7.0 adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json`. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
 
 Start there if you want the fastest review path:
 
 1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
 2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
-3. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
-4. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
-5. Open the split-sweep HTML sample to see the human-facing robustness table.
-6. Read the manifest to confirm the inputs and outputs behind the sample.
-7. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
+3. Open the [pre-trade research packet](../reports/pretrade-packet.md) for assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the same single-backtest path.
+4. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
+5. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
+6. Open the [split-sweep HTML sample](../reports/sample-sweep-split.html) to see the human-facing robustness table.
+7. Read the [sample manifest](../reports/sample-manifest.md) to confirm the inputs and outputs behind the sample.
+8. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
 
 ## Report Artifacts
 
@@ -29,6 +30,10 @@ Start there if you want the fastest review path:
 `reports/sample-report.json` is the machine-readable version of the same single backtest. It includes the strategy configuration, metrics, first and last dates, row count, `exposure_trade_review`, `scenario_risk_interpretation`, and `data_provenance` when adjacent fixture metadata exists. The single-backtest metric keys include `buy_and_hold_total_return` and `strategy_minus_buy_and_hold_return` as historical comparison diagnostics only. The `scenario_risk_interpretation` object contains `exposure`, `drawdown`, `fee_drag`, and `buy_and_hold_comparison` summaries for readers or downstream checks that need the same generated interpretation in structured form. The `exposure_trade_review` object summarizes historical model exposure, exposure changes, modeled entries/exits, and modeled fee drag; it is review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions. Use this format when another script, notebook, or test needs structured output.
 
 `reports/sample-report.html` is an HTML wrapper around the Markdown report content. It is useful for opening the sample report in a browser or attaching it to workflows that expect an HTML artifact.
+
+`reports/pretrade-packet.md` is generated by `market-signal-lab --pretrade-packet` from the existing single-backtest path. It summarizes source metadata, assumptions, historical diagnostics, scenario/risk summaries, a beginner checklist, and explicit non-advice plus leveraged ETF-like risk boundaries. It does not add broker workflows, live-data workflows, account fields, order routing, position sizing instructions, or execution features.
+
+`reports/pretrade-packet.json` is the machine-readable version of the same packet. It includes `packet_type`, source metadata, strategy configuration, assumptions, nested historical diagnostics copied from the single-backtest payload, `beginner_checklist`, and `risk_boundaries`.
 
 `reports/fee-sensitivity.md` is a research-only fee assumption comparison for the bundled single backtest. It reruns the existing 20/50 moving-average settings across several `fee_bps` values and shows historical total return, buy-and-hold total return, strategy-minus-buy-and-hold return, max drawdown, modeled exposure changes, modeled entries/exits, average exposure, and modeled fee drag. The bundled eight-row sample has no modeled exposure changes under the 20/50 settings, so the rows intentionally show no fee-driven return difference. For leveraged ETF-like fixture labels, this comparison is still not a real fund-cost or daily-reset behavior model.
 
@@ -95,6 +100,8 @@ After it finishes, the expected generated files are:
 - `reports/sample-report.md`
 - `reports/sample-report.json`
 - `reports/sample-report.html`
+- `reports/pretrade-packet.md`
+- `reports/pretrade-packet.json`
 - `reports/regime-comparison.md`
 - `reports/regime-comparison.json`
 - `reports/regime-comparison.html`

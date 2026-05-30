@@ -30,6 +30,10 @@ from market_signal_lab.metrics import (
     win_rate_from_returns,
 )
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
+from market_signal_lab.packet import (
+    build_pretrade_research_packet,
+    render_pretrade_research_packet,
+)
 from market_signal_lab.report import (
     build_exposure_trade_review,
     build_scenario_risk_interpretation,
@@ -64,9 +68,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = _run_regime_comparison(args)
         else:
             args = _resolve_args(args, parser)
-            report, json_payload, manifest_payload = (
-                _run_sweep(args) if args.sweep else _run_backtest(args)
-            )
+            if args.pretrade_packet:
+                report, json_payload, manifest_payload = _run_pretrade_packet(args)
+            else:
+                report, json_payload, manifest_payload = (
+                    _run_sweep(args) if args.sweep else _run_backtest(args)
+                )
         _write_outputs(args, report, json_payload, manifest_payload)
     except (OSError, ValueError, ArgumentTypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
@@ -183,6 +190,7 @@ def _build_parser() -> ArgumentParser:
     parser.add_argument(
         "--json-output",
         type=Path,
+        metavar="PATH",
         help="Optional output file path for a compact JSON report.",
     )
     parser.add_argument(
@@ -194,6 +202,16 @@ def _build_parser() -> ArgumentParser:
         "--manifest-output",
         type=Path,
         help="Optional output file path for a Markdown experiment manifest.",
+    )
+    parser.add_argument(
+        "--pretrade-packet",
+        action="store_true",
+        default=None,
+        help=(
+            "Generate a research-only pre-trade packet from the single-backtest "
+            "path. Requires --json-output PATH; writes Markdown via --output "
+            "or stdout."
+        ),
     )
     parser.add_argument(
         "--regime-comparison",
@@ -269,6 +287,10 @@ def _resolve_args(args: Namespace, parser: ArgumentParser) -> Namespace:
     resolved.config = args.config
     if resolved.csv_path is None:
         parser.error("the following arguments are required: csv_path")
+    if resolved.pretrade_packet and resolved.sweep:
+        parser.error("--pretrade-packet uses the single-backtest path, not --sweep")
+    if resolved.pretrade_packet and resolved.json_output is None:
+        parser.error("--pretrade-packet requires --json-output PATH")
     if resolved.split_ratio is not None and resolved.split_cutoff is not None:
         parser.error(
             "choose only one validation split option: --split-ratio or "
@@ -286,6 +308,8 @@ def _resolve_regime_comparison_args(
         parser.error("--regime-comparison uses bundled configs and does not take csv_path")
     if args.config is not None:
         parser.error("--regime-comparison uses bundled configs and does not take --config")
+    if args.pretrade_packet:
+        parser.error("--pretrade-packet cannot be combined with --regime-comparison")
 
     resolved = Namespace()
     for key, default in _default_args().items():
@@ -317,6 +341,7 @@ def _default_args() -> dict[str, Any]:
         "top_n": None,
         "split_ratio": None,
         "split_cutoff": None,
+        "pretrade_packet": False,
     }
 
 
@@ -366,6 +391,10 @@ def _coerce_config_value(key: str, value: Any) -> Any:
     if key == "sweep":
         if not isinstance(value, bool):
             raise ValueError("Config option 'sweep' must be a boolean")
+        return value
+    if key == "pretrade_packet":
+        if not isinstance(value, bool):
+            raise ValueError("Config option 'pretrade_packet' must be a boolean")
         return value
     if key in {"short_windows", "long_windows"}:
         return _coerce_config_integer_list(key, value)
@@ -472,6 +501,25 @@ def _run_backtest(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]
     )
 
     return report, json_payload, manifest_payload
+
+
+def _run_pretrade_packet(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    _, backtest_payload, _ = _run_backtest(args)
+    packet_payload = build_pretrade_research_packet(
+        backtest_payload,
+        input_path=Path(args.csv_path),
+    )
+    report = render_pretrade_research_packet(packet_payload)
+    manifest_payload = build_manifest(
+        input_path=args.csv_path,
+        symbol=args.symbol,
+        mode="pretrade_packet",
+        strategy_config=backtest_payload.get("strategy_config"),
+        fee_bps=args.fee_bps,
+        output_paths=_output_paths(args),
+        data_provenance=backtest_payload.get("data_provenance"),
+    )
+    return report, packet_payload, manifest_payload
 
 
 def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

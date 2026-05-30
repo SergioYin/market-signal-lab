@@ -264,6 +264,8 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         reports_dir / "sample-report.html",
         reports_dir / "sample-report.md",
         reports_dir / "sample-report.json",
+        reports_dir / "pretrade-packet.md",
+        reports_dir / "pretrade-packet.json",
         reports_dir / "regime-comparison.html",
         reports_dir / "regime-comparison.md",
         reports_dir / "regime-comparison.json",
@@ -291,6 +293,14 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
     issues = selfcheck.find_v160_static_dashboard_issues(tmp_path)
 
     assert issues == [
+        "reports/index.html: missing v1.6 dashboard card pretrade-packet",
+        "reports/index.html: missing v1.6 dashboard title Pre-Trade Packet",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/pretrade-packet.md"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to pretrade-packet.md",
+        "reports/index.html: missing v1.6 dashboard link to pretrade-packet.json",
         "reports/index.html: missing v1.6 dashboard card regime-comparison",
         "reports/index.html: missing v1.6 dashboard title Regime Comparison",
         (
@@ -349,6 +359,90 @@ def test_selfcheck_regenerates_split_sweep_artifacts() -> None:
     assert "reports/sample-sweep-split.html" in split_command
 
 
+def test_selfcheck_regenerates_pretrade_packet_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/pretrade-packet.md"),
+        Path("reports/pretrade-packet.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "pretrade-packet.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "pretrade-packet.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'href="pretrade-packet.md"' in selfcheck.GALLERY_HTML
+    assert 'href="pretrade-packet.json"' in selfcheck.GALLERY_HTML
+
+    command = _pretrade_packet_command()
+    assert "--pretrade-packet" in command
+    assert command[command.index("--output") + 1] == "reports/pretrade-packet.md"
+    assert command[command.index("--json-output") + 1] == "reports/pretrade-packet.json"
+
+
+def test_pretrade_packet_acceptance_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_pretrade_packet_acceptance_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_pretrade_packet_acceptance_contract_reports_packet_regressions(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+    packet = _valid_pretrade_packet_payload()
+    packet["research_only"] = False
+    del packet["historical_diagnostics"]["metrics"]["max_drawdown"]
+    packet["historical_diagnostics"]["exposure_trade_review"]["research_only"] = False
+    packet["beginner_checklist"][0]["status"] = "done"
+    packet["risk_boundaries"]["sample_backtest_limits"] = "Backtest sample."
+    packet["risk_boundaries"]["scope_limits"] = "Local artifact."
+    (reports_dir / "pretrade-packet.json").write_text(
+        json.dumps(packet),
+        encoding="utf-8",
+    )
+    (reports_dir / "pretrade-packet.md").write_text(
+        "# Pre-Trade Research Packet\n"
+        "## Source\n"
+        "- **Input path**: examples/data/sample_tqqq_qld_like.csv\n"
+        "- **Date range**: 2024-01-02 to 2024-01-11\n"
+        "- **Rows reviewed**: 8\n"
+        "## Assumptions\n"
+        "## Historical Diagnostics\n"
+        "## Scenario/Risk Interpretation\n"
+        "## Beginner Checklist\n"
+        "- [ ] One\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_pretrade_packet_acceptance_issues(tmp_path)
+
+    assert "reports/pretrade-packet.json: research_only must be true" in issues
+    assert (
+        "reports/pretrade-packet.json: missing "
+        "historical_diagnostics.metrics.max_drawdown"
+    ) in issues
+    assert (
+        "reports/pretrade-packet.json: "
+        "historical_diagnostics.exposure_trade_review.research_only must be true"
+    ) in issues
+    assert (
+        "reports/pretrade-packet.json: "
+        "beginner_checklist[1].status must be review_required"
+    ) in issues
+    assert (
+        "reports/pretrade-packet.json: "
+        "risk_boundaries.scope_limits must preserve scope limits"
+    ) in issues
+    assert (
+        "reports/pretrade-packet.json: "
+        "risk_boundaries.sample_backtest_limits must preserve sample/backtest limitation wording"
+    ) in issues
+    assert "reports/pretrade-packet.md: missing packet section ## Risk Boundaries" in issues
+    assert (
+        "reports/pretrade-packet.md: packet Markdown must render the seven checklist items"
+    ) in issues
+
+
 def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/index.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/split-sweep-walkthrough.md") in selfcheck.DOC_LINK_SOURCES
@@ -396,6 +490,10 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.6.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.6.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.6.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.7.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.7.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.7.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.7.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
@@ -929,6 +1027,95 @@ def _fee_sensitivity_command() -> list[str]:
     ]
     assert len(fee_commands) == 1
     return fee_commands[0]
+
+
+def _pretrade_packet_command() -> list[str]:
+    packet_commands = [
+        command
+        for command in selfcheck._sample_artifact_commands()
+        if "reports/pretrade-packet.md" in command
+    ]
+    assert len(packet_commands) == 1
+    return packet_commands[0]
+
+
+def _valid_pretrade_packet_payload() -> dict[str, object]:
+    return {
+        "packet_type": "pretrade_research_packet",
+        "schema_version": "1.0",
+        "research_only": True,
+        "historical_diagnostics_only": True,
+        "no_broker_or_live_data": True,
+        "note": (
+            "Research-only packet; not investment advice, not trading guidance, "
+            "and not a broker connection."
+        ),
+        "source": {
+            "input_path": "examples/data/sample_tqqq_qld_like.csv",
+            "first_date": "2024-01-02",
+            "last_date": "2024-01-11",
+            "row_count": 8,
+        },
+        "strategy_config": {
+            "symbol": "QQQ_LIKE",
+            "short_window": 20,
+            "long_window": 50,
+            "fee_bps": 10.0,
+        },
+        "assumptions": [
+            "Uses the existing single-backtest moving-average workflow.",
+            "Uses only the supplied local CSV path and optional symbol filter.",
+            "Uses historical close-to-close sample rows; no live data is requested.",
+            "Uses configured fee_bps as a simplified historical cost assumption.",
+            "Does not connect to brokers, create orders, or provide execution steps.",
+        ],
+        "historical_diagnostics": {
+            "metrics": {
+                "total_return": 0.0,
+                "buy_and_hold_total_return": 0.0169,
+                "strategy_minus_buy_and_hold_return": -0.0169,
+                "max_drawdown": 0.0,
+            },
+            "exposure_trade_review": {
+                "period_count": 7,
+                "average_exposure": 0.0,
+                "percent_periods_in_market": 0.0,
+                "exposure_changes": 0,
+                "entries_to_market": 0,
+                "exits_to_cash": 0,
+                "total_fee_drag": 0.0,
+                "research_only": True,
+                "note": "Historical exposure metadata only.",
+            },
+            "scenario_risk_interpretation": {
+                "research_only": True,
+                "historical_diagnostics_only": True,
+                "exposure": {"summary": "Exposure summary."},
+                "drawdown": {"summary": "Drawdown summary."},
+                "fee_drag": {"summary": "Fee summary."},
+                "buy_and_hold_comparison": {"summary": "Comparison summary."},
+            },
+        },
+        "beginner_checklist": [
+            {"item": f"Review item {index}.", "status": "review_required"}
+            for index in range(1, 8)
+        ],
+        "risk_boundaries": {
+            "non_advice": "Research-only; not investment advice.",
+            "sample_backtest_limits": (
+                "Backtest and sample results are limited to the supplied "
+                "historical rows and simplified assumptions. They are examples "
+                "for review only, not evidence of future returns."
+            ),
+            "leveraged_etf_like": (
+                "Daily reset mechanics are path-dependent and losses can grow."
+            ),
+            "scope_limits": (
+                "This packet has no broker workflow, live-data workflow, "
+                "order routing, or recommendation engine."
+            ),
+        },
+    }
 
 
 def _regime_comparison_command() -> list[str]:

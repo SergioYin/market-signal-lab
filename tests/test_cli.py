@@ -33,7 +33,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 1.6.0\n"
+    assert result.stdout == "market-signal-lab 1.7.0\n"
     assert result.stderr == ""
 
 
@@ -172,6 +172,79 @@ def test_cli_writes_backtest_json_report(tmp_path: Path) -> None:
     assert payload["first_date"] == "2024-01-01"
     assert payload["last_date"] == "2024-01-04"
     assert payload["row_count"] == 4
+
+
+def test_cli_writes_pretrade_research_packet(tmp_path: Path) -> None:
+    markdown_path = tmp_path / "pretrade-packet.md"
+    json_path = tmp_path / "pretrade-packet.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "20",
+            "--long-window",
+            "50",
+            "--fee-bps",
+            "10.0",
+            "--pretrade-packet",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Pre-Trade Research Packet" in markdown
+    assert "## Assumptions" in markdown
+    assert "## Historical Diagnostics" in markdown
+    assert "## Beginner Checklist" in markdown
+    assert "## Risk Boundaries" in markdown
+    assert "not investment advice" in markdown
+    assert "finished above buy-and-hold in this historical sample" in markdown
+    assert "beat buy-and-hold" not in markdown
+    assert "not evidence of future returns" in markdown
+    assert "Leveraged ETF-like boundary" in markdown
+    assert payload["packet_type"] == "pretrade_research_packet"
+    assert payload["research_only"] is True
+    assert payload["no_broker_or_live_data"] is True
+    assert payload["source"]["input_path"] == str(SAMPLE_DATA)
+    assert payload["strategy_config"]["symbol"] == "QQQ_LIKE"
+    assert "metrics" in payload["historical_diagnostics"]
+    assert "exposure_trade_review" in payload["historical_diagnostics"]
+    assert payload["beginner_checklist"][0]["status"] == "review_required"
+    assert "future returns" in payload["risk_boundaries"]["sample_backtest_limits"]
+    assert "broker workflow" in payload["risk_boundaries"]["scope_limits"]
+
+
+def test_cli_pretrade_packet_requires_json_output_path() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(SAMPLE_DATA),
+            "--pretrade-packet",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--pretrade-packet requires --json-output PATH" in result.stderr
 
 
 def test_cli_writes_backtest_html_report(tmp_path: Path) -> None:

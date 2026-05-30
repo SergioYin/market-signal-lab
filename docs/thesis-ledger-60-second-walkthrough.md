@@ -19,7 +19,7 @@ market-signal-lab --validate-thesis-ledger
 To validate a specific local packet, pass its path:
 
 ```bash
-market-signal-lab --validate-thesis-ledger path/to/cross-asset-thesis-ledger.json
+python -m market_signal_lab.cli --validate-thesis-ledger path/to/cross-asset-thesis-ledger.json
 ```
 
 ## Files
@@ -36,7 +36,7 @@ Default outputs, when no output paths are supplied:
 Optional output paths:
 
 ```bash
-market-signal-lab --validate-thesis-ledger \
+python -m market_signal_lab.cli --validate-thesis-ledger \
   --output reports/my-ledger-acceptance.md \
   --json-output reports/my-ledger-acceptance.json
 ```

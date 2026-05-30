@@ -40,6 +40,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "sample-report.html",
         "fee-sensitivity.md",
         "fee-sensitivity.json",
+        "cross-asset-thesis-ledger.md",
+        "cross-asset-thesis-ledger.json",
         "regime-comparison.html",
         "regime-comparison.md",
         "regime-comparison.json",
@@ -274,6 +276,8 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         reports_dir / "regime-comparison.json",
         reports_dir / "fee-sensitivity.md",
         reports_dir / "fee-sensitivity.json",
+        reports_dir / "cross-asset-thesis-ledger.md",
+        reports_dir / "cross-asset-thesis-ledger.json",
         reports_dir / "sample-sweep-split.html",
         reports_dir / "sample-sweep-split.md",
         reports_dir / "sample-sweep-split.json",
@@ -329,6 +333,20 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         ),
         "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.md",
         "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.json",
+        "reports/index.html: missing v1.6 dashboard card cross-asset-thesis-ledger",
+        "reports/index.html: missing v1.6 dashboard title Cross-Asset Thesis Ledger",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/cross-asset-thesis-ledger.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "cross-asset-thesis-ledger.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "cross-asset-thesis-ledger.json"
+        ),
         "reports/index.html: missing v1.6 dashboard card split-sweep",
         "reports/index.html: missing v1.6 dashboard title Split Sweep",
         (
@@ -406,6 +424,22 @@ def test_selfcheck_regenerates_scenario_card_artifacts() -> None:
     assert "--scenario-card" in command
     assert "--output" not in command
     assert "--json-output" not in command
+
+
+def test_selfcheck_regenerates_cross_asset_thesis_ledger_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/cross-asset-thesis-ledger.md"),
+        Path("reports/cross-asset-thesis-ledger.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "cross-asset-thesis-ledger.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "cross-asset-thesis-ledger.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'data-artifact="cross-asset-thesis-ledger"' in selfcheck.GALLERY_HTML
+    assert 'href="cross-asset-thesis-ledger.md"' in selfcheck.GALLERY_HTML
+    assert 'href="cross-asset-thesis-ledger.json"' in selfcheck.GALLERY_HTML
+    assert "QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE" in selfcheck.GALLERY_HTML
 
 
 def test_pretrade_packet_acceptance_contract_accepts_current_tree() -> None:
@@ -524,6 +558,14 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.7.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.7.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.7.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.8.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.8.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.8.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.8.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.9.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.9.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.9.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.9.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:

@@ -9,7 +9,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
-- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, regime comparison, fee sensitivity, split sweep, and manifest.
+- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
 - [Static Gallery Walkthrough](static-gallery-walkthrough.svg) - visual public-safe reading path for the static gallery, scenario card, JSON fields, and research-only boundaries.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
@@ -17,6 +17,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Pre-trade research packet JSON](../reports/pretrade-packet.json) - structured version of the same packet.
 - [Scenario card](../reports/scenario-card.md) - compact research-only card for embedding assumptions, key metrics, exposure/fee/drawdown diagnostics, risk labels, and next-review checklist in thesis-ledger or portfolio-review notes.
 - [Scenario card JSON](../reports/scenario-card.json) - structured version of the same scenario card.
+- [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
+- [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json) - structured version of the same offline research-only packet.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
 - [Regime comparison JSON](../reports/regime-comparison.json) - machine-readable version of the same synthetic regime comparison.
 - [Regime comparison HTML](../reports/regime-comparison.html) - browser-openable view of the same checked-in artifact.
@@ -40,6 +42,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.9.0 Release Notes](release-notes-v1.9.0.md)
+- [v1.9.0 Release Checklist](release-v1.9.0.md)
 - [v1.8.0 Release Notes](release-notes-v1.8.0.md)
 - [v1.8.0 Release Checklist](release-v1.8.0.md)
 - [v1.7.0 Release Notes](release-notes-v1.7.0.md)

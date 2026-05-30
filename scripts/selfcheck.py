@@ -11,6 +11,13 @@ import subprocess
 import sys
 from urllib.parse import unquote
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from market_signal_lab.thesis_ledger import (
+    build_cross_asset_thesis_ledger,
+    render_cross_asset_thesis_ledger,
+)
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 REPORTS_DIR = REPO_ROOT / "reports"
@@ -48,6 +55,8 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.5.0.md"),
     Path("docs/release-notes-v1.6.0.md"),
     Path("docs/release-notes-v1.7.0.md"),
+    Path("docs/release-notes-v1.8.0.md"),
+    Path("docs/release-notes-v1.9.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -69,6 +78,8 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.5.0.md"),
     Path("docs/release-v1.6.0.md"),
     Path("docs/release-v1.7.0.md"),
+    Path("docs/release-v1.8.0.md"),
+    Path("docs/release-v1.9.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -121,6 +132,8 @@ V130_STATIC_GALLERY_LINKS = (
     "scenario-card.json",
     "fee-sensitivity.md",
     "fee-sensitivity.json",
+    "cross-asset-thesis-ledger.md",
+    "cross-asset-thesis-ledger.json",
     "regime-comparison.html",
     "regime-comparison.md",
     "regime-comparison.json",
@@ -160,6 +173,11 @@ V160_STATIC_DASHBOARD_CARDS = {
         "Fee Sensitivity",
         "reports/fee-sensitivity.md",
         ("fee-sensitivity.md", "fee-sensitivity.json"),
+    ),
+    "cross-asset-thesis-ledger": (
+        "Cross-Asset Thesis Ledger",
+        "reports/cross-asset-thesis-ledger.md",
+        ("cross-asset-thesis-ledger.md", "cross-asset-thesis-ledger.json"),
     ),
     "split-sweep": (
         "Split Sweep",
@@ -243,6 +261,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-sweep.md"),
     Path("reports/sample-sweep.json"),
     Path("reports/sample-sweep.html"),
+    Path("reports/cross-asset-thesis-ledger.md"),
+    Path("reports/cross-asset-thesis-ledger.json"),
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
@@ -317,6 +337,12 @@ GALLERY_HTML = """<!doctype html>
         <p class="artifact-path">reports/fee-sensitivity.md</p>
         <p>Research-only fee_bps assumption comparison for the single backtest settings.</p>
         <p class="artifact-links"><a href="fee-sensitivity.md">Markdown</a><a href="fee-sensitivity.json">JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="cross-asset-thesis-ledger">
+        <h2>Cross-Asset Thesis Ledger</h2>
+        <p class="artifact-path">reports/cross-asset-thesis-ledger.md</p>
+        <p>Deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet with embedded scenario-card JSON.</p>
+        <p class="artifact-links"><a href="cross-asset-thesis-ledger.md">Markdown</a><a href="cross-asset-thesis-ledger.json">JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="split-sweep">
         <h2>Split Sweep</h2>
@@ -467,6 +493,16 @@ def run_sample_artifact_generation() -> bool:
                 print(result.stderr, file=sys.stderr)
             return False
 
+    ledger = build_cross_asset_thesis_ledger(CSV_PATH)
+    (REPORTS_DIR / "cross-asset-thesis-ledger.md").write_text(
+        render_cross_asset_thesis_ledger(ledger),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "cross-asset-thesis-ledger.json").write_text(
+        json.dumps(ledger, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
     for artifact in SAMPLE_ARTIFACTS:
@@ -480,8 +516,8 @@ def run_sample_artifact_generation() -> bool:
 
     print(
         "Created sample report gallery, report, pre-trade packet, scenario "
-        "card, manifest, sweep, split sweep, fee sensitivity, regime "
-        "comparison, and HTML artifacts."
+        "card, manifest, sweep, split sweep, fee sensitivity, cross-asset "
+        "thesis ledger, regime comparison, and HTML artifacts."
     )
     return True
 

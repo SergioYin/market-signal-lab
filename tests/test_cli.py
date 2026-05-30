@@ -34,8 +34,48 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.9.1"
+    assert result.stdout.strip() == "market-signal-lab 1.10.0"
     assert result.stderr == ""
+
+
+def test_cli_validates_default_cross_asset_thesis_ledger(tmp_path: Path) -> None:
+    repo_root = Path.cwd()
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+    ledger_dir = tmp_path / "reports"
+    ledger_dir.mkdir()
+    (ledger_dir / "cross-asset-thesis-ledger.json").write_text(
+        (repo_root / "reports/cross-asset-thesis-ledger.json").read_text(
+            encoding="utf-8"
+        ),
+        encoding="utf-8",
+    )
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--validate-thesis-ledger",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    markdown_path = ledger_dir / "cross-asset-thesis-ledger-acceptance.md"
+    json_path = ledger_dir / "cross-asset-thesis-ledger-acceptance.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Thesis-Ledger Acceptance Summary" in markdown
+    assert "- **Accepted**: True" in markdown
+    assert "not investment advice" in markdown
+    assert payload["accepted"] is True
+    assert payload["error_count"] == 0
+    assert payload["asset_symbols"] == ["QQQ_LIKE", "QLD_LIKE", "TQQQ_LIKE"]
 
 
 def test_cli_generates_moving_average_backtest_report(tmp_path: Path) -> None:

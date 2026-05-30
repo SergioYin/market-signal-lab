@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.9.1. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.10.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -40,6 +40,8 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - [Scenario card JSON](../reports/scenario-card.json)
 - [Cross-asset thesis ledger Markdown](../reports/cross-asset-thesis-ledger.md)
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json)
+- [Thesis-ledger acceptance Markdown](../reports/cross-asset-thesis-ledger-acceptance.md)
+- [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
 - [Static gallery walkthrough SVG](static-gallery-walkthrough.svg)
 - [Fee sensitivity Markdown](../reports/fee-sensitivity.md)
 - [Fee sensitivity JSON](../reports/fee-sensitivity.json)

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
 
 from market_signal_lab.thesis_ledger import (
     THESIS_LEDGER_SYMBOLS,
     build_cross_asset_thesis_ledger,
     render_cross_asset_thesis_ledger,
+    render_thesis_ledger_acceptance_summary,
+    validate_cross_asset_thesis_ledger_packet,
 )
 
 
@@ -82,3 +85,58 @@ def test_render_cross_asset_thesis_ledger_includes_public_boundaries() -> None:
     assert "no live data" in markdown.lower()
     assert "broker workflow" in markdown
     assert "will outperform" not in markdown
+
+
+def test_validate_cross_asset_thesis_ledger_accepts_valid_packet() -> None:
+    packet = build_cross_asset_thesis_ledger(SAMPLE_DATA)
+
+    summary = validate_cross_asset_thesis_ledger_packet(packet)
+    markdown = render_thesis_ledger_acceptance_summary(summary)
+
+    assert summary["summary_type"] == "cross_asset_thesis_ledger_acceptance"
+    assert summary["accepted"] is True
+    assert summary["error_count"] == 0
+    assert summary["asset_symbols"] == list(THESIS_LEDGER_SYMBOLS)
+    assert summary["research_only"] is True
+    assert summary["offline_only"] is True
+    assert "not investment advice" in summary["note"]
+    assert "# Thesis-Ledger Acceptance Summary" in markdown
+    assert "- **Accepted**: True" in markdown
+    assert "does not fetch live data" in markdown
+
+
+def test_validate_cross_asset_thesis_ledger_rejects_missing_risk_boundaries() -> None:
+    packet = build_cross_asset_thesis_ledger(SAMPLE_DATA)
+    del packet["risk_boundaries"]
+
+    summary = validate_cross_asset_thesis_ledger_packet(packet)
+
+    assert summary["accepted"] is False
+    assert summary["error_count"] >= 1
+    messages = " ".join(check["message"] for check in summary["checks"])
+    assert "Missing top-level key(s): risk_boundaries" in messages
+    assert "Risk boundaries must include" in messages
+
+
+def test_validate_cross_asset_thesis_ledger_rejects_bad_asset_shape() -> None:
+    packet = build_cross_asset_thesis_ledger(SAMPLE_DATA)
+    packet["assets"] = deepcopy(packet["assets"])
+    packet["assets"][0]["metrics"] = {"total_return": "1.0"}
+
+    summary = validate_cross_asset_thesis_ledger_packet(packet)
+
+    assert summary["accepted"] is False
+    failed_checks = {
+        check["check"]
+        for check in summary["checks"]
+        if check["accepted"] is False
+    }
+    assert "asset.QQQ_LIKE.metrics" in failed_checks
+
+
+def test_validate_cross_asset_thesis_ledger_handles_non_object_packet() -> None:
+    summary = validate_cross_asset_thesis_ledger_packet(["not", "an", "object"])
+
+    assert summary["accepted"] is False
+    assert summary["error_count"] == 1
+    assert summary["checks"][0]["check"] == "packet_object"

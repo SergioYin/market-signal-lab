@@ -16,6 +16,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
     render_cross_asset_thesis_ledger,
+    render_thesis_ledger_acceptance_summary,
+    validate_cross_asset_thesis_ledger_packet,
 )
 
 
@@ -58,6 +60,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.8.0.md"),
     Path("docs/release-notes-v1.9.0.md"),
     Path("docs/release-notes-v1.9.1.md"),
+    Path("docs/release-notes-v1.10.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -82,6 +85,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.8.0.md"),
     Path("docs/release-v1.9.0.md"),
     Path("docs/release-v1.9.1.md"),
+    Path("docs/release-v1.10.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -103,6 +107,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/release-notes-v1.10.0.md",
+    "docs/release-v1.10.0.md",
     "docs/release-notes-v1.9.1.md",
     "docs/release-v1.9.1.md",
     "docs/release-notes-v1.9.0.md",
@@ -269,6 +275,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-sweep.html"),
     Path("reports/cross-asset-thesis-ledger.md"),
     Path("reports/cross-asset-thesis-ledger.json"),
+    Path("reports/cross-asset-thesis-ledger-acceptance.md"),
+    Path("reports/cross-asset-thesis-ledger-acceptance.json"),
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
@@ -508,6 +516,15 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(ledger, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    ledger_acceptance = validate_cross_asset_thesis_ledger_packet(ledger)
+    (REPORTS_DIR / "cross-asset-thesis-ledger-acceptance.md").write_text(
+        render_thesis_ledger_acceptance_summary(ledger_acceptance),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "cross-asset-thesis-ledger-acceptance.json").write_text(
+        json.dumps(ledger_acceptance, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
@@ -523,7 +540,8 @@ def run_sample_artifact_generation() -> bool:
     print(
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, manifest, sweep, split sweep, fee sensitivity, cross-asset "
-        "thesis ledger, regime comparison, and HTML artifacts."
+        "thesis ledger, thesis-ledger acceptance, regime comparison, and "
+        "HTML artifacts."
     )
     return True
 

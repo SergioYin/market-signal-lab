@@ -10,6 +10,16 @@ from scripts import selfcheck
 def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/index.html") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/index.html") in selfcheck.HTML_LINK_SOURCES
+    assert (
+        Path("reports/cross-asset-thesis-ledger-acceptance.md")
+        in selfcheck.SAMPLE_ARTIFACTS
+    )
+    assert (
+        Path("reports/cross-asset-thesis-ledger-acceptance.json")
+        in selfcheck.SAMPLE_ARTIFACTS
+    )
+    assert Path("docs/release-notes-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -72,6 +82,8 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "reports/index.html" in landing
     assert "docs/index.md" in landing
     assert "docs/static-gallery-manifest.md" in landing
+    assert "docs/release-notes-v1.10.0.md" in landing
+    assert "docs/release-v1.10.0.md" in landing
     assert "docs/release-notes-v1.9.1.md" in landing
     assert "docs/release-v1.9.1.md" in landing
     assert "does not connect to brokers" in landing
@@ -1300,6 +1312,8 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.10.0.md",
+        "release-v1.10.0.md",
         "release-notes-v1.9.1.md",
         "release-v1.9.1.md",
         "release-notes-v1.9.0.md",

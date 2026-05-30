@@ -48,6 +48,10 @@ from market_signal_lab.sweep import (
     render_sweep_report,
     run_moving_average_sweep,
 )
+from market_signal_lab.thesis_ledger import (
+    render_thesis_ledger_acceptance_summary,
+    validate_cross_asset_thesis_ledger_packet,
+)
 
 BUNDLED_REGIME_CONFIGS = (
     Path("examples/configs/multi-regime-bull-report.json"),
@@ -59,6 +63,13 @@ REGIME_COMPARISON_JSON_OUTPUT = Path("reports/regime-comparison.json")
 REGIME_COMPARISON_HTML_OUTPUT = Path("reports/regime-comparison.html")
 SCENARIO_CARD_OUTPUT = Path("reports/scenario-card.md")
 SCENARIO_CARD_JSON_OUTPUT = Path("reports/scenario-card.json")
+THESIS_LEDGER_DEFAULT_JSON = Path("reports/cross-asset-thesis-ledger.json")
+THESIS_LEDGER_ACCEPTANCE_OUTPUT = Path(
+    "reports/cross-asset-thesis-ledger-acceptance.md"
+)
+THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT = Path(
+    "reports/cross-asset-thesis-ledger-acceptance.json"
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -66,7 +77,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.regime_comparison:
+        if args.validate_thesis_ledger is not None:
+            args = _resolve_thesis_ledger_validation_args(args, parser)
+            report, json_payload, manifest_payload = _run_thesis_ledger_validation(args)
+        elif args.regime_comparison:
             args = _resolve_regime_comparison_args(args, parser)
             report, json_payload, manifest_payload = _run_regime_comparison(args)
         else:
@@ -230,6 +244,19 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--validate-thesis-ledger",
+        nargs="?",
+        const=THESIS_LEDGER_DEFAULT_JSON,
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Validate a cross-asset thesis-ledger JSON packet. When PATH is "
+            "omitted, validates reports/cross-asset-thesis-ledger.json; when "
+            "no output path is supplied, writes Markdown/JSON acceptance "
+            "artifacts under reports."
+        ),
+    )
+    parser.add_argument(
         "--regime-comparison",
         action="store_true",
         default=False,
@@ -350,6 +377,49 @@ def _resolve_regime_comparison_args(
     resolved.manifest_output = args.manifest_output
     resolved.configs = BUNDLED_REGIME_CONFIGS
     resolved.regime_comparison = True
+    return resolved
+
+
+def _resolve_thesis_ledger_validation_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.config is not None:
+        parser.error("--validate-thesis-ledger does not take --config")
+    if args.regime_comparison:
+        parser.error("--validate-thesis-ledger cannot be combined with --regime-comparison")
+    if args.pretrade_packet:
+        parser.error("--validate-thesis-ledger cannot be combined with --pretrade-packet")
+    if args.scenario_card:
+        parser.error("--validate-thesis-ledger cannot be combined with --scenario-card")
+    if args.sweep:
+        parser.error("--validate-thesis-ledger cannot be combined with --sweep")
+    if args.html_output is not None:
+        parser.error("--validate-thesis-ledger writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error("--validate-thesis-ledger does not write experiment manifests")
+
+    input_path = args.validate_thesis_ledger
+    if args.csv_path is not None:
+        if input_path != THESIS_LEDGER_DEFAULT_JSON:
+            parser.error(
+                "--validate-thesis-ledger accepts only one ledger JSON path"
+            )
+        input_path = args.csv_path
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.thesis_ledger_json = input_path
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.validate_thesis_ledger = input_path
+    if resolved.output is None and resolved.json_output is None:
+        resolved.output = THESIS_LEDGER_ACCEPTANCE_OUTPUT
+        resolved.json_output = THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT
     return resolved
 
 
@@ -573,6 +643,22 @@ def _run_scenario_card(args: Namespace) -> tuple[str, dict[str, Any], dict[str, 
         data_provenance=backtest_payload.get("data_provenance"),
     )
     return report, card_payload, manifest_payload
+
+
+def _run_thesis_ledger_validation(
+    args: Namespace,
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    input_path = Path(args.thesis_ledger_json)
+    try:
+        packet = json.loads(
+            input_path.read_text(encoding="utf-8"),
+            parse_constant=_reject_json_constant,
+        )
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid thesis-ledger JSON {input_path}: {exc.msg}") from exc
+    summary = validate_cross_asset_thesis_ledger_packet(packet)
+    report = render_thesis_ledger_acceptance_summary(summary)
+    return report, summary, {}
 
 
 def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

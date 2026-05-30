@@ -96,7 +96,7 @@ The selfcheck performs seven checks:
 
 1. Compiles the package and tests to catch syntax issues.
 2. Runs the test suite with `pytest`.
-3. Regenerates the sample report, pre-trade packet, scenario card, manifest, sweep, split-sweep, fee sensitivity, regime comparison, JSON, and HTML artifacts under `reports/`.
+3. Regenerates the sample report, pre-trade packet, scenario card, manifest, sweep, split-sweep, fee sensitivity, cross-asset thesis ledger, thesis-ledger acceptance, regime comparison, JSON, and HTML artifacts under `reports/`.
 4. Validates local Markdown, documentation, and gallery links.
 5. Checks the v0.9.0 static demo acceptance links and the static dashboard contract.
 6. Checks public no-advice claim boundaries.
@@ -114,6 +114,10 @@ After it finishes, the expected generated files are:
 - `reports/regime-comparison.md`
 - `reports/regime-comparison.json`
 - `reports/regime-comparison.html`
+- `reports/cross-asset-thesis-ledger.md`
+- `reports/cross-asset-thesis-ledger.json`
+- `reports/cross-asset-thesis-ledger-acceptance.md`
+- `reports/cross-asset-thesis-ledger-acceptance.json`
 - `reports/fee-sensitivity.md`
 - `reports/fee-sensitivity.json`
 - `reports/index.html`

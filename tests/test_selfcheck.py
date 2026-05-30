@@ -1308,6 +1308,7 @@ def _write_v131_landing_fixture(
         "index.md",
         "static-gallery-manifest.md",
         "static-gallery-walkthrough.svg",
+        "thesis-ledger-60-second-walkthrough.md",
         "artifact-gallery.md",
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",

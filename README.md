@@ -4,9 +4,11 @@ Market Signal Lab is a public, research-only sandbox for reproducible market-sig
 
 It is for builders, reviewers, and researchers who want a small offline reference for packaging historical diagnostics with visible assumptions and acceptance checks. It is worth starring or reusing if you need a zero-dependency example of public-safe research artifacts with no live data, no broker connection, no account access, no orders, no position sizing, no forecasts, and no investment advice.
 
-Quick v1.10.0 verification:
+Quick v1.10.0 verification from a fresh checkout:
 
 ```bash
+git clone https://github.com/SergioYin/market-signal-lab.git
+cd market-signal-lab
 python -m market_signal_lab.cli --validate-thesis-ledger
 ```
 
@@ -69,16 +71,16 @@ The v1.6.0 first-screen dashboard cards show the artifact paths directly: `repor
 
 The v1.9.0 cross-asset thesis ledger adds `reports/cross-asset-thesis-ledger.md` and `reports/cross-asset-thesis-ledger.json` to that first inspection path. The v1.8.0 scenario card adds `reports/scenario-card.md` and `reports/scenario-card.json`. The v1.7.0 packet card adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json`.
 
-Validate the checked-in thesis-ledger JSON packet and write acceptance artifacts:
+Validate the checked-in thesis-ledger JSON packet and write acceptance artifacts before installing the package:
 
 ```bash
-market-signal-lab --validate-thesis-ledger
+python -m market_signal_lab.cli --validate-thesis-ledger
 ```
 
 Validate a specific local packet while printing Markdown to stdout:
 
 ```bash
-market-signal-lab --validate-thesis-ledger path/to/cross-asset-thesis-ledger.json \
+python -m market_signal_lab.cli --validate-thesis-ledger path/to/cross-asset-thesis-ledger.json \
   --json-output reports/my-ledger-acceptance.json
 ```
 

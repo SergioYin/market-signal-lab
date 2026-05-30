@@ -40,6 +40,7 @@ from market_signal_lab.report import (
     render_regime_comparison_report,
     render_experiment_report,
 )
+from market_signal_lab.scenario_card import build_scenario_card, render_scenario_card
 from market_signal_lab.split import TrainTestSplit, split_train_test
 from market_signal_lab.strategies import moving_average_crossover_strategy
 from market_signal_lab.sweep import (
@@ -56,6 +57,8 @@ BUNDLED_REGIME_CONFIGS = (
 REGIME_COMPARISON_OUTPUT = Path("reports/regime-comparison.md")
 REGIME_COMPARISON_JSON_OUTPUT = Path("reports/regime-comparison.json")
 REGIME_COMPARISON_HTML_OUTPUT = Path("reports/regime-comparison.html")
+SCENARIO_CARD_OUTPUT = Path("reports/scenario-card.md")
+SCENARIO_CARD_JSON_OUTPUT = Path("reports/scenario-card.json")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -68,7 +71,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = _run_regime_comparison(args)
         else:
             args = _resolve_args(args, parser)
-            if args.pretrade_packet:
+            if args.scenario_card:
+                report, json_payload, manifest_payload = _run_scenario_card(args)
+            elif args.pretrade_packet:
                 report, json_payload, manifest_payload = _run_pretrade_packet(args)
             else:
                 report, json_payload, manifest_payload = (
@@ -214,6 +219,17 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--scenario-card",
+        action="store_true",
+        default=None,
+        help=(
+            "Generate a compact research-only scenario card from the "
+            "single-backtest path. Defaults to reports/scenario-card.md and "
+            "reports/scenario-card.json when neither --output nor "
+            "--json-output is set."
+        ),
+    )
+    parser.add_argument(
         "--regime-comparison",
         action="store_true",
         default=False,
@@ -289,8 +305,19 @@ def _resolve_args(args: Namespace, parser: ArgumentParser) -> Namespace:
         parser.error("the following arguments are required: csv_path")
     if resolved.pretrade_packet and resolved.sweep:
         parser.error("--pretrade-packet uses the single-backtest path, not --sweep")
+    if resolved.scenario_card and resolved.sweep:
+        parser.error("--scenario-card uses the single-backtest path, not --sweep")
+    if resolved.pretrade_packet and resolved.scenario_card:
+        parser.error("choose only one card mode: --pretrade-packet or --scenario-card")
     if resolved.pretrade_packet and resolved.json_output is None:
         parser.error("--pretrade-packet requires --json-output PATH")
+    if (
+        resolved.scenario_card
+        and resolved.output is None
+        and resolved.json_output is None
+    ):
+        resolved.output = SCENARIO_CARD_OUTPUT
+        resolved.json_output = SCENARIO_CARD_JSON_OUTPUT
     if resolved.split_ratio is not None and resolved.split_cutoff is not None:
         parser.error(
             "choose only one validation split option: --split-ratio or "
@@ -310,6 +337,8 @@ def _resolve_regime_comparison_args(
         parser.error("--regime-comparison uses bundled configs and does not take --config")
     if args.pretrade_packet:
         parser.error("--pretrade-packet cannot be combined with --regime-comparison")
+    if args.scenario_card:
+        parser.error("--scenario-card cannot be combined with --regime-comparison")
 
     resolved = Namespace()
     for key, default in _default_args().items():
@@ -342,6 +371,7 @@ def _default_args() -> dict[str, Any]:
         "split_ratio": None,
         "split_cutoff": None,
         "pretrade_packet": False,
+        "scenario_card": False,
     }
 
 
@@ -395,6 +425,10 @@ def _coerce_config_value(key: str, value: Any) -> Any:
     if key == "pretrade_packet":
         if not isinstance(value, bool):
             raise ValueError("Config option 'pretrade_packet' must be a boolean")
+        return value
+    if key == "scenario_card":
+        if not isinstance(value, bool):
+            raise ValueError("Config option 'scenario_card' must be a boolean")
         return value
     if key in {"short_windows", "long_windows"}:
         return _coerce_config_integer_list(key, value)
@@ -520,6 +554,25 @@ def _run_pretrade_packet(args: Namespace) -> tuple[str, dict[str, Any], dict[str
         data_provenance=backtest_payload.get("data_provenance"),
     )
     return report, packet_payload, manifest_payload
+
+
+def _run_scenario_card(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    _, backtest_payload, _ = _run_backtest(args)
+    card_payload = build_scenario_card(
+        backtest_payload,
+        input_path=Path(args.csv_path),
+    )
+    report = render_scenario_card(card_payload)
+    manifest_payload = build_manifest(
+        input_path=args.csv_path,
+        symbol=args.symbol,
+        mode="scenario_card",
+        strategy_config=backtest_payload.get("strategy_config"),
+        fee_bps=args.fee_bps,
+        output_paths=_output_paths(args),
+        data_provenance=backtest_payload.get("data_provenance"),
+    )
+    return report, card_payload, manifest_payload
 
 
 def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

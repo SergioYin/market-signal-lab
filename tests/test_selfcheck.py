@@ -266,6 +266,8 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         reports_dir / "sample-report.json",
         reports_dir / "pretrade-packet.md",
         reports_dir / "pretrade-packet.json",
+        reports_dir / "scenario-card.md",
+        reports_dir / "scenario-card.json",
         reports_dir / "regime-comparison.html",
         reports_dir / "regime-comparison.md",
         reports_dir / "regime-comparison.json",
@@ -301,6 +303,14 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         ),
         "reports/index.html: missing v1.6 dashboard link to pretrade-packet.md",
         "reports/index.html: missing v1.6 dashboard link to pretrade-packet.json",
+        "reports/index.html: missing v1.6 dashboard card scenario-card",
+        "reports/index.html: missing v1.6 dashboard title Scenario Card",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/scenario-card.md"
+        ),
+        "reports/index.html: missing v1.6 dashboard link to scenario-card.md",
+        "reports/index.html: missing v1.6 dashboard link to scenario-card.json",
         "reports/index.html: missing v1.6 dashboard card regime-comparison",
         "reports/index.html: missing v1.6 dashboard title Regime Comparison",
         (
@@ -376,6 +386,25 @@ def test_selfcheck_regenerates_pretrade_packet_artifacts() -> None:
     assert "--pretrade-packet" in command
     assert command[command.index("--output") + 1] == "reports/pretrade-packet.md"
     assert command[command.index("--json-output") + 1] == "reports/pretrade-packet.json"
+
+
+def test_selfcheck_regenerates_scenario_card_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/scenario-card.md"),
+        Path("reports/scenario-card.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "scenario-card.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "scenario-card.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'href="scenario-card.md"' in selfcheck.GALLERY_HTML
+    assert 'href="scenario-card.json"' in selfcheck.GALLERY_HTML
+
+    command = _scenario_card_command()
+    assert "--scenario-card" in command
+    assert "--output" not in command
+    assert "--json-output" not in command
 
 
 def test_pretrade_packet_acceptance_contract_accepts_current_tree() -> None:
@@ -1037,6 +1066,16 @@ def _pretrade_packet_command() -> list[str]:
     ]
     assert len(packet_commands) == 1
     return packet_commands[0]
+
+
+def _scenario_card_command() -> list[str]:
+    card_commands = [
+        command
+        for command in selfcheck._sample_artifact_commands()
+        if "--scenario-card" in command
+    ]
+    assert len(card_commands) == 1
+    return card_commands[0]
 
 
 def _valid_pretrade_packet_payload() -> dict[str, object]:

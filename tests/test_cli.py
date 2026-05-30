@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -33,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout == "market-signal-lab 1.7.0\n"
+    assert result.stdout == "market-signal-lab 1.8.0\n"
     assert result.stderr == ""
 
 
@@ -245,6 +246,147 @@ def test_cli_pretrade_packet_requires_json_output_path() -> None:
 
     assert result.returncode == 2
     assert "--pretrade-packet requires --json-output PATH" in result.stderr
+
+
+def test_cli_writes_scenario_card_defaults_with_expected_shape(tmp_path: Path) -> None:
+    repo_root = Path.cwd()
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(repo_root / SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "20",
+            "--long-window",
+            "50",
+            "--fee-bps",
+            "10.0",
+            "--scenario-card",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    markdown_path = tmp_path / "reports/scenario-card.md"
+    json_path = tmp_path / "reports/scenario-card.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+
+    for heading in (
+        "# Scenario Card",
+        "## Source",
+        "## Assumptions",
+        "## Key Metrics",
+        "## Diagnostics",
+        "## Scenario/Risk Interpretation",
+        "## Risk Labels",
+        "## Next Review Checklist",
+    ):
+        assert heading in markdown
+    assert "not investment advice" in markdown
+    assert "Leveraged ETF-like risk" in markdown
+    assert markdown.count("- [ ] ") == 5
+
+    assert payload["card_type"] == "scenario_card"
+    assert payload["schema_version"] == "1.0"
+    assert payload["research_only"] is True
+    assert payload["historical_diagnostics_only"] is True
+    assert payload["no_broker_or_live_data"] is True
+    assert payload["strategy_config"]["symbol"] == "QQQ_LIKE"
+    assert set(payload["key_metrics"]) == {
+        "total_return",
+        "buy_and_hold_total_return",
+        "strategy_minus_buy_and_hold_return",
+        "max_drawdown",
+        "volatility",
+        "sharpe_like",
+        "win_rate",
+    }
+    assert set(payload["diagnostics"]) == {
+        "exposure",
+        "fees",
+        "drawdown",
+        "scenario_risk_interpretation",
+    }
+    assert "leveraged_etf_like" in payload["risk_labels"]
+    assert payload["next_review_checklist"][0]["status"] == "review_required"
+
+
+def test_cli_scenario_card_with_json_output_prints_markdown_to_stdout(
+    tmp_path: Path,
+) -> None:
+    repo_root = Path.cwd()
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+    json_path = tmp_path / "scenario-card.json"
+    default_markdown_path = tmp_path / "reports/scenario-card.md"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(repo_root / SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--scenario-card",
+            "--json-output",
+            str(json_path),
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "# Scenario Card" in result.stdout
+    assert not default_markdown_path.exists()
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["card_type"] == "scenario_card"
+
+
+def test_cli_scenario_card_with_output_does_not_default_json(
+    tmp_path: Path,
+) -> None:
+    repo_root = Path.cwd()
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+    output_path = tmp_path / "scenario-card.md"
+    default_json_path = tmp_path / "reports/scenario-card.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(repo_root / SAMPLE_DATA),
+            "--symbol",
+            "QQQ_LIKE",
+            "--scenario-card",
+            "--output",
+            str(output_path),
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert "# Scenario Card" in output_path.read_text(encoding="utf-8")
+    assert not default_json_path.exists()
 
 
 def test_cli_writes_backtest_html_report(tmp_path: Path) -> None:

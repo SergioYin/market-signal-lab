@@ -20,6 +20,7 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 
 - Single report: `reports/sample-report.html`, with links to [HTML](../reports/sample-report.html), [Markdown](../reports/sample-report.md), and [JSON](../reports/sample-report.json).
 - Pre-trade packet: `reports/pretrade-packet.md`, with links to [Markdown](../reports/pretrade-packet.md) and [JSON](../reports/pretrade-packet.json).
+- Scenario card: `reports/scenario-card.md`, with links to [Markdown](../reports/scenario-card.md) and [JSON](../reports/scenario-card.json).
 - Regime comparison: `reports/regime-comparison.html`, with links to [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
 - Fee sensitivity: `reports/fee-sensitivity.md`, with links to [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
 - Split sweep: `reports/sample-sweep-split.html`, with links to [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), [JSON](../reports/sample-sweep-split.json), and the [walkthrough](split-sweep-walkthrough.md).
@@ -33,6 +34,8 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - Single backtest interpretation inventory: the Markdown/HTML reports include `## Scenario/Risk Interpretation`, and the JSON report includes `scenario_risk_interpretation`.
 - [Pre-trade research packet Markdown](../reports/pretrade-packet.md)
 - [Pre-trade research packet JSON](../reports/pretrade-packet.json)
+- [Scenario card Markdown](../reports/scenario-card.md)
+- [Scenario card JSON](../reports/scenario-card.json)
 - [Fee sensitivity Markdown](../reports/fee-sensitivity.md)
 - [Fee sensitivity JSON](../reports/fee-sensitivity.json)
 - [Regime comparison HTML](../reports/regime-comparison.html)

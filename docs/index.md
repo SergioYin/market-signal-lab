@@ -14,6 +14,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
 - [Pre-trade research packet](../reports/pretrade-packet.md) - assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the existing single-backtest path.
 - [Pre-trade research packet JSON](../reports/pretrade-packet.json) - structured version of the same packet.
+- [Scenario card](../reports/scenario-card.md) - compact research-only card for embedding assumptions, key metrics, exposure/fee/drawdown diagnostics, risk labels, and next-review checklist in thesis-ledger or portfolio-review notes.
+- [Scenario card JSON](../reports/scenario-card.json) - structured version of the same scenario card.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
 - [Regime comparison JSON](../reports/regime-comparison.json) - machine-readable version of the same synthetic regime comparison.
 - [Regime comparison HTML](../reports/regime-comparison.html) - browser-openable view of the same checked-in artifact.
@@ -37,6 +39,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.8.0 Release Notes](release-notes-v1.8.0.md)
+- [v1.8.0 Release Checklist](release-v1.8.0.md)
 - [v1.7.0 Release Notes](release-notes-v1.7.0.md)
 - [v1.7.0 Release Checklist](release-v1.7.0.md)
 - [v1.6.0 Release Notes](release-notes-v1.6.0.md)

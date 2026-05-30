@@ -115,6 +115,8 @@ V130_STATIC_GALLERY_LINKS = (
     "sample-report.json",
     "pretrade-packet.md",
     "pretrade-packet.json",
+    "scenario-card.md",
+    "scenario-card.json",
     "fee-sensitivity.md",
     "fee-sensitivity.json",
     "regime-comparison.html",
@@ -141,6 +143,11 @@ V160_STATIC_DASHBOARD_CARDS = {
         "Pre-Trade Packet",
         "reports/pretrade-packet.md",
         ("pretrade-packet.md", "pretrade-packet.json"),
+    ),
+    "scenario-card": (
+        "Scenario Card",
+        "reports/scenario-card.md",
+        ("scenario-card.md", "scenario-card.json"),
     ),
     "regime-comparison": (
         "Regime Comparison",
@@ -226,6 +233,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/sample-manifest.md"),
     Path("reports/pretrade-packet.md"),
     Path("reports/pretrade-packet.json"),
+    Path("reports/scenario-card.md"),
+    Path("reports/scenario-card.json"),
     Path("reports/regime-comparison.md"),
     Path("reports/regime-comparison.json"),
     Path("reports/regime-comparison.html"),
@@ -274,7 +283,7 @@ GALLERY_HTML = """<!doctype html>
 <body>
   <main>
     <h1>Market Signal Lab Sample Reports</h1>
-    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The v1.7.0 pre-trade packet card keeps the first-screen cards local and static for the single report, pre-trade packet, regime comparison, fee sensitivity, split sweep, and manifest.</p>
+    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The v1.7.0 pre-trade packet card and scenario card keep the first-screen cards local and static for the single report, research cards, regime comparison, fee sensitivity, split sweep, and manifest.</p>
     <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
     <section class="dashboard" aria-label="Static artifact dashboard">
       <article class="dashboard-card" data-artifact="single-report">
@@ -288,6 +297,12 @@ GALLERY_HTML = """<!doctype html>
         <p class="artifact-path">reports/pretrade-packet.md</p>
         <p>Research-only assumptions, historical diagnostics, beginner checklist, and risk boundaries.</p>
         <p class="artifact-links"><a href="pretrade-packet.md">Packet Markdown</a><a href="pretrade-packet.json">Packet JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="scenario-card">
+        <h2>Scenario Card</h2>
+        <p class="artifact-path">reports/scenario-card.md</p>
+        <p>Compact research-only card with key metrics, diagnostics, risk labels, and next-review checklist.</p>
+        <p class="artifact-links"><a href="scenario-card.md">Card Markdown</a><a href="scenario-card.json">Card JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="regime-comparison">
         <h2>Regime Comparison</h2>
@@ -461,9 +476,9 @@ def run_sample_artifact_generation() -> bool:
             return False
 
     print(
-        "Created sample report gallery, report, pre-trade packet, manifest, "
-        "sweep, split sweep, fee sensitivity, regime comparison, and HTML "
-        "artifacts."
+        "Created sample report gallery, report, pre-trade packet, scenario "
+        "card, manifest, sweep, split sweep, fee sensitivity, regime "
+        "comparison, and HTML artifacts."
     )
     return True
 
@@ -1153,6 +1168,21 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/pretrade-packet.md",
             "--json-output",
             "reports/pretrade-packet.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            str(CSV_PATH),
+            "--symbol",
+            "QQQ_LIKE",
+            "--short-window",
+            "20",
+            "--long-window",
+            "50",
+            "--fee-bps",
+            "10.0",
+            "--scenario-card",
         ],
         [
             sys.executable,

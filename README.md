@@ -8,6 +8,8 @@ The scenario/risk interpretation section adds a beginner-readable `## Scenario/R
 
 The v1.6.0 static gallery dashboard increment makes the cold-user first screen explicit: start with the public static demo at <https://sergioyin.github.io/market-signal-lab/> or the checked-in gallery at `reports/index.html`, then use the dashboard cards to jump to the single report, regime comparison, fee sensitivity, split sweep, and manifest artifact paths. Use the static demo manifest at `docs/static-gallery-manifest.md` to confirm that the demo uses local relative links, no JavaScript, and no external assets.
 
+The v1.8.0 scenario-card increment adds a compact, zero-dependency `--scenario-card` CLI flag that reuses the existing single-backtest path and writes Markdown/JSON artifacts at `reports/scenario-card.md` and `reports/scenario-card.json`. The card is designed for thesis-ledger or portfolio-review embedding: assumptions, key metrics, exposure/fee/drawdown diagnostics, non-advice labels, leveraged ETF-like risk language, and a next-review checklist. It does not add broker, live-data, account, order, forecast, position-sizing, or execution workflows.
+
 The v1.7.0 pre-trade research packet adds a zero-dependency `--pretrade-packet` CLI flag that reuses the existing single-backtest path and writes Markdown/JSON artifacts at `reports/pretrade-packet.md` and `reports/pretrade-packet.json`. The packet summarizes assumptions, historical diagnostics, a beginner checklist, and explicit non-advice plus leveraged ETF-like risk boundaries. It does not add broker, live-data, account, order, or execution workflows.
 
 The regime-comparison artifact adds a cold-review path for the bundled synthetic bull, choppy, and drawdown-recovery fixtures. Start with `reports/regime-comparison.md`, then open `reports/regime-comparison.json` for the structured rows or `reports/regime-comparison.html` for a browser view. These files compare historical model diagnostics across deterministic synthetic regimes only; they are research-only artifacts, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.
@@ -24,6 +26,7 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Single Backtest Report](reports/sample-report.md) - includes `## Scenario/Risk Interpretation` and modeled exposure review sections for the bundled research-only sample.
 - [Single Backtest JSON](reports/sample-report.json) - includes `scenario_risk_interpretation` and `exposure_trade_review` objects for the same run.
 - [Pre-Trade Research Packet](reports/pretrade-packet.md) - assumptions, historical diagnostics, checklist, and risk boundaries generated from the existing single-backtest path.
+- [Scenario Card](reports/scenario-card.md) - compact research-only assumptions, key metrics, diagnostics, risk labels, and artifact-inspection checklist from the existing single-backtest path.
 - [Regime Comparison](reports/regime-comparison.md) - side-by-side research-only comparison of the bundled synthetic bull, choppy, and drawdown-recovery fixtures.
 - [Regime Comparison JSON](reports/regime-comparison.json) - structured version of the same synthetic regime comparison.
 - [Fee Sensitivity Comparison](reports/fee-sensitivity.md) - research-only fee assumption comparison for the bundled single backtest.
@@ -39,7 +42,7 @@ Before installing anything, open the public static demo at <https://sergioyin.gi
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
-The v1.7.0 packet card adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json` to that first inspection path.
+The v1.8.0 scenario card adds `reports/scenario-card.md` and `reports/scenario-card.json` to that first inspection path. The v1.7.0 packet card adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json`.
 
 ## What you get in 60 seconds
 
@@ -145,6 +148,22 @@ This packet is built from the same historical backtest diagnostics as the single
 report. It includes assumptions, source metadata, historical metrics, modeled
 exposure review, scenario/risk summaries, a beginner checklist, and non-advice
 plus leveraged ETF-like risk boundaries.
+
+Scenario card:
+
+```bash
+market-signal-lab examples/data/sample_tqqq_qld_like.csv \
+  --symbol QQQ_LIKE \
+  --short-window 20 \
+  --long-window 50 \
+  --fee-bps 10.0 \
+  --scenario-card
+```
+
+By default this writes `reports/scenario-card.md` and
+`reports/scenario-card.json`. The card is a compact research-only summary of
+the same historical single-backtest diagnostics; it is not advice, a forecast,
+trading guidance, or an execution workflow.
 
 Fee sensitivity artifact:
 
@@ -322,6 +341,8 @@ Before using any findings, read:
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.8.0 Release Notes](docs/release-notes-v1.8.0.md)
+- [v1.8.0 Release Checklist](docs/release-v1.8.0.md)
 - [v1.7.0 Release Notes](docs/release-notes-v1.7.0.md)
 - [v1.7.0 Release Checklist](docs/release-v1.7.0.md)
 - [v1.6.0 Release Notes](docs/release-notes-v1.6.0.md)

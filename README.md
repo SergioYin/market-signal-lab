@@ -1,6 +1,24 @@
 # Market Signal Lab
 
-Market Signal Lab is a public, research-only sandbox for reproducible trading-signal experiments. Its main value is the artifact trail: one local CSV can produce Markdown, JSON, HTML, and manifest outputs that a reviewer can inspect, rerun, diff, or publish as a static demo without connecting to brokers or live market data.
+Market Signal Lab is a public, research-only sandbox for reproducible market-signal artifact review. It turns a local CSV into Markdown, JSON, HTML, manifest, scenario-card, and thesis-ledger outputs that can be inspected, rerun, diffed, or published as a static demo.
+
+It is for builders, reviewers, and researchers who want a small offline reference for packaging historical diagnostics with visible assumptions and acceptance checks. It is worth starring or reusing if you need a zero-dependency example of public-safe research artifacts with no live data, no broker connection, no account access, no orders, no position sizing, no forecasts, and no investment advice.
+
+Quick v1.10.0 verification:
+
+```bash
+python -m market_signal_lab.cli --validate-thesis-ledger
+```
+
+v1.10.0 thesis-ledger acceptance artifacts:
+
+- [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet from the bundled sample CSV.
+- [Cross-Asset Thesis Ledger JSON](reports/cross-asset-thesis-ledger.json) - structured packet validated by the v1.10.0 acceptance check.
+- [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in Markdown acceptance artifact.
+- [Thesis-Ledger Acceptance JSON](reports/cross-asset-thesis-ledger-acceptance.json) - structured acceptance artifact.
+- [v1.10.0 Release Checklist](docs/release-v1.10.0.md) and [v1.10.0 Release Notes](docs/release-notes-v1.10.0.md) - release acceptance context and boundaries.
+
+This is not a trading bot, signal service, forecast engine, recommendation system, or broker workflow.
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 

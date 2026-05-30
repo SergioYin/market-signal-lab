@@ -10,6 +10,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
 - [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, regime comparison, fee sensitivity, split sweep, and manifest.
+- [Static Gallery Walkthrough](static-gallery-walkthrough.svg) - visual public-safe reading path for the static gallery, scenario card, JSON fields, and research-only boundaries.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
 - [Pre-trade research packet](../reports/pretrade-packet.md) - assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the existing single-backtest path.

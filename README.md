@@ -21,6 +21,7 @@ The v1.0.0 readiness increment adds checked static fixture provenance for the bu
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
+- [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg) - visual reading path for the public static gallery and scenario-card artifacts.
 - [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
 - [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
 - [Single Backtest Report](reports/sample-report.md) - includes `## Scenario/Risk Interpretation` and modeled exposure review sections for the bundled research-only sample.
@@ -38,7 +39,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [scenario card](reports/scenario-card.md) or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
@@ -340,6 +341,7 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [v1.8.0 Release Notes](docs/release-notes-v1.8.0.md)
 - [v1.8.0 Release Checklist](docs/release-v1.8.0.md)

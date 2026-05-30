@@ -46,6 +46,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "sample-sweep.html",
         "sample-sweep-split.html",
         "../docs/static-gallery-manifest.md",
+        "../docs/static-gallery-walkthrough.svg",
     }
     for link in expected_links:
         assert f'href="{link}"' in gallery
@@ -1205,6 +1206,7 @@ def _write_v130_gallery_fixture(
     for doc_name in (
         "artifact-gallery.md",
         "static-gallery-manifest.md",
+        "static-gallery-walkthrough.svg",
         "split-sweep-walkthrough.md",
     ):
         (docs_dir / doc_name).write_text(f"# {doc_name}\n", encoding="utf-8")
@@ -1249,6 +1251,7 @@ def _write_v131_landing_fixture(
     for doc_name in (
         "index.md",
         "static-gallery-manifest.md",
+        "static-gallery-walkthrough.svg",
         "artifact-gallery.md",
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",

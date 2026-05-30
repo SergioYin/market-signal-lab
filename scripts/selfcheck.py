@@ -85,6 +85,7 @@ V131_ROOT_LANDING_LINKS = (
     "docs/index.md",
     "README.md",
     "docs/static-gallery-manifest.md",
+    "docs/static-gallery-walkthrough.svg",
     "docs/artifact-gallery.md",
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
@@ -108,6 +109,7 @@ V090_DEMO_LINK_CONTRACT = {
 V130_STATIC_GALLERY_LINKS = (
     "../docs/artifact-gallery.md",
     "../docs/static-gallery-manifest.md",
+    "../docs/static-gallery-walkthrough.svg",
     "../docs/split-sweep-walkthrough.md",
     "sample-manifest.md",
     "sample-report.html",
@@ -335,6 +337,7 @@ GALLERY_HTML = """<!doctype html>
     <ul>
       <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
       <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
+      <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
       <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
       <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
       <li><a href="sample-manifest.md">Sample manifest</a></li>

@@ -16,6 +16,7 @@ v1.10.0 thesis-ledger acceptance artifacts:
 - [Cross-Asset Thesis Ledger JSON](reports/cross-asset-thesis-ledger.json) - structured packet validated by the v1.10.0 acceptance check.
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in Markdown acceptance artifact.
 - [Thesis-Ledger Acceptance JSON](reports/cross-asset-thesis-ledger-acceptance.json) - structured acceptance artifact.
+- [Thesis-Ledger 60-Second Walkthrough](docs/thesis-ledger-60-second-walkthrough.md) - cold-visitor guide for running the validator and reading PASS/WARN/FAIL acceptance fields.
 - [v1.10.0 Release Checklist](docs/release-v1.10.0.md) and [v1.10.0 Release Notes](docs/release-notes-v1.10.0.md) - release acceptance context and boundaries.
 
 This is not a trading bot, signal service, forecast engine, recommendation system, or broker workflow.

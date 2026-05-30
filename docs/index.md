@@ -19,7 +19,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Scenario card JSON](../reports/scenario-card.json) - structured version of the same scenario card.
 - [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json) - structured version of the same offline research-only packet.
-- Thesis-ledger acceptance validator - run `market-signal-lab --validate-thesis-ledger` to validate the checked-in JSON packet and write local Markdown/JSON acceptance artifacts without live data, broker, account, order, forecast, recommendation, or advice workflows.
+- [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `market-signal-lab --validate-thesis-ledger`, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
 - [Regime comparison JSON](../reports/regime-comparison.json) - machine-readable version of the same synthetic regime comparison.
 - [Regime comparison HTML](../reports/regime-comparison.html) - browser-openable view of the same checked-in artifact.

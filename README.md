@@ -346,6 +346,8 @@ Before using any findings, read:
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.9.1 Release Notes](docs/release-notes-v1.9.1.md)
+- [v1.9.1 Release Checklist](docs/release-v1.9.1.md)
 - [v1.9.0 Release Notes](docs/release-notes-v1.9.0.md)
 - [v1.9.0 Release Checklist](docs/release-v1.9.0.md)
 - [v1.8.0 Release Notes](docs/release-notes-v1.8.0.md)

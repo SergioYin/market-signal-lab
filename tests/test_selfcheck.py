@@ -72,6 +72,8 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "reports/index.html" in landing
     assert "docs/index.md" in landing
     assert "docs/static-gallery-manifest.md" in landing
+    assert "docs/release-notes-v1.9.1.md" in landing
+    assert "docs/release-v1.9.1.md" in landing
     assert "does not connect to brokers" in landing
     assert "investment advice" in landing
 
@@ -1298,6 +1300,10 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.9.1.md",
+        "release-v1.9.1.md",
+        "release-notes-v1.9.0.md",
+        "release-v1.9.0.md",
         "release-notes-v1.3.1.md",
         "release-v1.3.1.md",
     ):

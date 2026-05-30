@@ -57,6 +57,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.7.0.md"),
     Path("docs/release-notes-v1.8.0.md"),
     Path("docs/release-notes-v1.9.0.md"),
+    Path("docs/release-notes-v1.9.1.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -80,6 +81,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.7.0.md"),
     Path("docs/release-v1.8.0.md"),
     Path("docs/release-v1.9.0.md"),
+    Path("docs/release-v1.9.1.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -101,6 +103,10 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/release-notes-v1.9.1.md",
+    "docs/release-v1.9.1.md",
+    "docs/release-notes-v1.9.0.md",
+    "docs/release-v1.9.0.md",
     "docs/release-notes-v1.3.1.md",
     "docs/release-v1.3.1.md",
 )

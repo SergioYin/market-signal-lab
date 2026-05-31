@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.18.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.19.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -12,6 +12,8 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Public share summary](public-share-summary.md)
 - [Reviewer FAQ](reviewer-faq.md)
 - [Promotion checklist](promotion-checklist.md)
+- [Architecture](architecture.md)
+- [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md)
 - [Methodology audit](methodology-audit.md)
 - [Methodology audit review file schema](methodology-audit-review-schema.md)
 - [Evidence card walkthrough](evidence-card-walkthrough.svg)
@@ -62,6 +64,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Public share summary](public-share-summary.md)
 - [Reviewer FAQ](reviewer-faq.md)
 - [Promotion checklist](promotion-checklist.md)
+- [Architecture](architecture.md)
+- [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md)
 - [Methodology audit](methodology-audit.md)
 - [Methodology audit review file schema](methodology-audit-review-schema.md)
 - [Evidence card walkthrough SVG](evidence-card-walkthrough.svg)
@@ -83,6 +87,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 These files are research-only review artifacts. They are not investment advice, recommendations, forecasts, live trading signals, or instructions to buy, sell, hold, trade, or size a position.
 
 The public share summary, reviewer FAQ, and promotion checklist are static documentation artifacts only. They add no JavaScript, no live data access, no broker workflow, no account workflow, and no order workflow.
+
+The architecture overview and ADR document the same static-first boundary for maintainers. They add no runtime behavior, JavaScript, external assets, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
 
 The methodology audit, methodology audit review file schema, generated methodology audit template, blank methodology audit review JSON skeleton, and example methodology audit score are also static reviewer artifacts only. They help reviewers check for common sample-backtest presentation risks such as look-ahead bias, survivorship bias, overfitting, cost omissions, leveraged ETF-like daily reset risk, and no-advice/no-live-trading boundaries; they do not read CSV market data, certify a strategy, or add execution functionality.
 

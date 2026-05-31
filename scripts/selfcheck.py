@@ -26,6 +26,8 @@ REPORTS_DIR = REPO_ROOT / "reports"
 CSV_PATH = Path("examples/data/sample_tqqq_qld_like.csv")
 DOC_LINK_SOURCES = (
     Path("README.md"),
+    Path("docs/architecture.md"),
+    Path("docs/adr/0001-static-research-artifacts.md"),
     Path("docs/index.md"),
     Path("docs/artifact-gallery.md"),
     Path("docs/cold-review-checklist.md"),
@@ -72,6 +74,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.16.0.md"),
     Path("docs/release-notes-v1.17.0.md"),
     Path("docs/release-notes-v1.18.0.md"),
+    Path("docs/release-notes-v1.19.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -105,6 +108,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.16.0.md"),
     Path("docs/release-v1.17.0.md"),
     Path("docs/release-v1.18.0.md"),
+    Path("docs/release-v1.19.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -130,6 +134,10 @@ V131_ROOT_LANDING_LINKS = (
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
     "docs/methodology-audit-review-schema.md",
+    "docs/architecture.md",
+    "docs/adr/0001-static-research-artifacts.md",
+    "docs/release-notes-v1.19.0.md",
+    "docs/release-v1.19.0.md",
     "docs/release-notes-v1.18.0.md",
     "docs/release-v1.18.0.md",
     "docs/release-notes-v1.17.0.md",

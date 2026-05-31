@@ -24,6 +24,12 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/architecture.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/adr/0001-static-research-artifacts.md") in (
+        selfcheck.DOC_LINK_SOURCES
+    )
+    assert Path("docs/release-notes-v1.19.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.19.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.18.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.17.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/methodology-audit-review-schema.md") in (
@@ -99,6 +105,10 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/static-gallery-manifest.md" in landing
     assert "docs/methodology-audit.md" in landing
     assert "docs/methodology-audit-review-schema.md" in landing
+    assert "docs/architecture.md" in landing
+    assert "docs/adr/0001-static-research-artifacts.md" in landing
+    assert "docs/release-notes-v1.19.0.md" in landing
+    assert "docs/release-v1.19.0.md" in landing
     assert "docs/release-notes-v1.18.0.md" in landing
     assert "docs/release-v1.17.0.md" in landing
     assert "docs/release-notes-v1.16.0.md" in landing
@@ -176,6 +186,8 @@ def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
             "public-share-summary.md",
             "reviewer-faq.md",
             "promotion-checklist.md",
+            "architecture.md",
+            "adr/0001-static-research-artifacts.md",
             "methodology-audit.md",
             "methodology-audit-review-schema.md",
         ),
@@ -183,6 +195,8 @@ def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
             "public-share-summary.md",
             "reviewer-faq.md",
             "promotion-checklist.md",
+            "architecture.md",
+            "adr/0001-static-research-artifacts.md",
             "methodology-audit.md",
             "methodology-audit-review-schema.md",
         ),
@@ -203,6 +217,10 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
     required_links = {
         "docs/cold-user-evidence-card.md",
         "docs/methodology-audit-review-schema.md",
+        "docs/architecture.md",
+        "docs/adr/0001-static-research-artifacts.md",
+        "docs/release-notes-v1.19.0.md",
+        "docs/release-v1.19.0.md",
         "docs/release-notes-v1.18.0.md",
         "docs/release-v1.18.0.md",
         "docs/release-notes-v1.17.0.md",
@@ -762,6 +780,18 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.16.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.16.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/architecture.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/adr/0001-static-research-artifacts.md") in (
+        selfcheck.DOC_LINK_SOURCES
+    )
+    assert Path("docs/release-notes-v1.19.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.19.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/architecture.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/adr/0001-static-research-artifacts.md") in (
+        selfcheck.PUBLIC_CLAIM_SOURCES
+    )
+    assert Path("docs/release-notes-v1.19.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.19.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.18.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.17.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.18.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
@@ -1451,7 +1481,9 @@ def _write_v130_gallery_fixture(
         "static-gallery-walkthrough.svg",
         "split-sweep-walkthrough.md",
     ):
-        (docs_dir / doc_name).write_text(f"# {doc_name}\n", encoding="utf-8")
+        doc_path = docs_dir / doc_name
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+        doc_path.write_text(f"# {doc_name}\n", encoding="utf-8")
 
     report_names = {
         target
@@ -1501,6 +1533,10 @@ def _write_v131_landing_fixture(
         "risk-boundaries.md",
         "data-provenance.md",
         "methodology-audit-review-schema.md",
+        "architecture.md",
+        "adr/0001-static-research-artifacts.md",
+        "release-notes-v1.19.0.md",
+        "release-v1.19.0.md",
         "release-notes-v1.18.0.md",
         "release-v1.18.0.md",
         "release-notes-v1.17.0.md",
@@ -1526,7 +1562,9 @@ def _write_v131_landing_fixture(
         "release-notes-v1.3.1.md",
         "release-v1.3.1.md",
     ):
-        (docs_dir / doc_name).write_text(f"# {doc_name}\n", encoding="utf-8")
+        doc_path = docs_dir / doc_name
+        doc_path.parent.mkdir(parents=True, exist_ok=True)
+        doc_path.write_text(f"# {doc_name}\n", encoding="utf-8")
 
     links = [
         target

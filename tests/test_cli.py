@@ -34,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.18.0"
+    assert result.stdout.strip() == "market-signal-lab 1.19.0"
     assert result.stderr == ""
 
 

@@ -22,6 +22,8 @@ Three proof artifacts:
 
 For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
+The v1.19.0 architecture documentation increment adds [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) for maintainers and public reviewers. It explains the static-first architecture, local CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and why live data, brokers, account workflows, orders, position sizing, recommendations, forecasts, and investment advice are intentionally out of scope. It is documentation-only except version metadata.
+
 The v1.18.0 methodology-audit review-template increment adds `--methodology-audit-review-template`, a static JSON skeleton for reviewers to fill before scoring with `--score-methodology-audit`. It writes JSON to `--json-output` when supplied or stdout otherwise, and stays deterministic and stdlib-only with no JavaScript, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
 
 The v1.17.0 methodology-audit validation increment documents the reviewer-filled JSON shape in [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md) and makes invalid audit check names/statuses fail with direct CLI errors. It stays deterministic and stdlib-only, with no JavaScript, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
@@ -57,6 +59,8 @@ The v1.0.0 readiness increment adds checked static fixture provenance for the bu
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
+- [Architecture](docs/architecture.md) - static-first architecture, CLI artifact pipeline, methodology audit modules, sample reports, selfcheck gates, and out-of-scope boundaries.
+- [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Public Share Summary](docs/public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
 - [Reviewer FAQ](docs/reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](docs/promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
@@ -83,6 +87,8 @@ Worth saving if you want a compact reference for how to package research outputs
 ## First inspection path
 
 Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), [public share summary](docs/public-share-summary.md), [reviewer FAQ](docs/reviewer-faq.md), [promotion checklist](docs/promotion-checklist.md), [methodology audit](docs/methodology-audit.md), [methodology audit review schema](docs/methodology-audit-review-schema.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+
+For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
@@ -397,9 +403,13 @@ Before using any findings, read:
 - [Data Provenance](docs/data-provenance.md)
 - [Config Files](docs/config-files.md)
 - [Artifact Gallery](docs/artifact-gallery.md)
+- [Architecture](docs/architecture.md)
+- [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md)
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [v1.19.0 Release Notes](docs/release-notes-v1.19.0.md)
+- [v1.19.0 Release Checklist](docs/release-v1.19.0.md)
 - [v1.18.0 Release Notes](docs/release-notes-v1.18.0.md)
 - [v1.18.0 Release Checklist](docs/release-v1.18.0.md)
 - [v1.17.0 Release Notes](docs/release-notes-v1.17.0.md)

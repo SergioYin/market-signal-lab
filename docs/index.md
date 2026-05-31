@@ -6,6 +6,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
 - [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
+- [Architecture](architecture.md) - static-first architecture, CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and out-of-scope boundaries.
+- [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Cold User Evidence Card](cold-user-evidence-card.md) - concise reviewer handoff for the checked-in public artifacts, PASS/WARN/FAIL language, and research-only boundaries.
 - [Public Share Summary](public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
@@ -50,6 +52,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 ## Workflows
 
 - [Config Files](config-files.md) - JSON config shape, precedence, and repeatable run examples.
+- [Architecture](architecture.md) - maintainer overview for the static artifact pipeline and public-safe scope.
+- [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - accepted decision record for the static-first boundary.
 - [Artifact Gallery](artifact-gallery.md) - checked-in sample report, sweep, split-sweep, manifest, JSON, and HTML artifacts.
 - [Public Share Summary](public-share-summary.md) - public-safe summary route for sharing the static artifact workflow.
 - [Promotion Checklist](promotion-checklist.md) - pre-share checklist for evidence links, runnable checks, and public copy boundaries.
@@ -58,6 +62,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.19.0 Release Notes](release-notes-v1.19.0.md)
+- [v1.19.0 Release Checklist](release-v1.19.0.md)
 - [v1.18.0 Release Notes](release-notes-v1.18.0.md)
 - [v1.18.0 Release Checklist](release-v1.18.0.md)
 - [v1.17.0 Release Notes](release-notes-v1.17.0.md)

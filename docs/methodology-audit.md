@@ -2,7 +2,7 @@
 
 This checklist helps a cold reviewer assess whether a sample backtest is presented as a bounded research artifact rather than a trading system. It is meant for static review of checked-in Markdown, JSON, HTML, manifest, and documentation files. It is not investment advice, a recommendation, a forecast, a validation of future performance, or a live-trading workflow.
 
-Use it alongside the [Artifact Gallery](artifact-gallery.md), [Static Demo Manifest](static-gallery-manifest.md), [Data Provenance](data-provenance.md), [Metric Guide](metric-guide.md), and [Risk Boundaries](risk-boundaries.md).
+Use it alongside the [Methodology Audit Review File Schema](methodology-audit-review-schema.md), [Artifact Gallery](artifact-gallery.md), [Static Demo Manifest](static-gallery-manifest.md), [Data Provenance](data-provenance.md), [Metric Guide](metric-guide.md), and [Risk Boundaries](risk-boundaries.md).
 
 ## Fast Pass
 
@@ -25,6 +25,8 @@ python -m market_signal_lab.cli --score-methodology-audit examples/configs/metho
 ```
 
 The scorer only counts reviewer-entered `PASS`, `WARN`, and `FAIL` statuses and suggests `promote`, `promote_with_warnings`, or `do_not_promote`. Optional HTML output is a static rendering with local artifact links. It does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.
+
+For the accepted reviewer JSON shape, check order, status values, and validation errors, see the [Methodology Audit Review File Schema](methodology-audit-review-schema.md).
 
 ## Audit Checks
 

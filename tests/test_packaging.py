@@ -48,4 +48,4 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.16.0"
+    assert __version__ == "1.17.0"

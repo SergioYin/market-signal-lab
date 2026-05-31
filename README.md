@@ -20,7 +20,9 @@ Three proof artifacts:
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
 - [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 
-For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+
+The v1.17.0 methodology-audit validation increment documents the reviewer-filled JSON shape in [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md) and makes invalid audit check names/statuses fail with direct CLI errors. It stays deterministic and stdlib-only, with no JavaScript, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
 
 The v1.16.0 methodology-audit score HTML increment lets `--score-methodology-audit PATH` write a static browser-openable score report via `--html-output PATH`, with local links to matching Markdown and JSON artifacts when those outputs are supplied. The HTML report has no JavaScript, no external assets, no live data, no broker or account workflow, no orders, no position sizing, no recommendations, no forecasts, and no investment advice.
 
@@ -57,6 +59,7 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Reviewer FAQ](docs/reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](docs/promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
 - [Methodology Audit](docs/methodology-audit.md) - PASS/WARN/FAIL checklist for common backtest methodology risks and public-safe scope boundaries.
+- [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md) - JSON schema-like reference for reviewer-filled audit files and CLI validation errors.
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg) - visual reading path for the public static gallery and scenario-card artifacts.
 - [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
 - [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
@@ -77,7 +80,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), [public share summary](docs/public-share-summary.md), [reviewer FAQ](docs/reviewer-faq.md), [promotion checklist](docs/promotion-checklist.md), [methodology audit](docs/methodology-audit.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), [public share summary](docs/public-share-summary.md), [reviewer FAQ](docs/reviewer-faq.md), [promotion checklist](docs/promotion-checklist.md), [methodology audit](docs/methodology-audit.md), [methodology audit review schema](docs/methodology-audit-review-schema.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
@@ -395,6 +398,8 @@ Before using any findings, read:
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [v1.17.0 Release Notes](docs/release-notes-v1.17.0.md)
+- [v1.17.0 Release Checklist](docs/release-v1.17.0.md)
 - [v1.16.0 Release Notes](docs/release-notes-v1.16.0.md)
 - [v1.16.0 Release Checklist](docs/release-v1.16.0.md)
 - [v1.15.0 Release Notes](docs/release-notes-v1.15.0.md)

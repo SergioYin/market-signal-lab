@@ -34,6 +34,7 @@ DOC_LINK_SOURCES = (
     Path("docs/example-data.md"),
     Path("docs/metric-guide.md"),
     Path("docs/methodology-audit.md"),
+    Path("docs/methodology-audit-review-schema.md"),
     Path("docs/scenario-risk-glossary.md"),
     Path("docs/static-gallery-manifest.md"),
     Path("docs/thesis-ledger-60-second-walkthrough.md"),
@@ -69,6 +70,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.14.0.md"),
     Path("docs/release-notes-v1.15.0.md"),
     Path("docs/release-notes-v1.16.0.md"),
+    Path("docs/release-notes-v1.17.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -100,6 +102,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.14.0.md"),
     Path("docs/release-v1.15.0.md"),
     Path("docs/release-v1.16.0.md"),
+    Path("docs/release-v1.17.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -124,6 +127,9 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/methodology-audit-review-schema.md",
+    "docs/release-notes-v1.17.0.md",
+    "docs/release-v1.17.0.md",
     "docs/release-notes-v1.16.0.md",
     "docs/release-v1.16.0.md",
     "docs/release-notes-v1.15.0.md",

@@ -12,6 +12,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Reviewer FAQ](reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
 - [Methodology Audit](methodology-audit.md) - reviewer checklist for look-ahead bias, survivorship bias, overfitting, cost assumptions, leveraged ETF daily-reset risk, and no-advice/no-live-trading boundaries.
+- [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - JSON schema-like documentation for reviewer-filled audit files, accepted check names, accepted statuses, and CLI validation errors.
 - [Evidence Card Walkthrough](evidence-card-walkthrough.svg) - visual local reading path for the evidence-card handoff.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
@@ -36,6 +37,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Scenario/Risk Glossary](scenario-risk-glossary.md) - beginner definitions for exposure, modeled entry/exit, fee drag, drawdown, and buy-and-hold gap diagnostics.
 - [Metric Guide](metric-guide.md) - definitions and caveats for reported metrics.
 - [Methodology Audit](methodology-audit.md) - static review checklist for common backtest methodology risks and public-safe scope boundaries.
+- [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - reviewer JSON file shape for `--score-methodology-audit`.
 - [Split Sweep Walkthrough](split-sweep-walkthrough.md) - beginner reading guide for split-sweep robustness reports.
 - [Example Data and Synthetic Data Caveats](example-data.md) - bundled sample-data limits.
 - [Data Provenance](data-provenance.md) - how local CSV input and placeholder symbols are handled.
@@ -51,9 +53,12 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 - [Public Share Summary](public-share-summary.md) - public-safe summary route for sharing the static artifact workflow.
 - [Promotion Checklist](promotion-checklist.md) - pre-share checklist for evidence links, runnable checks, and public copy boundaries.
 - [Methodology Audit](methodology-audit.md) - checklist for reviewing sample backtests without treating them as advice, forecasts, or live-trading systems.
+- [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - allowed review-file fields, check order, status values, and scoring output fields.
 
 ## Release Notes
 
+- [v1.17.0 Release Notes](release-notes-v1.17.0.md)
+- [v1.17.0 Release Checklist](release-v1.17.0.md)
 - [v1.16.0 Release Notes](release-notes-v1.16.0.md)
 - [v1.16.0 Release Checklist](release-v1.16.0.md)
 - [v1.15.0 Release Notes](release-notes-v1.15.0.md)

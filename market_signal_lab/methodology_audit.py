@@ -190,34 +190,14 @@ def score_methodology_audit_review(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("Methodology audit review must be a JSON object")
 
-    checks = payload.get("checks")
-    if not isinstance(checks, list):
-        raise ValueError("Methodology audit review must contain a checks list")
-
-    expected_checks = [row["check"] for row in METHODOLOGY_AUDIT_CHECKS]
-    seen_checks: list[str] = []
+    checks = validate_methodology_audit_review_checks(payload)
     scored_checks: list[dict[str, str]] = []
     counts = {"PASS": 0, "WARN": 0, "FAIL": 0}
 
-    for index, row in enumerate(checks, start=1):
-        if not isinstance(row, dict):
-            raise ValueError(f"checks[{index}] must be a JSON object")
-        check_name = row.get("check")
-        if not isinstance(check_name, str) or not check_name:
-            raise ValueError(f"checks[{index}].check must be a non-empty string")
-        status = row.get("status")
-        if not isinstance(status, str):
-            raise ValueError(f"{check_name}: status must be PASS, WARN, or FAIL")
-        status = status.upper()
-        if status not in METHODOLOGY_AUDIT_STATUS_VALUES:
-            raise ValueError(f"{check_name}: invalid status {row.get('status')!r}")
-        notes = row.get("notes", "")
-        if notes is None:
-            notes = ""
-        if not isinstance(notes, str):
-            raise ValueError(f"{check_name}: notes must be a string when supplied")
-
-        seen_checks.append(check_name)
+    for row in checks:
+        check_name = row["check"]
+        status = row["status"].upper()
+        notes = row["notes"]
         counts[status] += 1
         scored_checks.append(
             {
@@ -225,12 +205,6 @@ def score_methodology_audit_review(payload: dict[str, Any]) -> dict[str, Any]:
                 "status": status,
                 "notes": notes,
             }
-        )
-
-    if seen_checks != expected_checks:
-        raise ValueError(
-            "Methodology audit checks must match the template order: "
-            + ", ".join(expected_checks)
         )
 
     gate = _methodology_audit_promotion_gate(counts)
@@ -262,6 +236,67 @@ def score_methodology_audit_review(payload: dict[str, Any]) -> dict[str, Any]:
             "account, order, or position-sizing workflow."
         ),
     }
+
+
+def validate_methodology_audit_review_checks(
+    payload: dict[str, Any],
+) -> list[dict[str, str]]:
+    """Return normalized review rows or raise a clear schema-style error."""
+
+    checks = payload.get("checks")
+    if not isinstance(checks, list):
+        raise ValueError("Methodology audit review must contain a checks list")
+
+    expected_checks = [row["check"] for row in METHODOLOGY_AUDIT_CHECKS]
+    if len(checks) != len(expected_checks):
+        raise ValueError(
+            "Methodology audit checks must contain exactly "
+            f"{len(expected_checks)} rows in template order"
+        )
+
+    normalized: list[dict[str, str]] = []
+    status_values = ", ".join(METHODOLOGY_AUDIT_STATUS_VALUES)
+    for index, row in enumerate(checks, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"checks[{index}] must be a JSON object")
+
+        expected_check = expected_checks[index - 1]
+        check_name = row.get("check")
+        if not isinstance(check_name, str) or not check_name:
+            raise ValueError(f"checks[{index}].check must be a non-empty string")
+        if check_name != expected_check:
+            raise ValueError(
+                f"checks[{index}].check must be {expected_check!r}, "
+                f"got {check_name!r}"
+            )
+
+        status = row.get("status")
+        if not isinstance(status, str):
+            raise ValueError(
+                f"{check_name}: status must be one of {status_values}"
+            )
+        status = status.upper()
+        if status not in METHODOLOGY_AUDIT_STATUS_VALUES:
+            raise ValueError(
+                f"{check_name}: invalid status {row.get('status')!r}; "
+                f"expected one of {status_values}"
+            )
+
+        notes = row.get("notes", "")
+        if notes is None:
+            notes = ""
+        if not isinstance(notes, str):
+            raise ValueError(f"{check_name}: notes must be a string when supplied")
+
+        normalized.append(
+            {
+                "check": check_name,
+                "status": status,
+                "notes": notes,
+            }
+        )
+
+    return normalized
 
 
 def render_methodology_audit_score(summary: dict[str, Any]) -> str:

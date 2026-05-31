@@ -34,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.16.0"
+    assert result.stdout.strip() == "market-signal-lab 1.17.0"
     assert result.stderr == ""
 
 
@@ -234,7 +234,39 @@ def test_cli_rejects_invalid_methodology_audit_status(tmp_path: Path) -> None:
     )
 
     assert result.returncode == 2
-    assert "Look-ahead bias: invalid status 'MAYBE'" in result.stderr
+    assert (
+        "Look-ahead bias: invalid status 'MAYBE'; "
+        "expected one of PASS, WARN, FAIL"
+    ) in result.stderr
+
+
+def test_cli_rejects_invalid_methodology_audit_check_name(tmp_path: Path) -> None:
+    review_path = tmp_path / "bad-methodology-audit-review.json"
+    review_payload = json.loads(
+        Path("examples/configs/methodology-audit-review.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    review_payload["checks"][1]["check"] = "Survival bias"
+    review_path.write_text(json.dumps(review_payload), encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            str(review_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        "checks[2].check must be 'Survivorship bias', got 'Survival bias'"
+    ) in result.stderr
 
 
 def test_cli_scores_fail_methodology_audit_status(tmp_path: Path) -> None:

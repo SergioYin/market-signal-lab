@@ -34,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.14.0"
+    assert result.stdout.strip() == "market-signal-lab 1.15.0"
     assert result.stderr == ""
 
 
@@ -126,6 +126,124 @@ def test_cli_rejects_csv_for_static_methodology_audit_template() -> None:
 
     assert result.returncode == 2
     assert "--methodology-audit-template does not take csv_path" in result.stderr
+
+
+def test_cli_scores_methodology_audit_review_json(tmp_path: Path) -> None:
+    markdown_path = tmp_path / "methodology-audit-score.md"
+    json_path = tmp_path / "methodology-audit-score.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            "examples/configs/methodology-audit-review.json",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Methodology Audit Score" in markdown
+    assert "- **PASS**: 5" in markdown
+    assert "- **WARN**: 1" in markdown
+    assert "- **FAIL**: 0" in markdown
+    assert "promote_with_warnings" in markdown
+    assert payload["summary_type"] == "methodology_audit_score"
+    assert payload["counts"] == {"pass": 5, "warn": 1, "fail": 0}
+    assert payload["promotion_gate_suggestion"] == "promote_with_warnings"
+    assert payload["no_live_data"] is True
+    assert payload["no_broker_or_account"] is True
+    assert payload["no_orders_or_position_sizing"] is True
+    assert payload["no_recommendations_or_forecasts"] is True
+
+
+def test_cli_rejects_invalid_methodology_audit_status(tmp_path: Path) -> None:
+    review_path = tmp_path / "bad-methodology-audit-review.json"
+    review_payload = json.loads(
+        Path("examples/configs/methodology-audit-review.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    review_payload["checks"][0]["status"] = "MAYBE"
+    review_path.write_text(json.dumps(review_payload), encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            str(review_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "Look-ahead bias: invalid status 'MAYBE'" in result.stderr
+
+
+def test_cli_scores_fail_methodology_audit_status(tmp_path: Path) -> None:
+    review_path = tmp_path / "fail-methodology-audit-review.json"
+    json_path = tmp_path / "fail-methodology-audit-score.json"
+    review_payload = json.loads(
+        Path("examples/configs/methodology-audit-review.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    review_payload["checks"][0]["status"] = "FAIL"
+    review_path.write_text(json.dumps(review_payload), encoding="utf-8")
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            str(review_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["counts"] == {"pass": 4, "warn": 1, "fail": 1}
+    assert payload["promotion_gate_suggestion"] == "do_not_promote"
+    assert "do_not_promote" in result.stdout
+
+
+def test_cli_rejects_csv_for_methodology_audit_score() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            "examples/configs/methodology-audit-review.json",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--score-methodology-audit does not take csv_path" in result.stderr
 
 
 def test_cli_validates_default_cross_asset_thesis_ledger(tmp_path: Path) -> None:

@@ -16,6 +16,15 @@ Open the sample report, JSON, manifest, and gallery before running code:
 
 For each item below, record `PASS`, `WARN`, or `FAIL`. A `PASS` means the artifact gives enough information for review. It does not mean the strategy is reliable, suitable for trading, or likely to work in future data.
 
+For an offline scoring summary, fill a local JSON file using the same checks as the table below, then run:
+
+```bash
+python -m market_signal_lab.cli --score-methodology-audit examples/configs/methodology-audit-review.json \
+  --json-output reports/methodology-audit-score.json
+```
+
+The scorer only counts reviewer-entered `PASS`, `WARN`, and `FAIL` statuses and suggests `promote`, `promote_with_warnings`, or `do_not_promote`. It does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.
+
 ## Audit Checks
 
 | Check | PASS evidence | WARN or FAIL evidence |

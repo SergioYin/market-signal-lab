@@ -20,6 +20,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     )
     assert Path("docs/release-notes-v1.14.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.14.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -86,6 +88,8 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/methodology-audit.md" in landing
     assert "docs/release-notes-v1.14.0.md" in landing
     assert "docs/release-v1.14.0.md" in landing
+    assert "docs/release-notes-v1.15.0.md" in landing
+    assert "docs/release-v1.15.0.md" in landing
     assert "docs/release-notes-v1.13.0.md" in landing
     assert "docs/release-v1.13.0.md" in landing
     assert "docs/release-notes-v1.12.0.md" in landing
@@ -179,6 +183,8 @@ def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
 def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> None:
     required_links = {
         "docs/cold-user-evidence-card.md",
+        "docs/release-notes-v1.15.0.md",
+        "docs/release-v1.15.0.md",
         "docs/release-notes-v1.14.0.md",
         "docs/release-v1.14.0.md",
         "docs/release-notes-v1.13.0.md",
@@ -700,6 +706,10 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.14.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.14.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.14.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.15.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.15.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
@@ -1434,6 +1444,8 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.15.0.md",
+        "release-v1.15.0.md",
         "release-notes-v1.14.0.md",
         "release-v1.14.0.md",
         "release-notes-v1.13.0.md",

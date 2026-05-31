@@ -1,0 +1,39 @@
+{
+  "audit_type": "methodology_audit_review",
+  "schema_version": "1.0",
+  "artifact_reviewed": "reports/sample-report.md",
+  "reviewer": "Example reviewer",
+  "review_date": "2026-06-01",
+  "checks": [
+    {
+      "check": "Look-ahead bias",
+      "status": "PASS",
+      "notes": "Historical diagnostics are labeled as supplied-row comparisons."
+    },
+    {
+      "check": "Survivorship bias",
+      "status": "PASS",
+      "notes": "Synthetic fixture and placeholder symbols are visible."
+    },
+    {
+      "check": "Overfitting",
+      "status": "WARN",
+      "notes": "Sweep output is framed as review material, but public copy should avoid implying model selection proof."
+    },
+    {
+      "check": "Fees and slippage",
+      "status": "PASS",
+      "notes": "fee_bps and missing real-world cost caveats are visible."
+    },
+    {
+      "check": "Daily reset leveraged ETF risk",
+      "status": "PASS",
+      "notes": "Leveraged ETF-like examples are described as placeholders."
+    },
+    {
+      "check": "Live trading and advice boundary",
+      "status": "PASS",
+      "notes": "The artifact stays research-only and has no broker or order workflow."
+    }
+  ]
+}

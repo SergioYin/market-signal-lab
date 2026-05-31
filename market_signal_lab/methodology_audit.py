@@ -100,6 +100,12 @@ METHODOLOGY_AUDIT_NOTE = (
     "forecast, not a validation of future performance, and not a live-trading, "
     "broker, account, order, or position-sizing workflow."
 )
+METHODOLOGY_AUDIT_STATUS_VALUES = ("PASS", "WARN", "FAIL")
+METHODOLOGY_AUDIT_PROMOTION_GATE = {
+    "PASS": "promote",
+    "WARN": "promote_with_warnings",
+    "FAIL": "do_not_promote",
+}
 
 
 def build_methodology_audit_template() -> dict[str, Any]:
@@ -115,7 +121,7 @@ def build_methodology_audit_template() -> dict[str, Any]:
         "no_orders_or_position_sizing": True,
         "no_recommendations_or_forecasts": True,
         "note": METHODOLOGY_AUDIT_NOTE,
-        "review_status_values": ["PASS", "WARN", "FAIL"],
+        "review_status_values": list(METHODOLOGY_AUDIT_STATUS_VALUES),
         "checks": list(METHODOLOGY_AUDIT_CHECKS),
         "review_notes": list(METHODOLOGY_AUDIT_REVIEW_NOTES),
         "source_document": "docs/methodology-audit.md",
@@ -176,3 +182,167 @@ def render_methodology_audit_template(payload: dict[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def score_methodology_audit_review(payload: dict[str, Any]) -> dict[str, Any]:
+    """Validate and score a reviewer-filled methodology audit JSON object."""
+
+    if not isinstance(payload, dict):
+        raise ValueError("Methodology audit review must be a JSON object")
+
+    checks = payload.get("checks")
+    if not isinstance(checks, list):
+        raise ValueError("Methodology audit review must contain a checks list")
+
+    expected_checks = [row["check"] for row in METHODOLOGY_AUDIT_CHECKS]
+    seen_checks: list[str] = []
+    scored_checks: list[dict[str, str]] = []
+    counts = {"PASS": 0, "WARN": 0, "FAIL": 0}
+
+    for index, row in enumerate(checks, start=1):
+        if not isinstance(row, dict):
+            raise ValueError(f"checks[{index}] must be a JSON object")
+        check_name = row.get("check")
+        if not isinstance(check_name, str) or not check_name:
+            raise ValueError(f"checks[{index}].check must be a non-empty string")
+        status = row.get("status")
+        if not isinstance(status, str):
+            raise ValueError(f"{check_name}: status must be PASS, WARN, or FAIL")
+        status = status.upper()
+        if status not in METHODOLOGY_AUDIT_STATUS_VALUES:
+            raise ValueError(f"{check_name}: invalid status {row.get('status')!r}")
+        notes = row.get("notes", "")
+        if notes is None:
+            notes = ""
+        if not isinstance(notes, str):
+            raise ValueError(f"{check_name}: notes must be a string when supplied")
+
+        seen_checks.append(check_name)
+        counts[status] += 1
+        scored_checks.append(
+            {
+                "check": check_name,
+                "status": status,
+                "notes": notes,
+            }
+        )
+
+    if seen_checks != expected_checks:
+        raise ValueError(
+            "Methodology audit checks must match the template order: "
+            + ", ".join(expected_checks)
+        )
+
+    gate = _methodology_audit_promotion_gate(counts)
+    return {
+        "summary_type": "methodology_audit_score",
+        "schema_version": "1.0",
+        "research_only": True,
+        "static_only": True,
+        "no_live_data": True,
+        "no_broker_or_account": True,
+        "no_orders_or_position_sizing": True,
+        "no_recommendations_or_forecasts": True,
+        "source_document": "docs/methodology-audit.md",
+        "artifact_reviewed": _optional_string(payload, "artifact_reviewed"),
+        "reviewer": _optional_string(payload, "reviewer"),
+        "review_date": _optional_string(payload, "review_date"),
+        "counts": {
+            "pass": counts["PASS"],
+            "warn": counts["WARN"],
+            "fail": counts["FAIL"],
+        },
+        "promotion_gate_suggestion": gate,
+        "promotion_gate_reason": _promotion_gate_reason(gate),
+        "checks": scored_checks,
+        "note": (
+            "Offline methodology-audit scoring summary from reviewer-entered "
+            "PASS/WARN/FAIL statuses only; not investment advice, not a "
+            "recommendation, not a forecast, and not a live-data, broker, "
+            "account, order, or position-sizing workflow."
+        ),
+    }
+
+
+def render_methodology_audit_score(summary: dict[str, Any]) -> str:
+    """Render a methodology audit score summary as Markdown."""
+
+    counts = summary["counts"]
+    lines = [
+        "# Methodology Audit Score",
+        "",
+        summary["note"],
+        "",
+        "## Reviewer Metadata",
+        "",
+        f"- **Artifact reviewed**: {summary['artifact_reviewed'] or 'Not supplied'}",
+        f"- **Reviewer**: {summary['reviewer'] or 'Not supplied'}",
+        f"- **Review date**: {summary['review_date'] or 'Not supplied'}",
+        f"- **Source checklist**: `{summary['source_document']}`",
+        "",
+        "## Score Summary",
+        "",
+        f"- **PASS**: {counts['pass']}",
+        f"- **WARN**: {counts['warn']}",
+        f"- **FAIL**: {counts['fail']}",
+        (
+            "- **Promotion gate suggestion**: "
+            f"{summary['promotion_gate_suggestion']}"
+        ),
+        f"- **Reason**: {summary['promotion_gate_reason']}",
+        "",
+        "## Audit Checks",
+        "",
+        "| Check | Status | Reviewer notes |",
+        "| --- | --- | --- |",
+    ]
+    for row in summary["checks"]:
+        lines.append(
+            "| {check} | {status} | {notes} |".format(
+                check=_escape_table_cell(row["check"]),
+                status=row["status"],
+                notes=_escape_table_cell(row["notes"]),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Boundary",
+            "",
+            "This scorer only summarizes a local reviewer-filled JSON file. It "
+            "does not read market data, fetch live data, connect to brokers, "
+            "inspect accounts, route orders, size positions, forecast, "
+            "recommend, certify strategy quality, or provide investment advice.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _methodology_audit_promotion_gate(counts: dict[str, int]) -> str:
+    if counts["FAIL"]:
+        return METHODOLOGY_AUDIT_PROMOTION_GATE["FAIL"]
+    if counts["WARN"]:
+        return METHODOLOGY_AUDIT_PROMOTION_GATE["WARN"]
+    return METHODOLOGY_AUDIT_PROMOTION_GATE["PASS"]
+
+
+def _promotion_gate_reason(gate: str) -> str:
+    if gate == "do_not_promote":
+        return "At least one audit check is marked FAIL."
+    if gate == "promote_with_warnings":
+        return "No FAIL statuses, but at least one audit check is marked WARN."
+    return "All audit checks are marked PASS."
+
+
+def _optional_string(payload: dict[str, Any], key: str) -> str | None:
+    value = payload.get(key)
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise ValueError(f"{key} must be a string when supplied")
+    return value
+
+
+def _escape_table_cell(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")

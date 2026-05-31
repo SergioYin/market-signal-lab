@@ -22,6 +22,8 @@ Three proof artifacts:
 
 For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
+The v1.15.0 methodology-audit scoring increment adds a static `--score-methodology-audit PATH` CLI flag that reads a reviewer-filled JSON file, then prints or writes a Markdown score summary with pass/warn/fail counts and a promotion gate suggestion. Optional compact JSON is available via `--json-output`. It reuses the `docs/methodology-audit.md` checks and does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, or provide investment advice.
+
 The v1.14.0 methodology-audit-template increment adds a static `--methodology-audit-template` CLI flag that prints or writes a reviewer Markdown template, with optional compact JSON via `--json-output`. It reuses the `docs/methodology-audit.md` checks and does not read CSV data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, or provide investment advice.
 
 The v1.13.0 methodology-audit increment adds a static reviewer checklist for common sample-backtest pitfalls: look-ahead bias, survivorship bias, overfitting, fees and slippage, leveraged ETF-like daily reset risk, and no-advice/no-live-trading boundaries. It is documentation only and adds no JavaScript, live-data, broker, account, order, forecast, recommendation, position-sizing, or execution workflow.
@@ -390,6 +392,8 @@ Before using any findings, read:
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [v1.15.0 Release Notes](docs/release-notes-v1.15.0.md)
+- [v1.15.0 Release Checklist](docs/release-v1.15.0.md)
 - [v1.14.0 Release Notes](docs/release-notes-v1.14.0.md)
 - [v1.14.0 Release Checklist](docs/release-v1.14.0.md)
 - [v1.13.0 Release Notes](docs/release-notes-v1.13.0.md)

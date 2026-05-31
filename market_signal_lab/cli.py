@@ -33,6 +33,8 @@ from market_signal_lab.manifest import build_manifest, render_manifest_markdown
 from market_signal_lab.methodology_audit import (
     build_methodology_audit_template,
     render_methodology_audit_template,
+    render_methodology_audit_score,
+    score_methodology_audit_review,
 )
 from market_signal_lab.packet import (
     build_pretrade_research_packet,
@@ -81,7 +83,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.methodology_audit_template:
+        if args.score_methodology_audit is not None:
+            args = _resolve_methodology_audit_score_args(args, parser)
+            report, json_payload, manifest_payload = _run_methodology_audit_score(args)
+        elif args.methodology_audit_template:
             args = _resolve_methodology_audit_template_args(args, parser)
             report, json_payload, manifest_payload = _run_methodology_audit_template()
         elif args.validate_thesis_ledger is not None:
@@ -271,6 +276,17 @@ def _build_parser() -> ArgumentParser:
             "Print or write a static Markdown methodology audit template for "
             "reviewers. Does not read CSV data, fetch live data, connect to "
             "brokers, or generate trading advice."
+        ),
+    )
+    parser.add_argument(
+        "--score-methodology-audit",
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Score a reviewer-filled methodology audit JSON file and print or "
+            "write a static Markdown summary. Optional --json-output writes "
+            "the compact score summary. Does not read market data, fetch live "
+            "data, connect to brokers, or generate trading advice."
         ),
     )
     parser.add_argument(
@@ -484,6 +500,55 @@ def _resolve_methodology_audit_template_args(
     return resolved
 
 
+def _resolve_methodology_audit_score_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--score-methodology-audit does not take csv_path")
+    if args.config is not None:
+        parser.error("--score-methodology-audit does not take --config")
+    if args.pretrade_packet:
+        parser.error(
+            "--score-methodology-audit cannot be combined with --pretrade-packet"
+        )
+    if args.scenario_card:
+        parser.error(
+            "--score-methodology-audit cannot be combined with --scenario-card"
+        )
+    if args.validate_thesis_ledger is not None:
+        parser.error(
+            "--score-methodology-audit cannot be combined with "
+            "--validate-thesis-ledger"
+        )
+    if args.methodology_audit_template:
+        parser.error(
+            "--score-methodology-audit cannot be combined with "
+            "--methodology-audit-template"
+        )
+    if args.regime_comparison:
+        parser.error(
+            "--score-methodology-audit cannot be combined with --regime-comparison"
+        )
+    if args.sweep:
+        parser.error("--score-methodology-audit cannot be combined with --sweep")
+    if args.html_output is not None:
+        parser.error("--score-methodology-audit writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error("--score-methodology-audit does not write experiment manifests")
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.score_methodology_audit = args.score_methodology_audit
+    return resolved
+
+
 def _default_args() -> dict[str, Any]:
     return {
         "csv_path": None,
@@ -691,6 +756,24 @@ def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, An
     payload = build_methodology_audit_template()
     report = render_methodology_audit_template(payload)
     return report, payload, {}
+
+
+def _run_methodology_audit_score(
+    args: Namespace,
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    input_path = Path(args.score_methodology_audit)
+    try:
+        payload = json.loads(
+            input_path.read_text(encoding="utf-8"),
+            parse_constant=_reject_json_constant,
+        )
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Invalid methodology audit JSON {input_path}: {exc.msg}"
+        ) from exc
+    summary = score_methodology_audit_review(payload)
+    report = render_methodology_audit_score(summary)
+    return report, summary, {}
 
 
 def _run_scenario_card(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

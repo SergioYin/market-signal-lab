@@ -27,10 +27,11 @@ Before promotion, inspect these checked-in artifacts:
 5. [Pre-trade research packet](../reports/pretrade-packet.md): gathers assumptions, historical diagnostics, beginner checklist, and explicit risk boundaries without adding execution behavior.
 6. [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md): demonstrates a deterministic offline evidence packet across placeholder assets.
 7. [Thesis-ledger acceptance summary](../reports/cross-asset-thesis-ledger-acceptance.md): shows PASS/WARN/FAIL review language for packet shape and public boundary checks.
-8. [Fee sensitivity sample](../reports/fee-sensitivity.md): shows fee-assumption diagnostics for the bundled single-backtest settings.
-9. [Regime comparison sample](../reports/regime-comparison.md): compares synthetic fixture scenarios side by side.
-10. [Split sweep sample](../reports/sample-sweep-split.md): shows train/test rank, return-gap, and robustness-label diagnostics inside the tiny fixture.
-11. [Sample manifest](../reports/sample-manifest.md): records input path, output paths, configuration, fixture provenance, and `research_only` metadata.
+8. [Methodology audit score](../reports/methodology-audit-score.md): shows reviewer-entered PASS/WARN/FAIL counts and a promotion gate suggestion for static methodology review.
+9. [Fee sensitivity sample](../reports/fee-sensitivity.md): shows fee-assumption diagnostics for the bundled single-backtest settings.
+10. [Regime comparison sample](../reports/regime-comparison.md): compares synthetic fixture scenarios side by side.
+11. [Split sweep sample](../reports/sample-sweep-split.md): shows train/test rank, return-gap, and robustness-label diagnostics inside the tiny fixture.
+12. [Sample manifest](../reports/sample-manifest.md): records input path, output paths, configuration, fixture provenance, and `research_only` metadata.
 
 Evidence is sufficient for public promotion when a reader can move from a claim to a checked-in artifact, then to a matching JSON or manifest record, without relying on live services or private context.
 

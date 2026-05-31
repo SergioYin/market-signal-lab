@@ -8,6 +8,9 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Cold User Evidence Card](cold-user-evidence-card.md) - concise reviewer handoff for the checked-in public artifacts, PASS/WARN/FAIL language, and research-only boundaries.
+- [Public Share Summary](public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
+- [Reviewer FAQ](reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
+- [Promotion Checklist](promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
 - [Evidence Card Walkthrough](evidence-card-walkthrough.svg) - visual local reading path for the evidence-card handoff.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
@@ -42,9 +45,13 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 - [Config Files](config-files.md) - JSON config shape, precedence, and repeatable run examples.
 - [Artifact Gallery](artifact-gallery.md) - checked-in sample report, sweep, split-sweep, manifest, JSON, and HTML artifacts.
+- [Public Share Summary](public-share-summary.md) - public-safe summary route for sharing the static artifact workflow.
+- [Promotion Checklist](promotion-checklist.md) - pre-share checklist for evidence links, runnable checks, and public copy boundaries.
 
 ## Release Notes
 
+- [v1.12.0 Release Notes](release-notes-v1.12.0.md)
+- [v1.12.0 Release Checklist](release-v1.12.0.md)
 - [v1.11.0 Release Notes](release-notes-v1.11.0.md)
 - [v1.11.0 Release Checklist](release-v1.11.0.md)
 - [v1.10.0 Release Notes](release-notes-v1.10.0.md)

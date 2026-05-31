@@ -45,3 +45,7 @@ def test_package_version_matches_project_metadata() -> None:
 
     assert match is not None
     assert __version__ == match.group(1)
+
+
+def test_package_version_tracks_current_release() -> None:
+    assert __version__ == "1.12.0"

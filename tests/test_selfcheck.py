@@ -18,8 +18,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         Path("reports/cross-asset-thesis-ledger-acceptance.json")
         in selfcheck.SAMPLE_ARTIFACTS
     )
-    assert Path("docs/release-notes-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
-    assert Path("docs/release-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -83,6 +83,8 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/cold-user-evidence-card.md" in landing
     assert "docs/index.md" in landing
     assert "docs/static-gallery-manifest.md" in landing
+    assert "docs/release-notes-v1.12.0.md" in landing
+    assert "docs/release-v1.12.0.md" in landing
     assert "docs/release-notes-v1.11.0.md" in landing
     assert "docs/release-v1.11.0.md" in landing
     assert "docs/release-notes-v1.10.0.md" in landing
@@ -127,9 +129,51 @@ def test_evidence_card_docs_exist_and_are_linked_from_public_indexes() -> None:
             assert required_link in source_text
 
 
-def test_v131_root_landing_contract_covers_evidence_card_and_v111_release_docs() -> None:
+def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
+    public_handoff_docs = (
+        Path("docs/public-share-summary.md"),
+        Path("docs/reviewer-faq.md"),
+        Path("docs/promotion-checklist.md"),
+    )
+    source_links = {
+        Path("README.md"): (
+            "docs/public-share-summary.md",
+            "docs/reviewer-faq.md",
+            "docs/promotion-checklist.md",
+        ),
+        Path("index.html"): (
+            "docs/public-share-summary.md",
+            "docs/reviewer-faq.md",
+            "docs/promotion-checklist.md",
+        ),
+        Path("docs/index.md"): (
+            "public-share-summary.md",
+            "reviewer-faq.md",
+            "promotion-checklist.md",
+        ),
+        Path("docs/static-gallery-manifest.md"): (
+            "public-share-summary.md",
+            "reviewer-faq.md",
+            "promotion-checklist.md",
+        ),
+    }
+
+    for document_file in public_handoff_docs:
+        assert (selfcheck.REPO_ROOT / document_file).is_file()
+
+    for source_file, required_links in source_links.items():
+        source_text = (selfcheck.REPO_ROOT / source_file).read_text(encoding="utf-8")
+        assert "file://" not in source_text
+        assert str(selfcheck.REPO_ROOT) not in source_text
+        for required_link in required_links:
+            assert required_link in source_text
+
+
+def test_v131_root_landing_contract_covers_evidence_card_and_v112_release_docs() -> None:
     required_links = {
         "docs/cold-user-evidence-card.md",
+        "docs/release-notes-v1.12.0.md",
+        "docs/release-v1.12.0.md",
         "docs/release-notes-v1.11.0.md",
         "docs/release-v1.11.0.md",
     }
@@ -627,6 +671,14 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.9.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.9.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.9.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.10.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.11.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.11.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.12.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.12.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
@@ -1361,6 +1413,8 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.12.0.md",
+        "release-v1.12.0.md",
         "release-notes-v1.11.0.md",
         "release-v1.11.0.md",
         "release-notes-v1.10.0.md",

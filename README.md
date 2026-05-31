@@ -20,7 +20,7 @@ Three proof artifacts:
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
 - [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 
-For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md) and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
@@ -45,6 +45,9 @@ The v1.0.0 readiness increment adds checked static fixture provenance for the bu
 The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and checked-in sample gallery, so a new reader can review the output shape before installing anything:
 
 - [Artifact Gallery](docs/artifact-gallery.md) - what each checked-in report, sweep, JSON file, HTML page, and manifest is for.
+- [Public Share Summary](docs/public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
+- [Reviewer FAQ](docs/reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
+- [Promotion Checklist](docs/promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg) - visual reading path for the public static gallery and scenario-card artifacts.
 - [Static Sample Gallery](reports/index.html) - browser-openable guide to the generated sample artifacts.
 - [Static Demo Manifest](docs/static-gallery-manifest.md) - Pages-safe link and asset contract for the checked-in gallery.
@@ -64,7 +67,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), [public share summary](docs/public-share-summary.md), [reviewer FAQ](docs/reviewer-faq.md), [promotion checklist](docs/promotion-checklist.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
@@ -381,6 +384,10 @@ Before using any findings, read:
 - [Artifact Gallery](docs/artifact-gallery.md)
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
+- [v1.12.0 Release Notes](docs/release-notes-v1.12.0.md)
+- [v1.12.0 Release Checklist](docs/release-v1.12.0.md)
+- [v1.11.0 Release Notes](docs/release-notes-v1.11.0.md)
+- [v1.11.0 Release Checklist](docs/release-v1.11.0.md)
 - [v1.10.0 Release Notes](docs/release-notes-v1.10.0.md)
 - [v1.10.0 Release Checklist](docs/release-v1.10.0.md)
 - [v1.9.1 Release Notes](docs/release-notes-v1.9.1.md)

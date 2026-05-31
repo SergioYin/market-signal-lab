@@ -30,6 +30,10 @@ from market_signal_lab.metrics import (
     win_rate_from_returns,
 )
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
+from market_signal_lab.methodology_audit import (
+    build_methodology_audit_template,
+    render_methodology_audit_template,
+)
 from market_signal_lab.packet import (
     build_pretrade_research_packet,
     render_pretrade_research_packet,
@@ -77,7 +81,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.validate_thesis_ledger is not None:
+        if args.methodology_audit_template:
+            args = _resolve_methodology_audit_template_args(args, parser)
+            report, json_payload, manifest_payload = _run_methodology_audit_template()
+        elif args.validate_thesis_ledger is not None:
             args = _resolve_thesis_ledger_validation_args(args, parser)
             report, json_payload, manifest_payload = _run_thesis_ledger_validation(args)
         elif args.regime_comparison:
@@ -257,6 +264,16 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--methodology-audit-template",
+        action="store_true",
+        default=False,
+        help=(
+            "Print or write a static Markdown methodology audit template for "
+            "reviewers. Does not read CSV data, fetch live data, connect to "
+            "brokers, or generate trading advice."
+        ),
+    )
+    parser.add_argument(
         "--regime-comparison",
         action="store_true",
         default=False,
@@ -420,6 +437,50 @@ def _resolve_thesis_ledger_validation_args(
     if resolved.output is None and resolved.json_output is None:
         resolved.output = THESIS_LEDGER_ACCEPTANCE_OUTPUT
         resolved.json_output = THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT
+    return resolved
+
+
+def _resolve_methodology_audit_template_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--methodology-audit-template does not take csv_path")
+    if args.config is not None:
+        parser.error("--methodology-audit-template does not take --config")
+    if args.pretrade_packet:
+        parser.error(
+            "--methodology-audit-template cannot be combined with --pretrade-packet"
+        )
+    if args.scenario_card:
+        parser.error(
+            "--methodology-audit-template cannot be combined with --scenario-card"
+        )
+    if args.validate_thesis_ledger is not None:
+        parser.error(
+            "--methodology-audit-template cannot be combined with "
+            "--validate-thesis-ledger"
+        )
+    if args.regime_comparison:
+        parser.error(
+            "--methodology-audit-template cannot be combined with --regime-comparison"
+        )
+    if args.sweep:
+        parser.error("--methodology-audit-template cannot be combined with --sweep")
+    if args.html_output is not None:
+        parser.error("--methodology-audit-template writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error("--methodology-audit-template does not write experiment manifests")
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.methodology_audit_template = True
     return resolved
 
 
@@ -624,6 +685,12 @@ def _run_pretrade_packet(args: Namespace) -> tuple[str, dict[str, Any], dict[str
         data_provenance=backtest_payload.get("data_provenance"),
     )
     return report, packet_payload, manifest_payload
+
+
+def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_methodology_audit_template()
+    report = render_methodology_audit_template(payload)
+    return report, payload, {}
 
 
 def _run_scenario_card(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:

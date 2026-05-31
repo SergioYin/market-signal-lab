@@ -34,8 +34,98 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.13.0"
+    assert result.stdout.strip() == "market-signal-lab 1.14.0"
     assert result.stderr == ""
+
+
+def test_cli_prints_static_methodology_audit_template_without_csv_path() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-template",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "# Methodology Audit Template" in result.stdout
+    assert "Look-ahead bias" in result.stdout
+    assert "Survivorship bias" in result.stdout
+    assert "Overfitting" in result.stdout
+    assert "Fees and slippage" in result.stdout
+    assert "Daily reset leveraged ETF risk" in result.stdout
+    assert "Live trading and advice boundary" in result.stdout
+    assert "not investment advice" in result.stdout
+    assert "not a live-trading, broker, account, order, or position-sizing workflow" in (
+        result.stdout
+    )
+    assert result.stderr == ""
+
+
+def test_cli_writes_static_methodology_audit_template_json(tmp_path: Path) -> None:
+    markdown_path = tmp_path / "methodology-audit-template.md"
+    json_path = tmp_path / "methodology-audit-template.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-template",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Methodology Audit Template" in markdown
+    assert payload["template_type"] == "methodology_audit_template"
+    assert payload["schema_version"] == "1.0"
+    assert payload["research_only"] is True
+    assert payload["static_only"] is True
+    assert payload["no_live_data"] is True
+    assert payload["no_broker_or_account"] is True
+    assert payload["no_orders_or_position_sizing"] is True
+    assert payload["no_recommendations_or_forecasts"] is True
+    assert payload["review_status_values"] == ["PASS", "WARN", "FAIL"]
+    assert [row["check"] for row in payload["checks"]] == [
+        "Look-ahead bias",
+        "Survivorship bias",
+        "Overfitting",
+        "Fees and slippage",
+        "Daily reset leveraged ETF risk",
+        "Live trading and advice boundary",
+    ]
+
+
+def test_cli_rejects_csv_for_static_methodology_audit_template() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-template",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--methodology-audit-template does not take csv_path" in result.stderr
 
 
 def test_cli_validates_default_cross_asset_thesis_ledger(tmp_path: Path) -> None:

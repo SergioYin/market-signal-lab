@@ -66,6 +66,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.11.0.md"),
     Path("docs/release-notes-v1.12.0.md"),
     Path("docs/release-notes-v1.13.0.md"),
+    Path("docs/release-notes-v1.14.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -94,6 +95,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.11.0.md"),
     Path("docs/release-v1.12.0.md"),
     Path("docs/release-v1.13.0.md"),
+    Path("docs/release-v1.14.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -117,6 +119,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/release-notes-v1.14.0.md",
+    "docs/release-v1.14.0.md",
     "docs/release-notes-v1.13.0.md",
     "docs/release-v1.13.0.md",
     "docs/release-notes-v1.12.0.md",
@@ -283,6 +287,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/pretrade-packet.json"),
     Path("reports/scenario-card.md"),
     Path("reports/scenario-card.json"),
+    Path("reports/methodology-audit-template.md"),
+    Path("reports/methodology-audit-template.json"),
     Path("reports/regime-comparison.md"),
     Path("reports/regime-comparison.json"),
     Path("reports/regime-comparison.html"),
@@ -1222,6 +1228,16 @@ def _is_non_local_html_reference(target: str) -> bool:
 
 def _sample_artifact_commands() -> list[list[str]]:
     return [
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-template",
+            "--output",
+            "reports/methodology-audit-template.md",
+            "--json-output",
+            "reports/methodology-audit-template.json",
+        ],
         [
             sys.executable,
             "-m",

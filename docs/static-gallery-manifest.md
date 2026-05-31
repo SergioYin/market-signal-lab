@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.13.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.14.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -46,6 +46,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Pre-trade research packet JSON](../reports/pretrade-packet.json)
 - [Scenario card Markdown](../reports/scenario-card.md)
 - [Scenario card JSON](../reports/scenario-card.json)
+- [Methodology audit template Markdown](../reports/methodology-audit-template.md)
+- [Methodology audit template JSON](../reports/methodology-audit-template.json)
 - [Cross-asset thesis ledger Markdown](../reports/cross-asset-thesis-ledger.md)
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json)
 - [Thesis-ledger acceptance Markdown](../reports/cross-asset-thesis-ledger-acceptance.md)
@@ -75,7 +77,7 @@ These files are research-only review artifacts. They are not investment advice, 
 
 The public share summary, reviewer FAQ, and promotion checklist are static documentation artifacts only. They add no JavaScript, no live data access, no broker workflow, no account workflow, and no order workflow.
 
-The methodology audit is also a static documentation artifact only. It helps reviewers check for common sample-backtest presentation risks such as look-ahead bias, survivorship bias, overfitting, cost omissions, leveraged ETF-like daily reset risk, and no-advice/no-live-trading boundaries; it does not certify a strategy or add execution functionality.
+The methodology audit and generated methodology audit template are also static reviewer artifacts only. They help reviewers check for common sample-backtest presentation risks such as look-ahead bias, survivorship bias, overfitting, cost omissions, leveraged ETF-like daily reset risk, and no-advice/no-live-trading boundaries; they do not read CSV data, certify a strategy, or add execution functionality.
 
 The bundled leveraged ETF-like sample is synthetic and simplified. Real leveraged ETF products commonly reset exposure daily, so multi-day results are path-dependent and cannot be estimated by multiplying an underlying index's start-to-end return. Leverage can magnify losses quickly, and real products include expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.
 

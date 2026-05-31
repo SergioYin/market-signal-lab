@@ -100,6 +100,7 @@ HTML_LINK_SOURCES = (
 )
 V131_ROOT_LANDING_LINKS = (
     "reports/index.html",
+    "docs/cold-user-evidence-card.md",
     "docs/index.md",
     "README.md",
     "docs/static-gallery-manifest.md",
@@ -109,6 +110,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/release-notes-v1.11.0.md",
+    "docs/release-v1.11.0.md",
     "docs/release-notes-v1.10.0.md",
     "docs/release-v1.10.0.md",
     "docs/release-notes-v1.9.1.md",

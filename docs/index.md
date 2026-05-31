@@ -7,6 +7,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
 - [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
+- [Cold User Evidence Card](cold-user-evidence-card.md) - concise reviewer handoff for the checked-in public artifacts, PASS/WARN/FAIL language, and research-only boundaries.
+- [Evidence Card Walkthrough](evidence-card-walkthrough.svg) - visual local reading path for the evidence-card handoff.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
 - [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
@@ -43,6 +45,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.11.0 Release Notes](release-notes-v1.11.0.md)
+- [v1.11.0 Release Checklist](release-v1.11.0.md)
 - [v1.10.0 Release Notes](release-notes-v1.10.0.md)
 - [v1.10.0 Release Checklist](release-v1.10.0.md)
 - [v1.9.1 Release Notes](release-notes-v1.9.1.md)

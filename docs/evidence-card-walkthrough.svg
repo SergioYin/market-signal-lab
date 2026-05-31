@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-labelledby="title desc">
+  <title id="title">Cold user evidence-card review path</title>
+  <desc id="desc">A static four-step review path from the gallery to the thesis ledger, acceptance validator, and risk boundaries.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .heading { fill: #1f2328; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; }
+      .body { fill: #57606a; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .mono { fill: #57606a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      .step { fill: #0969da; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; }
+      .card { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 2; }
+      .card-start { fill: #eef5ff; stroke: #8cbbf0; stroke-width: 2; }
+      .card-check { fill: #f1f8f4; stroke: #8dd39e; stroke-width: 2; }
+      .card-risk { fill: #fff8e5; stroke: #d4a72c; stroke-width: 2; }
+      .arrow { stroke: #6e7781; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .rule { stroke: #d0d7de; stroke-width: 2; stroke-dasharray: 6 8; }
+      .dot { fill: #0969da; }
+      .dot-check { fill: #1a7f37; }
+      .dot-risk { fill: #9a6700; }
+    </style>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6e7781"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1120" height="520"/>
+
+  <text class="heading" x="48" y="58" font-size="30">Evidence Card Review Path</text>
+  <text class="body" x="48" y="88" font-size="16">Follow the checked-in static artifacts from public gallery entry to validation and research-only limits.</text>
+
+  <line class="rule" x1="108" y1="178" x2="1012" y2="178"/>
+
+  <rect class="card-start" x="48" y="130" width="230" height="230" rx="8"/>
+  <circle class="dot" cx="88" cy="178" r="16"/>
+  <text class="heading" x="83" y="184" font-size="17">1</text>
+  <text class="step" x="76" y="220" font-size="18">Static gallery</text>
+  <text class="mono" x="76" y="253" font-size="14">reports/index.html</text>
+  <text class="body" x="76" y="288" font-size="15">Start from the</text>
+  <text class="body" x="76" y="310" font-size="15">no-script artifact index</text>
+  <text class="body" x="76" y="332" font-size="15">and sample evidence cards.</text>
+
+  <rect class="card" x="314" y="130" width="230" height="230" rx="8"/>
+  <circle class="dot" cx="354" cy="178" r="16"/>
+  <text class="heading" x="349" y="184" font-size="17">2</text>
+  <text class="step" x="342" y="220" font-size="18">Thesis ledger</text>
+  <text class="mono" x="342" y="253" font-size="14">cross-asset ledger</text>
+  <text class="body" x="342" y="288" font-size="15">Read assumptions,</text>
+  <text class="body" x="342" y="310" font-size="15">diagnostics, labels,</text>
+  <text class="body" x="342" y="332" font-size="15">and review notes.</text>
+
+  <rect class="card-check" x="580" y="130" width="230" height="230" rx="8"/>
+  <circle class="dot-check" cx="620" cy="178" r="16"/>
+  <text class="heading" x="615" y="184" font-size="17">3</text>
+  <text class="step" x="608" y="220" font-size="18">Acceptance validator</text>
+  <text class="mono" x="608" y="253" font-size="14">acceptance summary</text>
+  <text class="body" x="608" y="288" font-size="15">Check PASS, WARN,</text>
+  <text class="body" x="608" y="310" font-size="15">or FAIL as artifact-shape</text>
+  <text class="body" x="608" y="332" font-size="15">review status only.</text>
+
+  <rect class="card-risk" x="846" y="130" width="230" height="230" rx="8"/>
+  <circle class="dot-risk" cx="886" cy="178" r="16"/>
+  <text class="heading" x="881" y="184" font-size="17">4</text>
+  <text class="step" x="874" y="220" font-size="18">Risk boundaries</text>
+  <text class="mono" x="874" y="253" font-size="14">docs/risk-boundaries.md</text>
+  <text class="body" x="874" y="288" font-size="15">Confirm the research-only</text>
+  <text class="body" x="874" y="310" font-size="15">scope before treating</text>
+  <text class="body" x="874" y="332" font-size="15">the packet as complete.</text>
+
+  <path class="arrow" d="M 278 245 C 292 245, 298 245, 310 245"/>
+  <path class="arrow" d="M 544 245 C 558 245, 564 245, 576 245"/>
+  <path class="arrow" d="M 810 245 C 824 245, 830 245, 842 245"/>
+
+  <rect x="48" y="410" width="1028" height="62" rx="8" fill="#ffffff" stroke="#d0d7de" stroke-width="2"/>
+  <text class="heading" x="76" y="447" font-size="17">Reviewer stop line:</text>
+  <text class="body" x="226" y="447" font-size="16">the path documents static research artifacts; it does not create signals, forecasts, advice, or execution steps.</text>
+</svg>

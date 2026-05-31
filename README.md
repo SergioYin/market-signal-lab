@@ -1,10 +1,10 @@
 # Market Signal Lab
 
-Market Signal Lab is a public, research-only sandbox for reproducible market-signal artifact review. It turns a local CSV into Markdown, JSON, HTML, manifest, scenario-card, and thesis-ledger outputs that can be inspected, rerun, diffed, or published as a static demo.
+Market Signal Lab is a public, research-only reference repo for packaging reproducible market-signal review artifacts. From a bundled static sample CSV, it generates Markdown, JSON, HTML, manifest, scenario-card, and thesis-ledger outputs that a reviewer can inspect, rerun, diff, and publish as a static demo.
 
-It is for builders, reviewers, and researchers who want a small offline reference for packaging historical diagnostics with visible assumptions and acceptance checks. It is worth starring or reusing if you need a zero-dependency example of public-safe research artifacts with no live data, no broker connection, no account access, no orders, no position sizing, no forecasts, and no investment advice.
+Star or reuse it if you want a compact, zero-dependency example of how to ship historical diagnostics with visible assumptions, acceptance checks, structured outputs, and public-safe caveats. It is intentionally not a trading bot, signal service, forecast engine, recommendation system, broker workflow, account workflow, order workflow, position-sizing tool, or source of investment advice.
 
-Quick v1.10.0 verification from a fresh checkout:
+60-second path:
 
 ```bash
 git clone https://github.com/SergioYin/market-signal-lab.git
@@ -12,16 +12,15 @@ cd market-signal-lab
 python -m market_signal_lab.cli --validate-thesis-ledger
 ```
 
-v1.10.0 thesis-ledger acceptance artifacts:
+Then open the static first screen at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html), and compare the generated acceptance output with the checked-in artifacts.
+
+Three proof artifacts:
 
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet from the bundled sample CSV.
-- [Cross-Asset Thesis Ledger JSON](reports/cross-asset-thesis-ledger.json) - structured packet validated by the v1.10.0 acceptance check.
-- [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in Markdown acceptance artifact.
-- [Thesis-Ledger Acceptance JSON](reports/cross-asset-thesis-ledger-acceptance.json) - structured acceptance artifact.
-- [Thesis-Ledger 60-Second Walkthrough](docs/thesis-ledger-60-second-walkthrough.md) - cold-visitor guide for running the validator and reading PASS/WARN/FAIL acceptance fields.
-- [v1.10.0 Release Checklist](docs/release-v1.10.0.md) and [v1.10.0 Release Notes](docs/release-notes-v1.10.0.md) - release acceptance context and boundaries.
+- [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
+- [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 
-This is not a trading bot, signal service, forecast engine, recommendation system, or broker workflow.
+For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md) and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
 The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
@@ -65,7 +64,7 @@ Worth saving if you want a compact reference for how to package research outputs
 
 ## First inspection path
 
-Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [scenario card](reports/scenario-card.md) or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
+Before installing anything, open the public static demo at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html) from the checkout. That static gallery is the first screen for cold review: open the single backtest report first for the Scenario/Risk Interpretation section, then open the [cold user evidence card](docs/cold-user-evidence-card.md), the [scenario card](reports/scenario-card.md), or the [static gallery walkthrough](docs/static-gallery-walkthrough.svg) for the compact card path, then open the [regime comparison](reports/regime-comparison.md) to see how the synthetic bull, choppy, and drawdown-recovery fixtures differ, then use the manifest and caveat docs to verify the checked-in artifact trail. All linked results are historical research diagnostics only, use synthetic/static sample data, and use local relative paths only. They are not investment advice, recommendations, forecasts, or a guarantee of future returns. Use [`docs/static-gallery-manifest.md`](docs/static-gallery-manifest.md) to verify the gallery contract and artifact inventory.
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 

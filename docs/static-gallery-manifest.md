@@ -8,6 +8,8 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 
 - [Root landing](../index.html)
 - [Cold review checklist](cold-review-checklist.md)
+- [Cold user evidence card](cold-user-evidence-card.md)
+- [Evidence card walkthrough](evidence-card-walkthrough.svg)
 - [Static gallery entry page](../reports/index.html)
 - [Static gallery walkthrough](static-gallery-walkthrough.svg)
 - [Static demo manifest](static-gallery-manifest.md)
@@ -28,7 +30,9 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - Split sweep: `reports/sample-sweep-split.html`, with links to [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), [JSON](../reports/sample-sweep-split.json), and the [walkthrough](split-sweep-walkthrough.md).
 - Manifest: `reports/sample-manifest.md`, with links to [Sample manifest](../reports/sample-manifest.md) and this static demo manifest.
 
-## Demo Artifacts
+## Pages-Safe Artifact Inventory
+
+The Pages-safe artifact inventory uses repository-relative links only. The checked-in SVG walkthroughs are static SVG files with no external assets or scripts.
 
 - [Single backtest HTML](../reports/sample-report.html)
 - [Single backtest Markdown](../reports/sample-report.md)
@@ -42,6 +46,8 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json)
 - [Thesis-ledger acceptance Markdown](../reports/cross-asset-thesis-ledger-acceptance.md)
 - [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
+- [Cold user evidence card](cold-user-evidence-card.md)
+- [Evidence card walkthrough SVG](evidence-card-walkthrough.svg)
 - [Static gallery walkthrough SVG](static-gallery-walkthrough.svg)
 - [Fee sensitivity Markdown](../reports/fee-sensitivity.md)
 - [Fee sensitivity JSON](../reports/fee-sensitivity.json)

@@ -16,15 +16,16 @@ For a visual walkthrough of the public static gallery and scenario-card path, op
 
 Start there if you want the fastest review path:
 
-1. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
-2. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
-3. Open the [pre-trade research packet](../reports/pretrade-packet.md) for assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the same single-backtest path.
-4. Open the [scenario card](../reports/scenario-card.md) for a compact assumptions, key metrics, diagnostics, risk-labels, and next-review checklist view.
-5. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
-6. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
-7. Open the [split-sweep HTML sample](../reports/sample-sweep-split.html) to see the human-facing robustness table.
-8. Read the [sample manifest](../reports/sample-manifest.md) to confirm the inputs and outputs behind the sample.
-9. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
+1. Open the [Cold User Evidence Card](cold-user-evidence-card.md) for the concise checked-artifact handoff and research-only boundaries.
+2. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
+3. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
+4. Open the [pre-trade research packet](../reports/pretrade-packet.md) for assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the same single-backtest path.
+5. Open the [scenario card](../reports/scenario-card.md) for a compact assumptions, key metrics, diagnostics, risk-labels, and next-review checklist view.
+6. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
+7. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
+8. Open the [split-sweep HTML sample](../reports/sample-sweep-split.html) to see the human-facing robustness table.
+9. Read the [sample manifest](../reports/sample-manifest.md) to confirm the inputs and outputs behind the sample.
+10. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
 
 ## Report Artifacts
 

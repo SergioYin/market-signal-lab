@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Methodology Audit Score - Market Signal Lab</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Methodology Audit Score - Market Signal Lab</h1>
+  <p><strong>Research-only: this artifact is for historical market research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
+  <nav aria-label="Related artifacts">
+    <h2>Related Artifacts</h2>
+    <ul>
+      <li><a href="methodology-audit-score.md">Markdown score</a></li>
+      <li><a href="methodology-audit-score.json">JSON score</a></li>
+    </ul>
+  </nav>
+  <h1>Methodology Audit Score</h1>
+  <p>Offline methodology-audit scoring summary from reviewer-entered PASS/WARN/FAIL statuses only; not investment advice, not a recommendation, not a forecast, and not a live-data, broker, account, order, or position-sizing workflow.</p>
+  <h2>Reviewer Metadata</h2>
+  <ul>
+    <li><strong>Artifact reviewed</strong>: reports/sample-report.md</li>
+    <li><strong>Reviewer</strong>: Example reviewer</li>
+    <li><strong>Review date</strong>: 2026-06-01</li>
+    <li><strong>Source checklist</strong>: `docs/methodology-audit.md`</li>
+  </ul>
+  <h2>Score Summary</h2>
+  <ul>
+    <li><strong>PASS</strong>: 5</li>
+    <li><strong>WARN</strong>: 1</li>
+    <li><strong>FAIL</strong>: 0</li>
+    <li><strong>Promotion gate suggestion</strong>: promote_with_warnings</li>
+    <li><strong>Reason</strong>: No FAIL statuses, but at least one audit check is marked WARN.</li>
+  </ul>
+  <h2>Audit Checks</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Check</th>
+          <th>Status</th>
+          <th>Reviewer notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Look-ahead bias</td>
+          <td>PASS</td>
+          <td>Historical diagnostics are labeled as supplied-row comparisons.</td>
+        </tr>
+        <tr>
+          <td>Survivorship bias</td>
+          <td>PASS</td>
+          <td>Synthetic fixture and placeholder symbols are visible.</td>
+        </tr>
+        <tr>
+          <td>Overfitting</td>
+          <td>WARN</td>
+          <td>Sweep output is framed as review material, but public copy should avoid implying model selection proof.</td>
+        </tr>
+        <tr>
+          <td>Fees and slippage</td>
+          <td>PASS</td>
+          <td>fee_bps and missing real-world cost caveats are visible.</td>
+        </tr>
+        <tr>
+          <td>Daily reset leveraged ETF risk</td>
+          <td>PASS</td>
+          <td>Leveraged ETF-like examples are described as placeholders.</td>
+        </tr>
+        <tr>
+          <td>Live trading and advice boundary</td>
+          <td>PASS</td>
+          <td>The artifact stays research-only and has no broker or order workflow.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>Boundary</h2>
+  <p>This scorer only summarizes a local reviewer-filled JSON file. It does not read market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.</p>
+</body>
+</html>

@@ -22,6 +22,8 @@ Three proof artifacts:
 
 For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
+The v1.16.0 methodology-audit score HTML increment lets `--score-methodology-audit PATH` write a static browser-openable score report via `--html-output PATH`, with local links to matching Markdown and JSON artifacts when those outputs are supplied. The HTML report has no JavaScript, no external assets, no live data, no broker or account workflow, no orders, no position sizing, no recommendations, no forecasts, and no investment advice.
+
 The v1.15.0 methodology-audit scoring increment adds a static `--score-methodology-audit PATH` CLI flag that reads a reviewer-filled JSON file, then prints or writes a Markdown score summary with pass/warn/fail counts and a promotion gate suggestion. Optional compact JSON is available via `--json-output`. It reuses the `docs/methodology-audit.md` checks and does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, or provide investment advice.
 
 The v1.14.0 methodology-audit-template increment adds a static `--methodology-audit-template` CLI flag that prints or writes a reviewer Markdown template, with optional compact JSON via `--json-output`. It reuses the `docs/methodology-audit.md` checks and does not read CSV data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, or provide investment advice.
@@ -62,6 +64,7 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Single Backtest JSON](reports/sample-report.json) - includes `scenario_risk_interpretation` and `exposure_trade_review` objects for the same run.
 - [Pre-Trade Research Packet](reports/pretrade-packet.md) - assumptions, historical diagnostics, checklist, and risk boundaries generated from the existing single-backtest path.
 - [Scenario Card](reports/scenario-card.md) - compact research-only assumptions, key metrics, diagnostics, risk labels, and artifact-inspection checklist from the existing single-backtest path.
+- [Methodology Audit Score HTML](reports/methodology-audit-score.html) - static browser-openable PASS/WARN/FAIL methodology-audit score summary generated from reviewer-entered JSON.
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
 - [Regime Comparison](reports/regime-comparison.md) - side-by-side research-only comparison of the bundled synthetic bull, choppy, and drawdown-recovery fixtures.
 - [Regime Comparison JSON](reports/regime-comparison.json) - structured version of the same synthetic regime comparison.
@@ -392,6 +395,8 @@ Before using any findings, read:
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [v1.16.0 Release Notes](docs/release-notes-v1.16.0.md)
+- [v1.16.0 Release Checklist](docs/release-v1.16.0.md)
 - [v1.15.0 Release Notes](docs/release-notes-v1.15.0.md)
 - [v1.15.0 Release Checklist](docs/release-v1.15.0.md)
 - [v1.14.0 Release Notes](docs/release-notes-v1.14.0.md)

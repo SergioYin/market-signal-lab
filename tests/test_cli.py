@@ -34,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.15.0"
+    assert result.stdout.strip() == "market-signal-lab 1.16.0"
     assert result.stderr == ""
 
 
@@ -165,6 +165,49 @@ def test_cli_scores_methodology_audit_review_json(tmp_path: Path) -> None:
     assert payload["no_broker_or_account"] is True
     assert payload["no_orders_or_position_sizing"] is True
     assert payload["no_recommendations_or_forecasts"] is True
+
+
+def test_cli_writes_methodology_audit_score_html_with_boundary_and_links(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "methodology-audit-score.md"
+    json_path = tmp_path / "methodology-audit-score.json"
+    html_path = tmp_path / "methodology-audit-score.html"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--score-methodology-audit",
+            "examples/configs/methodology-audit-review.json",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+            "--html-output",
+            str(html_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    html = html_path.read_text(encoding="utf-8")
+    assert "<title>Methodology Audit Score - Market Signal Lab</title>" in html
+    assert "<h1>Methodology Audit Score - Market Signal Lab</h1>" in html
+    assert "Related Artifacts" in html
+    assert 'href="methodology-audit-score.md"' in html
+    assert 'href="methodology-audit-score.json"' in html
+    assert "This scorer only summarizes a local reviewer-filled JSON file." in html
+    assert "does not read market data, fetch live data, connect to brokers" in html
+    assert "inspect accounts, route orders, size positions, forecast" in html
+    assert "recommend, certify strategy quality, or provide investment advice" in html
+    assert "<script" not in html.lower()
+    assert "http://" not in html
+    assert "https://" not in html
 
 
 def test_cli_rejects_invalid_methodology_audit_status(tmp_path: Path) -> None:

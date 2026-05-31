@@ -68,6 +68,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.13.0.md"),
     Path("docs/release-notes-v1.14.0.md"),
     Path("docs/release-notes-v1.15.0.md"),
+    Path("docs/release-notes-v1.16.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -98,6 +99,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.13.0.md"),
     Path("docs/release-v1.14.0.md"),
     Path("docs/release-v1.15.0.md"),
+    Path("docs/release-v1.16.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -108,6 +110,7 @@ HTML_LINK_SOURCES = (
     Path("index.html"),
     Path("reports/index.html"),
     Path("reports/regime-comparison.html"),
+    Path("reports/methodology-audit-score.html"),
 )
 V131_ROOT_LANDING_LINKS = (
     "reports/index.html",
@@ -121,6 +124,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/split-sweep-walkthrough.md",
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
+    "docs/release-notes-v1.16.0.md",
+    "docs/release-v1.16.0.md",
     "docs/release-notes-v1.15.0.md",
     "docs/release-v1.15.0.md",
     "docs/release-notes-v1.14.0.md",
@@ -166,6 +171,9 @@ V130_STATIC_GALLERY_LINKS = (
     "pretrade-packet.json",
     "scenario-card.md",
     "scenario-card.json",
+    "methodology-audit-score.html",
+    "methodology-audit-score.md",
+    "methodology-audit-score.json",
     "fee-sensitivity.md",
     "fee-sensitivity.json",
     "cross-asset-thesis-ledger.md",
@@ -199,6 +207,15 @@ V160_STATIC_DASHBOARD_CARDS = {
         "Scenario Card",
         "reports/scenario-card.md",
         ("scenario-card.md", "scenario-card.json"),
+    ),
+    "methodology-audit-score": (
+        "Methodology Audit Score",
+        "reports/methodology-audit-score.html",
+        (
+            "methodology-audit-score.html",
+            "methodology-audit-score.md",
+            "methodology-audit-score.json",
+        ),
     ),
     "regime-comparison": (
         "Regime Comparison",
@@ -295,6 +312,7 @@ SAMPLE_ARTIFACTS = (
     Path("reports/methodology-audit-template.json"),
     Path("reports/methodology-audit-score.md"),
     Path("reports/methodology-audit-score.json"),
+    Path("reports/methodology-audit-score.html"),
     Path("reports/regime-comparison.md"),
     Path("reports/regime-comparison.json"),
     Path("reports/regime-comparison.html"),
@@ -367,6 +385,12 @@ GALLERY_HTML = """<!doctype html>
         <p class="artifact-path">reports/scenario-card.md</p>
         <p>Compact research-only card with key metrics, diagnostics, risk labels, and next-review checklist.</p>
         <p class="artifact-links"><a href="scenario-card.md">Card Markdown</a><a href="scenario-card.json">Card JSON</a></p>
+      </article>
+      <article class="dashboard-card" data-artifact="methodology-audit-score">
+        <h2>Methodology Audit Score</h2>
+        <p class="artifact-path">reports/methodology-audit-score.html</p>
+        <p>Static reviewer-entered PASS/WARN/FAIL score summary with local Markdown and JSON outputs.</p>
+        <p class="artifact-links"><a href="methodology-audit-score.html">HTML</a><a href="methodology-audit-score.md">Markdown</a><a href="methodology-audit-score.json">JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="regime-comparison">
         <h2>Regime Comparison</h2>
@@ -1254,6 +1278,8 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/methodology-audit-score.md",
             "--json-output",
             "reports/methodology-audit-score.json",
+            "--html-output",
+            "reports/methodology-audit-score.html",
         ],
         [
             sys.executable,

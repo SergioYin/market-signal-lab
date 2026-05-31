@@ -22,6 +22,10 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-v1.14.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("reports/methodology-audit-score.html") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/methodology-audit-score.html") in selfcheck.HTML_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -50,6 +54,9 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "sample-report.html",
+        "methodology-audit-score.html",
+        "methodology-audit-score.md",
+        "methodology-audit-score.json",
         "fee-sensitivity.md",
         "fee-sensitivity.json",
         "cross-asset-thesis-ledger.md",
@@ -86,6 +93,8 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/index.md" in landing
     assert "docs/static-gallery-manifest.md" in landing
     assert "docs/methodology-audit.md" in landing
+    assert "docs/release-notes-v1.16.0.md" in landing
+    assert "docs/release-v1.16.0.md" in landing
     assert "docs/release-notes-v1.14.0.md" in landing
     assert "docs/release-v1.14.0.md" in landing
     assert "docs/release-notes-v1.15.0.md" in landing
@@ -438,6 +447,24 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         ),
         "reports/index.html: missing v1.6 dashboard link to scenario-card.md",
         "reports/index.html: missing v1.6 dashboard link to scenario-card.json",
+        "reports/index.html: missing v1.6 dashboard card methodology-audit-score",
+        "reports/index.html: missing v1.6 dashboard title Methodology Audit Score",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/methodology-audit-score.html"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "methodology-audit-score.html"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "methodology-audit-score.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "methodology-audit-score.json"
+        ),
         "reports/index.html: missing v1.6 dashboard card regime-comparison",
         "reports/index.html: missing v1.6 dashboard title Regime Comparison",
         (
@@ -710,6 +737,10 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.15.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.15.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.15.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.16.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.16.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.16.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
@@ -1444,6 +1475,8 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.16.0.md",
+        "release-v1.16.0.md",
         "release-notes-v1.15.0.md",
         "release-v1.15.0.md",
         "release-notes-v1.14.0.md",

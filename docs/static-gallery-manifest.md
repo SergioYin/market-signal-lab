@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.15.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.16.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -28,6 +28,7 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - Single report: `reports/sample-report.html`, with links to [HTML](../reports/sample-report.html), [Markdown](../reports/sample-report.md), and [JSON](../reports/sample-report.json).
 - Pre-trade packet: `reports/pretrade-packet.md`, with links to [Markdown](../reports/pretrade-packet.md) and [JSON](../reports/pretrade-packet.json).
 - Scenario card: `reports/scenario-card.md`, with links to [Markdown](../reports/scenario-card.md) and [JSON](../reports/scenario-card.json).
+- Methodology audit score: `reports/methodology-audit-score.html`, with links to [HTML](../reports/methodology-audit-score.html), [Markdown](../reports/methodology-audit-score.md), and [JSON](../reports/methodology-audit-score.json).
 - Cross-asset thesis ledger: `reports/cross-asset-thesis-ledger.md`, with links to [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
 - Regime comparison: `reports/regime-comparison.html`, with links to [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
 - Fee sensitivity: `reports/fee-sensitivity.md`, with links to [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
@@ -50,6 +51,7 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Methodology audit template JSON](../reports/methodology-audit-template.json)
 - [Example methodology audit score Markdown](../reports/methodology-audit-score.md)
 - [Example methodology audit score JSON](../reports/methodology-audit-score.json)
+- [Example methodology audit score HTML](../reports/methodology-audit-score.html)
 - [Cross-asset thesis ledger Markdown](../reports/cross-asset-thesis-ledger.md)
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json)
 - [Thesis-ledger acceptance Markdown](../reports/cross-asset-thesis-ledger-acceptance.md)

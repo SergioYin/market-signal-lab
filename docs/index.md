@@ -23,6 +23,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Pre-trade research packet JSON](../reports/pretrade-packet.json) - structured version of the same packet.
 - [Scenario card](../reports/scenario-card.md) - compact research-only card for embedding assumptions, key metrics, exposure/fee/drawdown diagnostics, risk labels, and next-review checklist in thesis-ledger or portfolio-review notes.
 - [Scenario card JSON](../reports/scenario-card.json) - structured version of the same scenario card.
+- [Methodology audit score HTML](../reports/methodology-audit-score.html) - static browser-openable PASS/WARN/FAIL score summary generated from reviewer-entered JSON.
 - [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json) - structured version of the same offline research-only packet.
 - [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `python -m market_signal_lab.cli --validate-thesis-ledger` from a fresh checkout, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
@@ -53,6 +54,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.16.0 Release Notes](release-notes-v1.16.0.md)
+- [v1.16.0 Release Checklist](release-v1.16.0.md)
 - [v1.15.0 Release Notes](release-notes-v1.15.0.md)
 - [v1.15.0 Release Checklist](release-v1.15.0.md)
 - [v1.14.0 Release Notes](release-notes-v1.14.0.md)

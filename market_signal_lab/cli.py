@@ -147,16 +147,30 @@ def _write_text(path: Path, text: str) -> None:
 
 
 def _html_report_title(args: Namespace) -> str:
+    if getattr(args, "score_methodology_audit", None) is not None:
+        return "Methodology Audit Score - Market Signal Lab"
     if getattr(args, "regime_comparison", False):
         return "Regime Comparison - Market Signal Lab"
     return "Market Signal Lab Report"
 
 
 def _html_artifact_links(args: Namespace) -> tuple[tuple[str, str], ...]:
-    if not getattr(args, "regime_comparison", False) or args.html_output is None:
+    if args.html_output is None:
         return ()
 
     links: list[tuple[str, str]] = []
+    if getattr(args, "score_methodology_audit", None) is not None:
+        for label, path in (
+            ("Markdown score", args.output),
+            ("JSON score", args.json_output),
+        ):
+            if path is not None:
+                links.append((label, _relative_output_link(args.html_output, path)))
+        return tuple(links)
+
+    if not getattr(args, "regime_comparison", False):
+        return ()
+
     for label, path in (
         ("Markdown report", args.output),
         ("JSON data", args.json_output),
@@ -532,8 +546,6 @@ def _resolve_methodology_audit_score_args(
         )
     if args.sweep:
         parser.error("--score-methodology-audit cannot be combined with --sweep")
-    if args.html_output is not None:
-        parser.error("--score-methodology-audit writes Markdown/JSON, not HTML")
     if args.manifest_output is not None:
         parser.error("--score-methodology-audit does not write experiment manifests")
 
@@ -543,7 +555,7 @@ def _resolve_methodology_audit_score_args(
     resolved.csv_path = None
     resolved.output = args.output
     resolved.json_output = args.json_output
-    resolved.html_output = None
+    resolved.html_output = args.html_output
     resolved.manifest_output = None
     resolved.score_methodology_audit = args.score_methodology_audit
     return resolved

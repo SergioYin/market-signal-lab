@@ -20,10 +20,11 @@ For an offline scoring summary, fill a local JSON file using the same checks as 
 
 ```bash
 python -m market_signal_lab.cli --score-methodology-audit examples/configs/methodology-audit-review.json \
-  --json-output reports/methodology-audit-score.json
+  --json-output reports/methodology-audit-score.json \
+  --html-output reports/methodology-audit-score.html
 ```
 
-The scorer only counts reviewer-entered `PASS`, `WARN`, and `FAIL` statuses and suggests `promote`, `promote_with_warnings`, or `do_not_promote`. It does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.
+The scorer only counts reviewer-entered `PASS`, `WARN`, and `FAIL` statuses and suggests `promote`, `promote_with_warnings`, or `do_not_promote`. Optional HTML output is a static rendering with local artifact links. It does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.
 
 ## Audit Checks
 

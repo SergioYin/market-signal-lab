@@ -34,7 +34,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.17.0"
+    assert result.stdout.strip() == "market-signal-lab 1.18.0"
     assert result.stderr == ""
 
 
@@ -108,6 +108,120 @@ def test_cli_writes_static_methodology_audit_template_json(tmp_path: Path) -> No
         "Daily reset leveraged ETF risk",
         "Live trading and advice boundary",
     ]
+
+
+def test_cli_prints_methodology_audit_review_template_json() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-review-template",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stderr == ""
+    payload = json.loads(result.stdout)
+    assert payload["audit_type"] == "methodology_audit_review"
+    assert payload["schema_version"] == "1.0"
+    assert payload["research_only"] is True
+    assert payload["static_only"] is True
+    assert payload["no_live_data"] is True
+    assert payload["no_broker_or_account"] is True
+    assert payload["no_orders_or_position_sizing"] is True
+    assert payload["no_recommendations_or_forecasts"] is True
+    assert payload["artifact_reviewed"] == ""
+    assert payload["reviewer"] == ""
+    assert payload["review_date"] == ""
+    assert payload["review_status_values"] == ["PASS", "WARN", "FAIL"]
+    assert [row["check"] for row in payload["checks"]] == [
+        "Look-ahead bias",
+        "Survivorship bias",
+        "Overfitting",
+        "Fees and slippage",
+        "Daily reset leveraged ETF risk",
+        "Live trading and advice boundary",
+    ]
+    assert {row["status"] for row in payload["checks"]} == {""}
+    assert {row["notes"] for row in payload["checks"]} == {""}
+    assert payload["schema_document"] == "docs/methodology-audit-review-schema.md"
+    assert "not investment advice" in payload["note"]
+
+
+def test_cli_writes_methodology_audit_review_template_json_only(
+    tmp_path: Path,
+) -> None:
+    json_path = tmp_path / "methodology-audit-review-template.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-review-template",
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["audit_type"] == "methodology_audit_review"
+    assert payload["checks"][0] == {
+        "check": "Look-ahead bias",
+        "status": "",
+        "notes": "",
+    }
+
+
+def test_cli_rejects_csv_for_methodology_audit_review_template() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-review-template",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--methodology-audit-review-template does not take csv_path" in (
+        result.stderr
+    )
+
+
+def test_cli_rejects_markdown_output_for_methodology_audit_review_template(
+    tmp_path: Path,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-review-template",
+            "--output",
+            str(tmp_path / "review-template.md"),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "writes JSON via stdout or --json-output, not Markdown" in result.stderr
 
 
 def test_cli_rejects_csv_for_static_methodology_audit_template() -> None:

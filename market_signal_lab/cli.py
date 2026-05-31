@@ -31,6 +31,7 @@ from market_signal_lab.metrics import (
 )
 from market_signal_lab.manifest import build_manifest, render_manifest_markdown
 from market_signal_lab.methodology_audit import (
+    build_methodology_audit_review_template,
     build_methodology_audit_template,
     render_methodology_audit_template,
     render_methodology_audit_score,
@@ -83,7 +84,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        if args.score_methodology_audit is not None:
+        if args.methodology_audit_review_template:
+            args = _resolve_methodology_audit_review_template_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_methodology_audit_review_template()
+            )
+        elif args.score_methodology_audit is not None:
             args = _resolve_methodology_audit_score_args(args, parser)
             report, json_payload, manifest_payload = _run_methodology_audit_score(args)
         elif args.methodology_audit_template:
@@ -121,6 +127,9 @@ def _write_outputs(
 ) -> None:
     if args.output:
         _write_text(args.output, report)
+    elif getattr(args, "methodology_audit_review_template", False):
+        if args.json_output is None:
+            print(report, end="")
     else:
         print(report, end="")
 
@@ -290,6 +299,17 @@ def _build_parser() -> ArgumentParser:
             "Print or write a static Markdown methodology audit template for "
             "reviewers. Does not read CSV data, fetch live data, connect to "
             "brokers, or generate trading advice."
+        ),
+    )
+    parser.add_argument(
+        "--methodology-audit-review-template",
+        action="store_true",
+        default=False,
+        help=(
+            "Print or write a blank static methodology audit review JSON "
+            "skeleton for reviewers to fill. Optional --json-output writes "
+            "the JSON file. Does not read market data, fetch live data, "
+            "connect to brokers, or generate trading advice."
         ),
     )
     parser.add_argument(
@@ -514,6 +534,72 @@ def _resolve_methodology_audit_template_args(
     return resolved
 
 
+def _resolve_methodology_audit_review_template_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--methodology-audit-review-template does not take csv_path")
+    if args.config is not None:
+        parser.error("--methodology-audit-review-template does not take --config")
+    if args.output is not None:
+        parser.error(
+            "--methodology-audit-review-template writes JSON via stdout or "
+            "--json-output, not Markdown"
+        )
+    if args.pretrade_packet:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--pretrade-packet"
+        )
+    if args.scenario_card:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--scenario-card"
+        )
+    if args.validate_thesis_ledger is not None:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--validate-thesis-ledger"
+        )
+    if args.methodology_audit_template:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--methodology-audit-template"
+        )
+    if args.score_methodology_audit is not None:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--score-methodology-audit"
+        )
+    if args.regime_comparison:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with "
+            "--regime-comparison"
+        )
+    if args.sweep:
+        parser.error(
+            "--methodology-audit-review-template cannot be combined with --sweep"
+        )
+    if args.html_output is not None:
+        parser.error("--methodology-audit-review-template writes JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            "--methodology-audit-review-template does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = None
+    resolved.json_output = args.json_output
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.methodology_audit_review_template = True
+    return resolved
+
+
 def _resolve_methodology_audit_score_args(
     args: Namespace,
     parser: ArgumentParser,
@@ -539,6 +625,11 @@ def _resolve_methodology_audit_score_args(
         parser.error(
             "--score-methodology-audit cannot be combined with "
             "--methodology-audit-template"
+        )
+    if args.methodology_audit_review_template:
+        parser.error(
+            "--score-methodology-audit cannot be combined with "
+            "--methodology-audit-review-template"
         )
     if args.regime_comparison:
         parser.error(
@@ -767,6 +858,14 @@ def _run_pretrade_packet(args: Namespace) -> tuple[str, dict[str, Any], dict[str
 def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_methodology_audit_template()
     report = render_methodology_audit_template(payload)
+    return report, payload, {}
+
+
+def _run_methodology_audit_review_template() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_methodology_audit_review_template()
+    report = _compact_json(payload)
     return report, payload, {}
 
 

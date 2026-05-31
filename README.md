@@ -22,6 +22,8 @@ Three proof artifacts:
 
 For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
+The v1.18.0 methodology-audit review-template increment adds `--methodology-audit-review-template`, a static JSON skeleton for reviewers to fill before scoring with `--score-methodology-audit`. It writes JSON to `--json-output` when supplied or stdout otherwise, and stays deterministic and stdlib-only with no JavaScript, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
+
 The v1.17.0 methodology-audit validation increment documents the reviewer-filled JSON shape in [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md) and makes invalid audit check names/statuses fail with direct CLI errors. It stays deterministic and stdlib-only, with no JavaScript, live data, broker or account workflow, orders, position sizing, recommendations, forecasts, or investment advice.
 
 The v1.16.0 methodology-audit score HTML increment lets `--score-methodology-audit PATH` write a static browser-openable score report via `--html-output PATH`, with local links to matching Markdown and JSON artifacts when those outputs are supplied. The HTML report has no JavaScript, no external assets, no live data, no broker or account workflow, no orders, no position sizing, no recommendations, no forecasts, and no investment advice.
@@ -398,6 +400,8 @@ Before using any findings, read:
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [v1.18.0 Release Notes](docs/release-notes-v1.18.0.md)
+- [v1.18.0 Release Checklist](docs/release-v1.18.0.md)
 - [v1.17.0 Release Notes](docs/release-notes-v1.17.0.md)
 - [v1.17.0 Release Checklist](docs/release-v1.17.0.md)
 - [v1.16.0 Release Notes](docs/release-notes-v1.16.0.md)

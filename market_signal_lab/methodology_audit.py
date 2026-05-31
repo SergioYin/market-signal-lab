@@ -128,6 +128,41 @@ def build_methodology_audit_template() -> dict[str, Any]:
     }
 
 
+def build_methodology_audit_review_template() -> dict[str, Any]:
+    """Return a blank reviewer-fillable methodology audit JSON skeleton."""
+
+    return {
+        "audit_type": "methodology_audit_review",
+        "schema_version": "1.0",
+        "research_only": True,
+        "static_only": True,
+        "no_live_data": True,
+        "no_broker_or_account": True,
+        "no_orders_or_position_sizing": True,
+        "no_recommendations_or_forecasts": True,
+        "artifact_reviewed": "",
+        "reviewer": "",
+        "review_date": "",
+        "review_status_values": list(METHODOLOGY_AUDIT_STATUS_VALUES),
+        "checks": [
+            {
+                "check": row["check"],
+                "status": "",
+                "notes": "",
+            }
+            for row in METHODOLOGY_AUDIT_CHECKS
+        ],
+        "note": (
+            "Blank local methodology audit review JSON skeleton for reviewers "
+            "to fill before scoring; not investment advice, not a "
+            "recommendation, not a forecast, and not a live-data, broker, "
+            "account, order, or position-sizing workflow."
+        ),
+        "source_document": "docs/methodology-audit.md",
+        "schema_document": "docs/methodology-audit-review-schema.md",
+    }
+
+
 def render_methodology_audit_template(payload: dict[str, Any]) -> str:
     """Render the static audit template as Markdown."""
 

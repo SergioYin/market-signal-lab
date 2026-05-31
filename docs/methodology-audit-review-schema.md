@@ -6,6 +6,14 @@ This page documents the JSON shape accepted by:
 python -m market_signal_lab.cli --score-methodology-audit PATH
 ```
 
+To generate a blank local skeleton with the accepted check names in order:
+
+```bash
+python -m market_signal_lab.cli --methodology-audit-review-template
+python -m market_signal_lab.cli --methodology-audit-review-template \
+  --json-output reports/methodology-audit-review-template.json
+```
+
 The file is a local reviewer-entered methodology audit review. It is static input for PASS/WARN/FAIL counting only. It does not read CSV market data, fetch live data, connect to brokers, inspect accounts, route orders, size positions, forecast, recommend, certify strategy quality, or provide investment advice.
 
 ## Root Object
@@ -97,6 +105,8 @@ error: Look-ahead bias: invalid status 'MAYBE'; expected one of PASS, WARN, FAIL
 ```
 
 See [`examples/configs/methodology-audit-review.json`](../examples/configs/methodology-audit-review.json) for the checked-in example review file.
+
+See [`reports/methodology-audit-review-template.json`](../reports/methodology-audit-review-template.json) for the generated blank review skeleton. Reviewers must fill each blank `status` with `PASS`, `WARN`, or `FAIL` before scoring.
 
 ## Score Output
 

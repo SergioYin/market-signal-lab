@@ -71,6 +71,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.15.0.md"),
     Path("docs/release-notes-v1.16.0.md"),
     Path("docs/release-notes-v1.17.0.md"),
+    Path("docs/release-notes-v1.18.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -103,6 +104,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.15.0.md"),
     Path("docs/release-v1.16.0.md"),
     Path("docs/release-v1.17.0.md"),
+    Path("docs/release-v1.18.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -128,6 +130,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
     "docs/methodology-audit-review-schema.md",
+    "docs/release-notes-v1.18.0.md",
+    "docs/release-v1.18.0.md",
     "docs/release-notes-v1.17.0.md",
     "docs/release-v1.17.0.md",
     "docs/release-notes-v1.16.0.md",
@@ -316,6 +320,7 @@ SAMPLE_ARTIFACTS = (
     Path("reports/scenario-card.json"),
     Path("reports/methodology-audit-template.md"),
     Path("reports/methodology-audit-template.json"),
+    Path("reports/methodology-audit-review-template.json"),
     Path("reports/methodology-audit-score.md"),
     Path("reports/methodology-audit-score.json"),
     Path("reports/methodology-audit-score.html"),
@@ -1273,6 +1278,14 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/methodology-audit-template.md",
             "--json-output",
             "reports/methodology-audit-template.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--methodology-audit-review-template",
+            "--json-output",
+            "reports/methodology-audit-review-template.json",
         ],
         [
             sys.executable,

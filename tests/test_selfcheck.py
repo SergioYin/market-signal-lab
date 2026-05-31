@@ -18,8 +18,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         Path("reports/cross-asset-thesis-ledger-acceptance.json")
         in selfcheck.SAMPLE_ARTIFACTS
     )
-    assert Path("docs/release-notes-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
-    assert Path("docs/release-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.13.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.13.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -83,6 +83,9 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/cold-user-evidence-card.md" in landing
     assert "docs/index.md" in landing
     assert "docs/static-gallery-manifest.md" in landing
+    assert "docs/methodology-audit.md" in landing
+    assert "docs/release-notes-v1.13.0.md" in landing
+    assert "docs/release-v1.13.0.md" in landing
     assert "docs/release-notes-v1.12.0.md" in landing
     assert "docs/release-v1.12.0.md" in landing
     assert "docs/release-notes-v1.11.0.md" in landing
@@ -150,11 +153,13 @@ def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
             "public-share-summary.md",
             "reviewer-faq.md",
             "promotion-checklist.md",
+            "methodology-audit.md",
         ),
         Path("docs/static-gallery-manifest.md"): (
             "public-share-summary.md",
             "reviewer-faq.md",
             "promotion-checklist.md",
+            "methodology-audit.md",
         ),
     }
 
@@ -169,9 +174,11 @@ def test_public_share_reviewer_and_promotion_docs_are_linked() -> None:
             assert required_link in source_text
 
 
-def test_v131_root_landing_contract_covers_evidence_card_and_v112_release_docs() -> None:
+def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> None:
     required_links = {
         "docs/cold-user-evidence-card.md",
+        "docs/release-notes-v1.13.0.md",
+        "docs/release-v1.13.0.md",
         "docs/release-notes-v1.12.0.md",
         "docs/release-v1.12.0.md",
         "docs/release-notes-v1.11.0.md",
@@ -628,6 +635,7 @@ def test_docs_link_sources_include_canonical_docs_map() -> None:
     assert Path("docs/release-notes-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.2.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/static-gallery-manifest.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/methodology-audit.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.3.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.3.1.md") in selfcheck.DOC_LINK_SOURCES
@@ -643,6 +651,7 @@ def test_public_claim_sources_include_v110_release_docs() -> None:
     assert Path("docs/release-notes-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.2.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/static-gallery-manifest.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/methodology-audit.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.3.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.3.1.md") in selfcheck.PUBLIC_CLAIM_SOURCES
@@ -679,6 +688,10 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.12.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.12.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.12.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-notes-v1.13.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.13.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.13.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
+    assert Path("docs/release-v1.13.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 
 
 def test_regime_comparison_artifacts_are_in_public_gallery_contract() -> None:
@@ -1413,6 +1426,8 @@ def _write_v131_landing_fixture(
         "split-sweep-walkthrough.md",
         "risk-boundaries.md",
         "data-provenance.md",
+        "release-notes-v1.13.0.md",
+        "release-v1.13.0.md",
         "release-notes-v1.12.0.md",
         "release-v1.12.0.md",
         "release-notes-v1.11.0.md",

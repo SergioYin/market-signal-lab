@@ -32,6 +32,7 @@ DOC_LINK_SOURCES = (
     Path("docs/three-minute-review.md"),
     Path("docs/local-audit-commands.md"),
     Path("docs/public-share-copy.md"),
+    Path("docs/reviewer-decision-tree.md"),
     Path("docs/artifact-gallery.md"),
     Path("docs/cold-review-checklist.md"),
     Path("docs/config-files.md"),
@@ -81,6 +82,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.20.0.md"),
     Path("docs/release-notes-v1.20.1.md"),
     Path("docs/release-notes-v1.20.2.md"),
+    Path("docs/release-notes-v1.20.3.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -118,6 +120,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.20.0.md"),
     Path("docs/release-v1.20.1.md"),
     Path("docs/release-v1.20.2.md"),
+    Path("docs/release-v1.20.3.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -148,6 +151,9 @@ V131_ROOT_LANDING_LINKS = (
     "docs/three-minute-review.md",
     "docs/local-audit-commands.md",
     "docs/public-share-copy.md",
+    "docs/reviewer-decision-tree.md",
+    "docs/release-notes-v1.20.3.md",
+    "docs/release-v1.20.3.md",
     "docs/release-notes-v1.20.2.md",
     "docs/release-v1.20.2.md",
     "docs/release-notes-v1.20.1.md",

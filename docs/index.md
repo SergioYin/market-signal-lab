@@ -6,6 +6,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
 - [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
+- [Quick-Tour Preview](quick-tour-preview.md) - visual three-minute route from static gallery to evidence card to thesis-ledger acceptance.
 - [Three-Minute Review Route](three-minute-review.md) - cold-review route for the static demo, methodology caveats, and one reproducible acceptance command.
 - [Local Audit Commands](local-audit-commands.md) - concise local commands for artifact acceptance, selfcheck, release hygiene, and command limits.
 - [Public Share Copy](public-share-copy.md) - public-safe one-liners and claim boundaries for sharing the project.
@@ -20,6 +21,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Methodology Audit](methodology-audit.md) - reviewer checklist for look-ahead bias, survivorship bias, overfitting, cost assumptions, leveraged ETF daily-reset risk, and no-advice/no-live-trading boundaries.
 - [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - JSON schema-like documentation for reviewer-filled audit files, accepted check names, accepted statuses, and CLI validation errors.
 - [Evidence Card Walkthrough](evidence-card-walkthrough.svg) - visual local reading path for the evidence-card handoff.
+- [Quick-Tour Preview SVG](quick-tour-preview.svg) - static public-safe preview diagram for the cold-review route.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
 - [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
@@ -66,6 +68,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.20.4 Release Notes](release-notes-v1.20.4.md)
+- [v1.20.4 Release Checklist](release-v1.20.4.md)
 - [v1.20.3 Release Notes](release-notes-v1.20.3.md)
 - [v1.20.3 Release Checklist](release-v1.20.3.md)
 - [v1.20.2 Release Notes](release-notes-v1.20.2.md)

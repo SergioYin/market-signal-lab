@@ -20,7 +20,9 @@ Three proof artifacts:
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
 - [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 
-For a compact cold-review handoff, use the [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+For a compact cold-review handoff, use the [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+
+The v1.20.4 quick-tour preview increment adds [Quick-Tour Preview](docs/quick-tour-preview.md) and [Quick-Tour Preview SVG](docs/quick-tour-preview.svg) so cold users can see the static gallery -> evidence card -> acceptance-check route before installing anything. It is documentation/static-demo polish only and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
 The v1.20.3 reviewer decision-tree increment adds [Reviewer Decision Tree](docs/reviewer-decision-tree.md) so cold users can choose between understanding, reproducibility, methodology-risk, public-sharing, and promotion-readiness checks. It is documentation-only except version metadata and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
@@ -420,6 +422,8 @@ Before using any findings, read:
 - [Local Audit Commands](docs/local-audit-commands.md)
 - [Public Share Copy](docs/public-share-copy.md)
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
+- [v1.20.4 Release Notes](docs/release-notes-v1.20.4.md)
+- [v1.20.4 Release Checklist](docs/release-v1.20.4.md)
 - [v1.20.3 Release Notes](docs/release-notes-v1.20.3.md)
 - [v1.20.3 Release Checklist](docs/release-v1.20.3.md)
 - [v1.20.2 Release Notes](docs/release-notes-v1.20.2.md)

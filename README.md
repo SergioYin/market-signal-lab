@@ -20,7 +20,9 @@ Three proof artifacts:
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
 - [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 
-For a compact cold-review handoff, use the [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+For a compact cold-review handoff, use the [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+
+The v1.20.0 cold-review route increment adds [Three-Minute Review Route](docs/three-minute-review.md) for reviewers who want to inspect the static demo, methodology caveats, and one reproducible acceptance command before deciding whether to reuse the project pattern. It is documentation-only except version metadata and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
 The v1.19.0 architecture documentation increment adds [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) for maintainers and public reviewers. It explains the static-first architecture, local CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and why live data, brokers, account workflows, orders, position sizing, recommendations, forecasts, and investment advice are intentionally out of scope. It is documentation-only except version metadata.
 
@@ -408,6 +410,9 @@ Before using any findings, read:
 - [Static Gallery Walkthrough](docs/static-gallery-walkthrough.svg)
 - [Static Demo Manifest](docs/static-gallery-manifest.md)
 - [Methodology Audit](docs/methodology-audit.md)
+- [Three-Minute Review Route](docs/three-minute-review.md)
+- [v1.20.0 Release Notes](docs/release-notes-v1.20.0.md)
+- [v1.20.0 Release Checklist](docs/release-v1.20.0.md)
 - [v1.19.0 Release Notes](docs/release-notes-v1.19.0.md)
 - [v1.19.0 Release Checklist](docs/release-v1.19.0.md)
 - [v1.18.0 Release Notes](docs/release-notes-v1.18.0.md)

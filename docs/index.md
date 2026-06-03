@@ -8,6 +8,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
 - [Three-Minute Review Route](three-minute-review.md) - cold-review route for the static demo, methodology caveats, and one reproducible acceptance command.
 - [Local Audit Commands](local-audit-commands.md) - concise local commands for artifact acceptance, selfcheck, release hygiene, and command limits.
+- [Public Share Copy](public-share-copy.md) - public-safe one-liners and claim boundaries for sharing the project.
 - [Architecture](architecture.md) - static-first architecture, CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and out-of-scope boundaries.
 - [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
@@ -64,6 +65,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.20.2 Release Notes](release-notes-v1.20.2.md)
+- [v1.20.2 Release Checklist](release-v1.20.2.md)
 - [v1.20.1 Release Notes](release-notes-v1.20.1.md)
 - [v1.20.1 Release Checklist](release-v1.20.1.md)
 - [v1.20.0 Release Notes](release-notes-v1.20.0.md)

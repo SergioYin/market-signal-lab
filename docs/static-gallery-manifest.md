@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.20.1. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.20.2. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -9,6 +9,7 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Root landing](../index.html)
 - [Three-minute review route](three-minute-review.md)
 - [Local audit commands](local-audit-commands.md)
+- [Public share copy](public-share-copy.md)
 - [Cold review checklist](cold-review-checklist.md)
 - [Cold user evidence card](cold-user-evidence-card.md)
 - [Public share summary](public-share-summary.md)
@@ -64,6 +65,7 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
 - [Three-minute review route](three-minute-review.md)
 - [Local audit commands](local-audit-commands.md)
+- [Public share copy](public-share-copy.md)
 - [Cold user evidence card](cold-user-evidence-card.md)
 - [Public share summary](public-share-summary.md)
 - [Reviewer FAQ](reviewer-faq.md)

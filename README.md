@@ -22,6 +22,8 @@ Three proof artifacts:
 
 For a compact cold-review handoff, use the [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
 
+The v1.20.2 public-share copy increment adds [Public Share Copy](docs/public-share-copy.md) so reviewers and maintainers can describe the project without turning sample outputs into strategy, forecast, signal-service, or recommendation claims. It is documentation-only except version metadata and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
+
 The v1.20.1 audit-command guide increment adds [Local Audit Commands](docs/local-audit-commands.md) for reviewers who want a short verification route after reading the three-minute review page. It is documentation-only except version metadata and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
 The v1.20.0 cold-review route increment adds [Three-Minute Review Route](docs/three-minute-review.md) for reviewers who want to inspect the static demo, methodology caveats, and one reproducible acceptance command before deciding whether to reuse the project pattern. It is documentation-only except version metadata and preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
@@ -414,6 +416,9 @@ Before using any findings, read:
 - [Methodology Audit](docs/methodology-audit.md)
 - [Three-Minute Review Route](docs/three-minute-review.md)
 - [Local Audit Commands](docs/local-audit-commands.md)
+- [Public Share Copy](docs/public-share-copy.md)
+- [v1.20.2 Release Notes](docs/release-notes-v1.20.2.md)
+- [v1.20.2 Release Checklist](docs/release-v1.20.2.md)
 - [v1.20.1 Release Notes](docs/release-notes-v1.20.1.md)
 - [v1.20.1 Release Checklist](docs/release-v1.20.1.md)
 - [v1.20.0 Release Notes](docs/release-notes-v1.20.0.md)

@@ -37,6 +37,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json) - structured version of the same offline research-only packet.
 - [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `python -m market_signal_lab.cli --validate-thesis-ledger` from a fresh checkout, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
+- [Reviewer evidence bundle](../reports/reviewer-evidence-bundle.md) - compact static handoff tying gallery, thesis-ledger acceptance, verification commands, methodology risks, and no-advice boundaries together.
+- [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json) - structured version of the same public-safe handoff.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
 - [Regime comparison JSON](../reports/regime-comparison.json) - machine-readable version of the same synthetic regime comparison.
 - [Regime comparison HTML](../reports/regime-comparison.html) - browser-openable view of the same checked-in artifact.
@@ -68,6 +70,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.21.0 Release Notes](release-notes-v1.21.0.md)
+- [v1.21.0 Release Checklist](release-v1.21.0.md)
 - [v1.20.4 Release Notes](release-notes-v1.20.4.md)
 - [v1.20.4 Release Checklist](release-v1.20.4.md)
 - [v1.20.3 Release Notes](release-notes-v1.20.3.md)

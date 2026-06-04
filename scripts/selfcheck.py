@@ -13,6 +13,10 @@ from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from market_signal_lab.reviewer_bundle import (
+    build_reviewer_evidence_bundle,
+    render_reviewer_evidence_bundle,
+)
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
     render_cross_asset_thesis_ledger,
@@ -85,6 +89,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.20.2.md"),
     Path("docs/release-notes-v1.20.3.md"),
     Path("docs/release-notes-v1.20.4.md"),
+    Path("docs/release-notes-v1.21.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -124,6 +129,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.20.2.md"),
     Path("docs/release-v1.20.3.md"),
     Path("docs/release-v1.20.4.md"),
+    Path("docs/release-v1.21.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -157,6 +163,9 @@ V131_ROOT_LANDING_LINKS = (
     "docs/local-audit-commands.md",
     "docs/public-share-copy.md",
     "docs/reviewer-decision-tree.md",
+    "reports/reviewer-evidence-bundle.md",
+    "docs/release-notes-v1.21.0.md",
+    "docs/release-v1.21.0.md",
     "docs/release-notes-v1.20.4.md",
     "docs/release-v1.20.4.md",
     "docs/release-notes-v1.20.3.md",
@@ -227,6 +236,8 @@ V130_STATIC_GALLERY_LINKS = (
     "fee-sensitivity.json",
     "cross-asset-thesis-ledger.md",
     "cross-asset-thesis-ledger.json",
+    "reviewer-evidence-bundle.md",
+    "reviewer-evidence-bundle.json",
     "regime-comparison.html",
     "regime-comparison.md",
     "regime-comparison.json",
@@ -280,6 +291,11 @@ V160_STATIC_DASHBOARD_CARDS = {
         "Cross-Asset Thesis Ledger",
         "reports/cross-asset-thesis-ledger.md",
         ("cross-asset-thesis-ledger.md", "cross-asset-thesis-ledger.json"),
+    ),
+    "reviewer-evidence-bundle": (
+        "Reviewer Evidence Bundle",
+        "reports/reviewer-evidence-bundle.md",
+        ("reviewer-evidence-bundle.md", "reviewer-evidence-bundle.json"),
     ),
     "split-sweep": (
         "Split Sweep",
@@ -373,6 +389,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/cross-asset-thesis-ledger.json"),
     Path("reports/cross-asset-thesis-ledger-acceptance.md"),
     Path("reports/cross-asset-thesis-ledger-acceptance.json"),
+    Path("reports/reviewer-evidence-bundle.md"),
+    Path("reports/reviewer-evidence-bundle.json"),
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
@@ -460,6 +478,12 @@ GALLERY_HTML = """<!doctype html>
         <p>Deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet with embedded scenario-card JSON.</p>
         <p class="artifact-links"><a href="cross-asset-thesis-ledger.md">Markdown</a><a href="cross-asset-thesis-ledger.json">JSON</a></p>
       </article>
+      <article class="dashboard-card" data-artifact="reviewer-evidence-bundle">
+        <h2>Reviewer Evidence Bundle</h2>
+        <p class="artifact-path">reports/reviewer-evidence-bundle.md</p>
+        <p>Cold-review handoff route, deterministic verification commands, and explicit research-only boundaries.</p>
+        <p class="artifact-links"><a href="reviewer-evidence-bundle.md">Markdown</a><a href="reviewer-evidence-bundle.json">JSON</a></p>
+      </article>
       <article class="dashboard-card" data-artifact="split-sweep">
         <h2>Split Sweep</h2>
         <p class="artifact-path">reports/sample-sweep-split.html</p>
@@ -482,6 +506,7 @@ GALLERY_HTML = """<!doctype html>
       <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
       <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
       <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
+      <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a></li>
       <li><a href="sample-manifest.md">Sample manifest</a></li>
     </ul>
     <h2>Parameter Sweep</h2>
@@ -627,6 +652,15 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(ledger_acceptance, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    reviewer_bundle = build_reviewer_evidence_bundle()
+    (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
+        render_reviewer_evidence_bundle(reviewer_bundle),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "reviewer-evidence-bundle.json").write_text(
+        json.dumps(reviewer_bundle, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
@@ -642,7 +676,7 @@ def run_sample_artifact_generation() -> bool:
     print(
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
-        "fee sensitivity, cross-asset thesis ledger, thesis-ledger "
+        "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, thesis-ledger "
         "acceptance, regime comparison, and HTML artifacts."
     )
     return True

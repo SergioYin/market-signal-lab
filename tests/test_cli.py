@@ -34,8 +34,65 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.20.4"
+    assert result.stdout.strip() == "market-signal-lab 1.21.0"
     assert result.stderr == ""
+
+
+def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-evidence-bundle",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "reviewer-evidence-bundle.md"
+    json_path = tmp_path / "reports" / "reviewer-evidence-bundle.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Reviewer Evidence Bundle" in markdown
+    assert "reports/index.html" in markdown
+    assert "python -m market_signal_lab.cli --validate-thesis-ledger" in markdown
+    assert "daily-reset leveraged ETF" in markdown
+    assert payload["bundle_type"] == "reviewer_evidence_bundle"
+    assert payload["schema_version"] == "1.0"
+    assert payload["research_only"] is True
+    assert payload["static_only"] is True
+    assert payload["no_live_data"] is True
+    assert payload["no_broker_or_account"] is True
+    assert payload["no_orders_or_position_sizing"] is True
+    assert payload["no_recommendations_or_forecasts"] is True
+    assert payload["inspection_steps"][0]["path"] == "reports/index.html"
+
+
+def test_cli_rejects_csv_for_reviewer_evidence_bundle() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-evidence-bundle",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--reviewer-evidence-bundle does not take csv_path" in result.stderr
 
 
 def test_cli_prints_static_methodology_audit_template_without_csv_path() -> None:

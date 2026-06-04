@@ -47,6 +47,10 @@ from market_signal_lab.report import (
     render_regime_comparison_report,
     render_experiment_report,
 )
+from market_signal_lab.reviewer_bundle import (
+    build_reviewer_evidence_bundle,
+    render_reviewer_evidence_bundle,
+)
 from market_signal_lab.scenario_card import build_scenario_card, render_scenario_card
 from market_signal_lab.split import TrainTestSplit, split_train_test
 from market_signal_lab.strategies import moving_average_crossover_strategy
@@ -77,6 +81,8 @@ THESIS_LEDGER_ACCEPTANCE_OUTPUT = Path(
 THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT = Path(
     "reports/cross-asset-thesis-ledger-acceptance.json"
 )
+REVIEWER_EVIDENCE_BUNDLE_OUTPUT = Path("reports/reviewer-evidence-bundle.md")
+REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT = Path("reports/reviewer-evidence-bundle.json")
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -101,6 +107,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.regime_comparison:
             args = _resolve_regime_comparison_args(args, parser)
             report, json_payload, manifest_payload = _run_regime_comparison(args)
+        elif args.reviewer_evidence_bundle:
+            args = _resolve_reviewer_evidence_bundle_args(args, parser)
+            report, json_payload, manifest_payload = _run_reviewer_evidence_bundle()
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -324,6 +333,17 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--reviewer-evidence-bundle",
+        action="store_true",
+        default=False,
+        help=(
+            "Write a static reviewer evidence bundle linking the gallery, "
+            "thesis-ledger acceptance route, methodology risks, and no-advice "
+            "boundaries. Defaults to reports/reviewer-evidence-bundle.md and "
+            "reports/reviewer-evidence-bundle.json."
+        ),
+    )
+    parser.add_argument(
         "--regime-comparison",
         action="store_true",
         default=False,
@@ -487,6 +507,59 @@ def _resolve_thesis_ledger_validation_args(
     if resolved.output is None and resolved.json_output is None:
         resolved.output = THESIS_LEDGER_ACCEPTANCE_OUTPUT
         resolved.json_output = THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT
+    return resolved
+
+
+def _resolve_reviewer_evidence_bundle_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--reviewer-evidence-bundle does not take csv_path")
+    if args.config is not None:
+        parser.error("--reviewer-evidence-bundle does not take --config")
+    if args.pretrade_packet:
+        parser.error("--reviewer-evidence-bundle cannot be combined with --pretrade-packet")
+    if args.scenario_card:
+        parser.error("--reviewer-evidence-bundle cannot be combined with --scenario-card")
+    if args.validate_thesis_ledger is not None:
+        parser.error(
+            "--reviewer-evidence-bundle cannot be combined with "
+            "--validate-thesis-ledger"
+        )
+    if args.methodology_audit_template:
+        parser.error(
+            "--reviewer-evidence-bundle cannot be combined with "
+            "--methodology-audit-template"
+        )
+    if args.methodology_audit_review_template:
+        parser.error(
+            "--reviewer-evidence-bundle cannot be combined with "
+            "--methodology-audit-review-template"
+        )
+    if args.score_methodology_audit is not None:
+        parser.error(
+            "--reviewer-evidence-bundle cannot be combined with "
+            "--score-methodology-audit"
+        )
+    if args.regime_comparison:
+        parser.error("--reviewer-evidence-bundle cannot be combined with --regime-comparison")
+    if args.sweep:
+        parser.error("--reviewer-evidence-bundle cannot be combined with --sweep")
+    if args.html_output is not None:
+        parser.error("--reviewer-evidence-bundle writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error("--reviewer-evidence-bundle does not write experiment manifests")
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or REVIEWER_EVIDENCE_BUNDLE_OUTPUT
+    resolved.json_output = args.json_output or REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.reviewer_evidence_bundle = True
     return resolved
 
 
@@ -858,6 +931,12 @@ def _run_pretrade_packet(args: Namespace) -> tuple[str, dict[str, Any], dict[str
 def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_methodology_audit_template()
     report = render_methodology_audit_template(payload)
+    return report, payload, {}
+
+
+def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_reviewer_evidence_bundle()
+    report = render_reviewer_evidence_bundle(payload)
     return report, payload, {}
 
 

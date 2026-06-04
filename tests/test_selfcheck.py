@@ -72,6 +72,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "fee-sensitivity.json",
         "cross-asset-thesis-ledger.md",
         "cross-asset-thesis-ledger.json",
+        "reviewer-evidence-bundle.md",
+        "reviewer-evidence-bundle.json",
         "regime-comparison.html",
         "regime-comparison.md",
         "regime-comparison.json",
@@ -109,6 +111,9 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/adr/0001-static-research-artifacts.md" in landing
     assert "docs/release-notes-v1.19.0.md" in landing
     assert "docs/release-v1.19.0.md" in landing
+    assert "docs/release-notes-v1.21.0.md" in landing
+    assert "docs/release-v1.21.0.md" in landing
+    assert "reports/reviewer-evidence-bundle.md" in landing
     assert "docs/release-notes-v1.18.0.md" in landing
     assert "docs/release-v1.17.0.md" in landing
     assert "docs/release-notes-v1.16.0.md" in landing
@@ -225,6 +230,9 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/reviewer-decision-tree.md",
         "docs/quick-tour-preview.md",
         "docs/quick-tour-preview.svg",
+        "reports/reviewer-evidence-bundle.md",
+        "docs/release-notes-v1.21.0.md",
+        "docs/release-v1.21.0.md",
         "docs/release-notes-v1.20.4.md",
         "docs/release-v1.20.4.md",
         "docs/release-notes-v1.20.3.md",
@@ -458,6 +466,8 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         reports_dir / "fee-sensitivity.json",
         reports_dir / "cross-asset-thesis-ledger.md",
         reports_dir / "cross-asset-thesis-ledger.json",
+        reports_dir / "reviewer-evidence-bundle.md",
+        reports_dir / "reviewer-evidence-bundle.json",
         reports_dir / "sample-sweep-split.html",
         reports_dir / "sample-sweep-split.md",
         reports_dir / "sample-sweep-split.json",
@@ -544,6 +554,20 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         (
             "reports/index.html: missing v1.6 dashboard link to "
             "cross-asset-thesis-ledger.json"
+        ),
+        "reports/index.html: missing v1.6 dashboard card reviewer-evidence-bundle",
+        "reports/index.html: missing v1.6 dashboard title Reviewer Evidence Bundle",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/reviewer-evidence-bundle.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "reviewer-evidence-bundle.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "reviewer-evidence-bundle.json"
         ),
         "reports/index.html: missing v1.6 dashboard card split-sweep",
         "reports/index.html: missing v1.6 dashboard title Split Sweep",
@@ -1538,6 +1562,10 @@ def _write_v131_landing_fixture(
 
     (tmp_path / "README.md").write_text("# README\n", encoding="utf-8")
     (reports_dir / "index.html").write_text("<h1>Gallery</h1>\n", encoding="utf-8")
+    (reports_dir / "reviewer-evidence-bundle.md").write_text(
+        "# Reviewer Evidence Bundle\n",
+        encoding="utf-8",
+    )
     for doc_name in (
         "cold-user-evidence-card.md",
         "index.md",
@@ -1557,6 +1585,8 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-notes-v1.21.0.md",
+        "release-v1.21.0.md",
         "release-notes-v1.20.4.md",
         "release-v1.20.4.md",
         "release-notes-v1.20.3.md",

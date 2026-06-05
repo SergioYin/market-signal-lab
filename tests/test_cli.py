@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from market_signal_lab.cli import _regime_generation_assumptions
 from market_signal_lab.beginner_prediction_checklist import (
     BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS,
     BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS,
@@ -43,7 +44,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.22.0"
+    assert result.stdout.strip() == "market-signal-lab 1.22.1"
     assert result.stderr == ""
 
 
@@ -796,6 +797,34 @@ def test_cli_validates_default_cross_asset_thesis_ledger(tmp_path: Path) -> None
     assert "not investment advice" in markdown
     assert payload["accepted"] is True
     assert payload["error_count"] == 0
+    assert payload["asset_symbols"] == ["QQQ_LIKE", "QLD_LIKE", "TQQQ_LIKE"]
+
+
+def test_cli_validates_bundled_thesis_ledger_from_empty_cwd(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--validate-thesis-ledger",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(
+        (
+            tmp_path / "reports" / "cross-asset-thesis-ledger-acceptance.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert payload["accepted"] is True
     assert payload["asset_symbols"] == ["QQQ_LIKE", "QLD_LIKE", "TQQQ_LIKE"]
 
 
@@ -1618,8 +1647,90 @@ def test_cli_regime_comparison_writes_markdown_json_and_html(
     assert "<h2>Caveats</h2>" in html
     assert "Research-only" in html
     assert "<script" not in html.lower()
+
+
+def test_cli_regime_comparison_reads_bundled_inputs_from_empty_cwd(
+    tmp_path: Path,
+) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    env = {**os.environ, "PYTHONPATH": str(repo_root)}
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--regime-comparison",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0, result.stderr
+    payload = json.loads(
+        (tmp_path / "reports" / "regime-comparison.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert [row["symbol"] for row in payload["regimes"]] == [
+        "BULL_REGIME",
+        "CHOPPY_REGIME",
+        "DRAWDOWN_RECOVERY_REGIME",
+    ]
+    assert {Path(row["csv_path"]).name for row in payload["regimes"]} == {
+        "sample_multi_regime.csv"
+    }
+    assert payload["regimes"][0]["data_provenance"]["dataset_label"] == (
+        "sample_multi_regime"
+    )
+    assert Path(
+        payload["regimes"][0]["data_provenance"]["metadata_path"]
+    ).name == (
+        "sample_multi_regime.csv.provenance.json"
+    )
+    html = (tmp_path / "reports" / "regime-comparison.html").read_text(
+        encoding="utf-8"
+    )
     assert "http://" not in html
     assert "https://" not in html
+
+
+@pytest.mark.parametrize(
+    "data_provenance",
+    [
+        None,
+        {"regimes": "bull"},
+        {"regimes": [{"symbol": "OTHER_REGIME"}]},
+    ],
+)
+def test_regime_generation_assumptions_falls_back_for_missing_metadata(
+    data_provenance: object,
+) -> None:
+    fallback = _regime_generation_assumptions(data_provenance, "BULL_REGIME")
+
+    assert fallback == {
+        "source": "No matching per-regime provenance metadata was found.",
+        "assumptions": [
+            "Treat this row as a research-only comparison row, not a forecast.",
+        ],
+        "synthetic_only": True,
+        "not_predictive": True,
+        "not_live_trading": True,
+    }
+
+
+def test_regime_generation_assumptions_fallback_is_fresh() -> None:
+    fallback = _regime_generation_assumptions(None, "BULL_REGIME")
+    fallback["assumptions"].append("mutated")
+
+    fresh_fallback = _regime_generation_assumptions(None, "BULL_REGIME")
+
+    assert fresh_fallback["assumptions"] == [
+        "Treat this row as a research-only comparison row, not a forecast.",
+    ]
 
 
 def test_cli_flags_override_config_values(tmp_path: Path) -> None:

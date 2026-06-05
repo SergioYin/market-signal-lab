@@ -4,23 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "market-signal-lab"
-version = "1.22.0"
-description = "Explainable trading-signal research and backtesting sandbox"
+version = "1.22.1"
+description = "Research-only static backtest artifact packaging sandbox"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 license = { file = "LICENSE" }
 authors = [{ name = "SergioYin" }]
-keywords = ["backtesting", "trading-signals", "research", "finance", "static-demo"]
+keywords = ["backtesting", "research", "static-artifacts", "sample-data", "artifact-packaging"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
-    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Education",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Topic :: Office/Business :: Financial",
+    "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 
 [project.optional-dependencies]
@@ -35,9 +35,15 @@ Documentation = "https://github.com/SergioYin/market-signal-lab/tree/main/docs"
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+markers = [
+    "wheel_smoke: builds and installs the wheel before exercising installed console scripts",
+]
 
 [project.scripts]
 market-signal-lab = "market_signal_lab.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["market_signal_lab*"]
+
+[tool.setuptools.package-data]
+market_signal_lab = ["_resources/**/*.csv", "_resources/**/*.json"]

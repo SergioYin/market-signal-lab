@@ -72,6 +72,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.22.1 Release Notes](release-notes-v1.22.1.md)
 - [v1.22.0 Release Notes](release-notes-v1.22.0.md)
 - [v1.22.0 Release Checklist](release-v1.22.0.md)
 - [v1.21.0 Release Notes](release-notes-v1.21.0.md)

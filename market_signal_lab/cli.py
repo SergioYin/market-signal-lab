@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from collections.abc import Mapping, Sequence
+from importlib.resources import files
 from io import StringIO
 from pathlib import Path
 import csv
 import json
 import os
 import sys
+import tempfile
 from typing import Any
 
 from market_signal_lab import __version__
@@ -73,6 +75,7 @@ BUNDLED_REGIME_CONFIGS = (
     Path("examples/configs/multi-regime-choppy-report.json"),
     Path("examples/configs/multi-regime-drawdown-recovery-report.json"),
 )
+BUNDLED_RESOURCE_ROOT = "_resources"
 REGIME_COMPARISON_OUTPUT = Path("reports/regime-comparison.md")
 REGIME_COMPARISON_JSON_OUTPUT = Path("reports/regime-comparison.json")
 REGIME_COMPARISON_HTML_OUTPUT = Path("reports/regime-comparison.html")
@@ -348,9 +351,10 @@ def _build_parser() -> ArgumentParser:
         metavar="PATH",
         help=(
             "Validate a cross-asset thesis-ledger JSON packet. When PATH is "
-            "omitted, validates reports/cross-asset-thesis-ledger.json; when "
-            "no output path is supplied, writes Markdown/JSON acceptance "
-            "artifacts under reports."
+            "omitted, validates reports/cross-asset-thesis-ledger.json if it "
+            "exists, otherwise uses the bundled demo ledger from the installed "
+            "package; when no output path is supplied, writes Markdown/JSON "
+            "acceptance artifacts under reports."
         ),
     )
     parser.add_argument(
@@ -416,8 +420,9 @@ def _build_parser() -> ArgumentParser:
         action="store_true",
         default=False,
         help=(
-            "Run bundled bull/choppy/drawdown-recovery configs and write a "
-            "deterministic comparison artifact under reports by default."
+            "Run bundled bull/choppy/drawdown-recovery demo configs, usable "
+            "from an empty current directory after wheel install, and write "
+            "Markdown/JSON/HTML comparison artifacts under reports by default."
         ),
     )
     parser.add_argument(
@@ -1095,10 +1100,7 @@ def _run_thesis_ledger_validation(
 ) -> tuple[str, dict[str, Any], dict[str, Any]]:
     input_path = Path(args.thesis_ledger_json)
     try:
-        packet = json.loads(
-            input_path.read_text(encoding="utf-8"),
-            parse_constant=_reject_json_constant,
-        )
+        packet = _load_defaultable_json(input_path, THESIS_LEDGER_DEFAULT_JSON)
     except json.JSONDecodeError as exc:
         raise ValueError(f"Invalid thesis-ledger JSON {input_path}: {exc.msg}") from exc
     summary = validate_cross_asset_thesis_ledger_packet(packet)
@@ -1161,12 +1163,16 @@ def _run_sweep(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
 
 
 def _run_regime_comparison(args: Namespace) -> tuple[str, dict[str, Any], dict[str, Any]]:
-    regimes = []
-    for config_path in args.configs:
-        config_values = _load_config(config_path)
-        run_args = _args_from_config_values(config_values)
-        _, payload, _ = _run_backtest(run_args)
-        regimes.append(_build_regime_comparison_row(config_path, run_args, payload))
+    with _bundled_resource_worktree() as resource_root:
+        regimes = []
+        for config_path in args.configs:
+            read_config_path = _bundled_read_path(config_path, resource_root)
+            config_values = _load_config(read_config_path)
+            run_args = _args_from_config_values(config_values)
+            run_args.csv_path = _bundled_read_path(Path(run_args.csv_path), resource_root)
+            _, payload, _ = _run_backtest(run_args)
+            row = _build_regime_comparison_row(config_path, run_args, payload)
+            regimes.append(_sanitize_bundled_resource_paths(row, resource_root))
 
     summary = _build_regime_comparison_summary(regimes)
     report = render_regime_comparison_report(regimes, summary)
@@ -1305,21 +1311,12 @@ def _regime_generation_assumptions(
     data_provenance: Any,
     symbol: str,
 ) -> dict[str, Any]:
-    fallback = {
-        "source": "No matching per-regime provenance metadata was found.",
-        "assumptions": [
-            "Treat this row as a research-only comparison row, not a forecast.",
-        ],
-        "synthetic_only": True,
-        "not_predictive": True,
-        "not_live_trading": True,
-    }
     if not isinstance(data_provenance, Mapping):
-        return fallback
+        return _fallback_regime_generation_assumptions()
 
     regimes = data_provenance.get("regimes")
     if not _is_non_text_sequence(regimes):
-        return fallback
+        return _fallback_regime_generation_assumptions()
 
     for regime in regimes:
         if isinstance(regime, Mapping) and regime.get("symbol") == symbol:
@@ -1331,7 +1328,19 @@ def _regime_generation_assumptions(
                 "not_live_trading": regime.get("not_live_trading") is True,
             }
 
-    return fallback
+    return _fallback_regime_generation_assumptions()
+
+
+def _fallback_regime_generation_assumptions() -> dict[str, Any]:
+    return {
+        "source": "No matching per-regime provenance metadata was found.",
+        "assumptions": [
+            "Treat this row as a research-only comparison row, not a forecast.",
+        ],
+        "synthetic_only": True,
+        "not_predictive": True,
+        "not_live_trading": True,
+    }
 
 
 def _build_regime_comparison_summary(
@@ -1366,6 +1375,81 @@ def _load_provenance_payload(csv_path: Path) -> dict[str, Any] | None:
     if provenance is None:
         return None
     return provenance.as_dict()
+
+
+def _load_defaultable_json(path: Path, bundled_default: Path) -> Any:
+    if path.exists() or path != bundled_default:
+        return json.loads(
+            path.read_text(encoding="utf-8"),
+            parse_constant=_reject_json_constant,
+        )
+
+    return json.loads(
+        _bundled_resource(bundled_default).read_text(encoding="utf-8"),
+        parse_constant=_reject_json_constant,
+    )
+
+
+def _bundled_resource_worktree() -> tempfile.TemporaryDirectory[str]:
+    worktree = tempfile.TemporaryDirectory(prefix="market-signal-lab-")
+    root = Path(worktree.name)
+    try:
+        for logical_path in (
+            *BUNDLED_REGIME_CONFIGS,
+            Path("examples/data/sample_multi_regime.csv"),
+            Path("examples/data/sample_multi_regime.csv.provenance.json"),
+        ):
+            resource = _bundled_resource(logical_path)
+            target = root / logical_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(resource.read_bytes())
+    except BaseException:
+        worktree.cleanup()
+        raise
+
+    return worktree
+
+
+def _bundled_resource(logical_path: Path):
+    resource = files("market_signal_lab").joinpath(
+        BUNDLED_RESOURCE_ROOT,
+        *logical_path.parts,
+    )
+    if not resource.is_file():
+        raise FileNotFoundError(
+            "Bundled resource is missing: "
+            f"{BUNDLED_RESOURCE_ROOT}/{logical_path.as_posix()}"
+        )
+    return resource
+
+
+def _bundled_read_path(path: Path, resource_root: str | Path) -> Path:
+    if path.exists():
+        return path
+    if path.is_absolute() or ".." in path.parts:
+        return path
+    bundled_path = Path(resource_root) / path
+    if bundled_path.exists():
+        return bundled_path
+    return path
+
+
+def _sanitize_bundled_resource_paths(value: Any, resource_root: str | Path) -> Any:
+    root = Path(resource_root)
+    if isinstance(value, dict):
+        return {
+            key: _sanitize_bundled_resource_paths(nested, root)
+            for key, nested in value.items()
+        }
+    if isinstance(value, list):
+        return [_sanitize_bundled_resource_paths(nested, root) for nested in value]
+    if isinstance(value, str):
+        try:
+            relative = Path(value).relative_to(root)
+        except ValueError:
+            return value
+        return relative.as_posix()
+    return value
 
 
 def _compact_json(payload: dict[str, Any]) -> str:

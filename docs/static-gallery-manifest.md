@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.22.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.22.1. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -30,20 +30,28 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Split-sweep walkthrough](split-sweep-walkthrough.md)
 - [Sample manifest](../reports/sample-manifest.md)
 
-## Dashboard Cards
+## Gallery First Screen
 
-The checked-in [Static Sample Gallery](../reports/index.html) starts with a compact no-JavaScript dashboard. Each card shows the repository artifact path as visible text and links only to local relative targets:
+The checked-in [Static Sample Gallery](../reports/index.html) starts with a compact no-JavaScript three-CTA landing:
 
-- Single report: `reports/sample-report.html`, with links to [HTML](../reports/sample-report.html), [Markdown](../reports/sample-report.md), and [JSON](../reports/sample-report.json).
-- Pre-trade packet: `reports/pretrade-packet.md`, with links to [Markdown](../reports/pretrade-packet.md) and [JSON](../reports/pretrade-packet.json).
-- Scenario card: `reports/scenario-card.md`, with links to [Markdown](../reports/scenario-card.md) and [JSON](../reports/scenario-card.json).
-- Methodology audit score: `reports/methodology-audit-score.html`, with links to [HTML](../reports/methodology-audit-score.html), [Markdown](../reports/methodology-audit-score.md), and [JSON](../reports/methodology-audit-score.json).
-- Cross-asset thesis ledger: `reports/cross-asset-thesis-ledger.md`, with links to [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
-- Beginner backtest-reading checklist: `reports/beginner-prediction-checklist.md`, with links to [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
-- Regime comparison: `reports/regime-comparison.html`, with links to [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
-- Fee sensitivity: `reports/fee-sensitivity.md`, with links to [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
-- Split sweep: `reports/sample-sweep-split.html`, with links to [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), [JSON](../reports/sample-sweep-split.json), and the [walkthrough](split-sweep-walkthrough.md).
-- Manifest: `reports/sample-manifest.md`, with links to [Sample manifest](../reports/sample-manifest.md) and this static demo manifest.
+- [View sample report](../reports/sample-report.html)
+- [Beginner backtest checklist](../reports/beginner-prediction-checklist.md)
+- [Run one verification command](../reports/index.html#verify): `python -m market_signal_lab.cli --validate-thesis-ledger`
+
+The same page then exposes repository-local secondary links grouped under Core Artifacts, More Samples, and Docs And Releases:
+
+- Single report: [HTML](../reports/sample-report.html), [Markdown](../reports/sample-report.md), and [JSON](../reports/sample-report.json).
+- Pre-trade packet: [Markdown](../reports/pretrade-packet.md) and [JSON](../reports/pretrade-packet.json).
+- Scenario card: [Markdown](../reports/scenario-card.md) and [JSON](../reports/scenario-card.json).
+- Methodology audit score: [HTML](../reports/methodology-audit-score.html), [Markdown](../reports/methodology-audit-score.md), and [JSON](../reports/methodology-audit-score.json).
+- Regime comparison: [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
+- Fee sensitivity: [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
+- Cross-asset thesis ledger: [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
+- Reviewer evidence bundle: [Markdown](../reports/reviewer-evidence-bundle.md) and [JSON](../reports/reviewer-evidence-bundle.json).
+- Beginner backtest-reading checklist: [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
+- Split sweep: [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), and [JSON](../reports/sample-sweep-split.json).
+- Parameter sweep: [HTML](../reports/sample-sweep.html), [Markdown](../reports/sample-sweep.md), and [JSON](../reports/sample-sweep.json).
+- Manifest and docs: [Sample manifest](../reports/sample-manifest.md), [Artifact gallery notes](artifact-gallery.md), [Static demo manifest](static-gallery-manifest.md), [Static gallery walkthrough](static-gallery-walkthrough.svg), [Split-sweep walkthrough](split-sweep-walkthrough.md), [Local audit commands](local-audit-commands.md), [v1.22.1 release notes](release-notes-v1.22.1.md), [v1.22.0 release notes](release-notes-v1.22.0.md), and [v1.22.0 release checklist](release-v1.22.0.md).
 
 ## Pages-Safe Artifact Inventory
 

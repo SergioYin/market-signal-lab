@@ -99,6 +99,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.20.4.md"),
     Path("docs/release-notes-v1.21.0.md"),
     Path("docs/release-notes-v1.22.0.md"),
+    Path("docs/release-notes-v1.22.1.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -175,6 +176,7 @@ V131_ROOT_LANDING_LINKS = (
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-notes-v1.22.1.md",
     "docs/release-notes-v1.22.0.md",
     "docs/release-v1.22.0.md",
     "docs/release-notes-v1.21.0.md",
@@ -267,70 +269,24 @@ V130_STATIC_GALLERY_REQUIRED_TEXT = (
     "Scenario/Risk Interpretation",
     "scenario_risk_interpretation",
 )
-V160_STATIC_DASHBOARD_CARDS = {
-    "single-report": (
-        "Single Report",
-        "reports/sample-report.html",
-        ("sample-report.html", "sample-report.md", "sample-report.json"),
+V160_STATIC_PRIMARY_ACTIONS = {
+    "sample-report": ("View sample report", "sample-report.html"),
+    "beginner-checklist": (
+        "Beginner backtest checklist",
+        "beginner-prediction-checklist.md",
     ),
-    "pretrade-packet": (
-        "Pre-Trade Packet",
-        "reports/pretrade-packet.md",
-        ("pretrade-packet.md", "pretrade-packet.json"),
-    ),
-    "scenario-card": (
-        "Scenario Card",
-        "reports/scenario-card.md",
-        ("scenario-card.md", "scenario-card.json"),
-    ),
-    "methodology-audit-score": (
-        "Methodology Audit Score",
-        "reports/methodology-audit-score.html",
-        (
-            "methodology-audit-score.html",
-            "methodology-audit-score.md",
-            "methodology-audit-score.json",
-        ),
-    ),
-    "regime-comparison": (
-        "Regime Comparison",
-        "reports/regime-comparison.html",
-        ("regime-comparison.html", "regime-comparison.md", "regime-comparison.json"),
-    ),
-    "fee-sensitivity": (
-        "Fee Sensitivity",
-        "reports/fee-sensitivity.md",
-        ("fee-sensitivity.md", "fee-sensitivity.json"),
-    ),
-    "cross-asset-thesis-ledger": (
-        "Cross-Asset Thesis Ledger",
-        "reports/cross-asset-thesis-ledger.md",
-        ("cross-asset-thesis-ledger.md", "cross-asset-thesis-ledger.json"),
-    ),
-    "reviewer-evidence-bundle": (
-        "Reviewer Evidence Bundle",
-        "reports/reviewer-evidence-bundle.md",
-        ("reviewer-evidence-bundle.md", "reviewer-evidence-bundle.json"),
-    ),
-    "beginner-prediction-checklist": (
-        "Beginner Backtest Reading Checklist",
-        "reports/beginner-prediction-checklist.md",
-        (
-            "beginner-prediction-checklist.md",
-            "beginner-prediction-checklist.json",
-        ),
-    ),
-    "split-sweep": (
-        "Split Sweep",
-        "reports/sample-sweep-split.html",
-        ("sample-sweep-split.html", "sample-sweep-split.md", "sample-sweep-split.json"),
-    ),
-    "manifest": (
-        "Manifest",
-        "reports/sample-manifest.md",
-        ("sample-manifest.md", "../docs/static-gallery-manifest.md"),
-    ),
+    "verification-command": ("Run one verification command", "#verify"),
 }
+V160_STATIC_GALLERY_REQUIRED_SECTIONS = (
+    "Static research sample",
+    "Beginner boundary",
+    "Run One Verification Command",
+    "What To Read First",
+    "Secondary Docs And Release Links",
+)
+V160_STATIC_GALLERY_REQUIRED_COMMAND = (
+    "python -m market_signal_lab.cli --validate-thesis-ledger"
+)
 REGIME_COMPARISON_HTML_REQUIRED_LINKS = (
     "regime-comparison.md",
     "regime-comparison.json",
@@ -465,119 +421,92 @@ GALLERY_HTML = """<!doctype html>
   <title>Market Signal Lab Sample Reports</title>
   <style>
     body { font-family: system-ui, sans-serif; line-height: 1.45; margin: 0; color: #1f2328; background: #ffffff; }
-    main { max-width: 1120px; margin: 0 auto; padding: 1.25rem; }
+    main { max-width: 960px; margin: 0 auto; padding: 1.25rem; }
     h1 { font-size: 1.75rem; margin: 0 0 0.5rem; }
     h2 { font-size: 1.05rem; margin: 1.25rem 0 0.45rem; }
     p { margin: 0.45rem 0; }
     a { color: #0969da; }
-    .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
-    .dashboard-card { border: 1px solid #d0d7de; border-radius: 8px; padding: 0.85rem; background: #f6f8fa; }
-    .dashboard-card h2 { margin-top: 0; }
+    .primary-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+    .primary-actions a { border: 1px solid #0969da; border-radius: 8px; padding: 0.85rem; background: #f6f8fa; color: #0969da; font-weight: 700; text-decoration: none; }
+    .secondary-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.75rem; margin: 0.75rem 0; }
+    .secondary-links section { border-top: 1px solid #d0d7de; padding-top: 0.65rem; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9rem; }
+    pre { overflow-x: auto; border: 1px solid #d0d7de; border-radius: 8px; padding: 0.85rem; background: #f6f8fa; }
     .artifact-path { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.85rem; color: #57606a; overflow-wrap: anywhere; }
-    .artifact-links { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.65rem; }
-    .artifact-links a { border: 1px solid #d0d7de; border-radius: 6px; padding: 0.2rem 0.45rem; background: #ffffff; text-decoration: none; }
   </style>
 </head>
 <body>
   <main>
     <h1>Market Signal Lab Sample Reports</h1>
-    <p><strong>v1.6.0 static artifact dashboard:</strong> open the checked-in outputs before running the CLI. The v1.7.0 pre-trade packet card and scenario card keep the first-screen cards local and static for the single report, research cards, regime comparison, fee sensitivity, split sweep, and manifest.</p>
-    <p><strong>Public-safe research samples:</strong> these artifacts use synthetic sample data and require no JavaScript, remote data, broker connection, or trading account. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
-    <section class="dashboard" aria-label="Static artifact dashboard">
-      <article class="dashboard-card" data-artifact="single-report">
-        <h2>Single Report</h2>
-        <p class="artifact-path">reports/sample-report.html</p>
-        <p>Scenario/Risk Interpretation in HTML plus matching scenario_risk_interpretation JSON.</p>
-        <p class="artifact-links"><a href="sample-report.html">HTML</a><a href="sample-report.md">Markdown</a><a href="sample-report.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="pretrade-packet">
-        <h2>Pre-Trade Packet</h2>
-        <p class="artifact-path">reports/pretrade-packet.md</p>
-        <p>Research-only assumptions, historical diagnostics, beginner checklist, and risk boundaries.</p>
-        <p class="artifact-links"><a href="pretrade-packet.md">Markdown</a><a href="pretrade-packet.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="scenario-card">
-        <h2>Scenario Card</h2>
-        <p class="artifact-path">reports/scenario-card.md</p>
-        <p>Compact research-only card with key metrics, diagnostics, risk labels, and next-review checklist.</p>
-        <p class="artifact-links"><a href="scenario-card.md">Markdown</a><a href="scenario-card.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="methodology-audit-score">
-        <h2>Methodology Audit Score</h2>
-        <p class="artifact-path">reports/methodology-audit-score.html</p>
-        <p>Static reviewer-entered PASS/WARN/FAIL score summary with local Markdown and JSON outputs.</p>
-        <p class="artifact-links"><a href="methodology-audit-score.html">HTML</a><a href="methodology-audit-score.md">Markdown</a><a href="methodology-audit-score.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="regime-comparison">
-        <h2>Regime Comparison</h2>
-        <p class="artifact-path">reports/regime-comparison.html</p>
-        <p>Synthetic bull, choppy, and drawdown-recovery fixture diagnostics.</p>
-        <p class="artifact-links"><a href="regime-comparison.html">HTML</a><a href="regime-comparison.md">Markdown</a><a href="regime-comparison.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="fee-sensitivity">
-        <h2>Fee Sensitivity</h2>
-        <p class="artifact-path">reports/fee-sensitivity.md</p>
-        <p>Research-only fee_bps assumption comparison for the single backtest settings.</p>
-        <p class="artifact-links"><a href="fee-sensitivity.md">Markdown</a><a href="fee-sensitivity.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="cross-asset-thesis-ledger">
-        <h2>Cross-Asset Thesis Ledger</h2>
-        <p class="artifact-path">reports/cross-asset-thesis-ledger.md</p>
-        <p>Deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet with embedded scenario-card JSON.</p>
-        <p class="artifact-links"><a href="cross-asset-thesis-ledger.md">Markdown</a><a href="cross-asset-thesis-ledger.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="reviewer-evidence-bundle">
-        <h2>Reviewer Evidence Bundle</h2>
-        <p class="artifact-path">reports/reviewer-evidence-bundle.md</p>
-        <p>Cold-review handoff route, deterministic verification commands, and explicit research-only boundaries.</p>
-        <p class="artifact-links"><a href="reviewer-evidence-bundle.md">Markdown</a><a href="reviewer-evidence-bundle.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="beginner-prediction-checklist">
-        <h2>Beginner Backtest Reading Checklist</h2>
-        <p class="artifact-path">reports/beginner-prediction-checklist.md</p>
-        <p>Static reading checklist for historical backtests and related checklist artifacts without advice or forecasts.</p>
-        <p class="artifact-links"><a href="beginner-prediction-checklist.md">Markdown</a><a href="beginner-prediction-checklist.json">JSON</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="split-sweep">
-        <h2>Split Sweep</h2>
-        <p class="artifact-path">reports/sample-sweep-split.html</p>
-        <p>Train/test ranking, return-gap, and robustness_flag diagnostics.</p>
-        <p class="artifact-links"><a href="sample-sweep-split.html">HTML</a><a href="sample-sweep-split.md">Markdown</a><a href="sample-sweep-split.json">JSON</a><a href="../docs/split-sweep-walkthrough.md">Walkthrough</a></p>
-      </article>
-      <article class="dashboard-card" data-artifact="manifest">
-        <h2>Manifest</h2>
-        <p class="artifact-path">reports/sample-manifest.md</p>
-        <p>Reproduction record plus static gallery contract for local relative links.</p>
-        <p class="artifact-links"><a href="sample-manifest.md">Sample</a><a href="../docs/static-gallery-manifest.md">Demo</a></p>
-      </article>
+    <p><strong>Static research sample:</strong> start with one readable report, one beginner checklist, and one local command. This page has no JavaScript, no external assets, no live data, no broker connection, and no trading account workflow.</p>
+    <p><strong>Beginner boundary:</strong> these checked-in artifacts use synthetic sample data. They are research-only review aids, not investment advice, not recommendations, not forecasts, and not a guarantee of future returns.</p>
+    <section class="primary-actions" aria-label="Primary actions">
+      <a href="sample-report.html">View sample report</a>
+      <a href="beginner-prediction-checklist.md">Beginner backtest checklist</a>
+      <a href="#verify">Run one verification command</a>
     </section>
+    <h2 id="verify">Run One Verification Command</h2>
+    <p>From the repository root, run this deterministic local check. It validates the checked-in thesis-ledger packet shape and public research boundaries; it does not prove profitability or future performance.</p>
+    <pre><code>python -m market_signal_lab.cli --validate-thesis-ledger</code></pre>
+    <h2>What To Read First</h2>
+    <p class="artifact-path">reports/sample-report.html</p>
+    <p>The sample report shows Scenario/Risk Interpretation text and matching scenario_risk_interpretation JSON for one historical backtest-shaped artifact.</p>
+    <p class="artifact-path">reports/beginner-prediction-checklist.md</p>
+    <p>The Beginner Backtest Reading Checklist explains how to read assumptions, fees, exposure, drawdown, and caveats without treating a backtest as a prediction.</p>
     <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
     <p><strong>Regime-comparison limits:</strong> the bull, choppy, and drawdown-recovery labels are deterministic fixture scenarios for research review and tests. They are not market classifications, recommendations, forecasts, or a guarantee of future returns.</p>
-    <h2>Open These First</h2>
-    <ul>
-      <li><a href="../docs/cold-review-checklist.md">Cold review checklist</a></li>
-      <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
-      <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
-      <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
-      <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
-      <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a></li>
-      <li><a href="beginner-prediction-checklist.md">Beginner backtest reading checklist</a></li>
-      <li><a href="sample-manifest.md">Sample manifest</a></li>
-    </ul>
-    <h2>Parameter Sweep</h2>
-    <ul>
-      <li><a href="sample-sweep.html">HTML sweep</a></li>
-      <li><a href="sample-sweep.md">Markdown sweep</a></li>
-      <li><a href="sample-sweep.json">JSON sweep</a></li>
-    </ul>
+    <h2>Secondary Docs And Release Links</h2>
+    <div class="secondary-links">
+      <section>
+        <h2>Core Artifacts</h2>
+        <ul>
+          <li><a href="sample-report.md">Sample report Markdown</a> and <a href="sample-report.json">JSON</a></li>
+          <li><a href="pretrade-packet.md">Pre-trade packet</a> and <a href="pretrade-packet.json">JSON</a></li>
+          <li><a href="scenario-card.md">Scenario card</a> and <a href="scenario-card.json">JSON</a></li>
+          <li><a href="methodology-audit-score.html">Methodology audit score</a>, <a href="methodology-audit-score.md">Markdown</a>, and <a href="methodology-audit-score.json">JSON</a></li>
+          <li><a href="regime-comparison.html">Regime comparison</a>, <a href="regime-comparison.md">Markdown</a>, and <a href="regime-comparison.json">JSON</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2>More Samples</h2>
+        <ul>
+          <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
+          <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
+          <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
+          <li><a href="sample-sweep-split.html">Split sweep</a>, <a href="sample-sweep-split.md">Markdown</a>, and <a href="sample-sweep-split.json">JSON</a></li>
+          <li><a href="sample-sweep.html">Parameter sweep</a>, <a href="sample-sweep.md">Markdown</a>, and <a href="sample-sweep.json">JSON</a></li>
+          <li><a href="sample-manifest.md">Sample manifest</a></li>
+        </ul>
+      </section>
+      <section>
+        <h2>Docs And Releases</h2>
+        <ul>
+          <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
+          <li><a href="../docs/static-gallery-manifest.md">Static demo manifest</a></li>
+          <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
+          <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
+          <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-notes-v1.22.1.md">v1.22.1 release notes</a></li>
+          <li><a href="../docs/release-notes-v1.22.0.md">v1.22.0 release notes</a></li>
+          <li><a href="../docs/release-v1.22.0.md">v1.22.0 release checklist</a></li>
+        </ul>
+      </section>
+    </div>
   </main>
 </body>
 </html>
 """
 
 
+
 MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]+\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_HREF_RE = re.compile(r"\bhref\s*=\s*[\"']([^\"']+)[\"']", re.IGNORECASE)
+HTML_PRIMARY_ACTIONS_SECTION_RE = re.compile(
+    r"<section\b(?=[^>]*\bclass\s*=\s*[\"'][^\"']*\bprimary-actions\b[^\"']*[\"'])"
+    r"[^>]*>(.*?)</section>",
+    re.IGNORECASE | re.DOTALL,
+)
 HTML_REFERENCE_ATTR_RE = re.compile(
     r"\b(?:href|src|poster)\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))",
     re.IGNORECASE,
@@ -597,9 +526,9 @@ def run_compileall() -> bool:
 
 
 def run_pytest() -> bool:
-    print("2) Running pytest...")
+    print("2) Running pytest, excluding wheel smoke...")
     result = subprocess.run(
-        [sys.executable, "-m", "pytest"],
+        [sys.executable, "-m", "pytest", "-m", "not wheel_smoke"],
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
@@ -864,34 +793,53 @@ def find_v160_static_dashboard_issues(repo_root: Path = REPO_ROOT) -> list[str]:
 
     text = source.read_text(encoding="utf-8")
     issues: list[str] = []
-    if "v1.6.0 static artifact dashboard" not in text:
-        issues.append(f"{relative_source}: missing v1.6 dashboard heading text")
-    if 'aria-label="Static artifact dashboard"' not in text:
-        issues.append(f"{relative_source}: missing v1.6 dashboard landmark")
+    primary_sections = HTML_PRIMARY_ACTIONS_SECTION_RE.findall(text)
+    if len(primary_sections) != 1:
+        issues.append(f"{relative_source}: must have one primary actions section")
+    primary_section_start = re.search(
+        r"<section\b(?=[^>]*\bclass\s*=\s*[\"'][^\"']*\bprimary-actions\b[^\"']*[\"'])"
+        r"[^>]*>",
+        text,
+        re.IGNORECASE,
+    )
+    if not primary_section_start or not re.search(
+        r'\baria-label\s*=\s*["\']Primary actions["\']',
+        primary_section_start.group(0),
+        re.IGNORECASE,
+    ):
+        issues.append(f"{relative_source}: missing primary actions landmark")
+    if V160_STATIC_GALLERY_REQUIRED_COMMAND not in text:
+        issues.append(f"{relative_source}: missing verification command")
+    for required_text in V160_STATIC_GALLERY_REQUIRED_SECTIONS:
+        if required_text not in text:
+            issues.append(
+                f"{relative_source}: missing simplified gallery text {required_text}"
+            )
 
     links = _local_links_for_source(relative_source, text)
-    for card_id, (title, visible_path, required_links) in V160_STATIC_DASHBOARD_CARDS.items():
-        if f'data-artifact="{card_id}"' not in text:
-            issues.append(f"{relative_source}: missing v1.6 dashboard card {card_id}")
-        if f"<h2>{title}</h2>" not in text:
-            issues.append(f"{relative_source}: missing v1.6 dashboard title {title}")
-        if visible_path not in text:
+    primary_section = primary_sections[0] if len(primary_sections) == 1 else ""
+    primary_links = HTML_HREF_RE.findall(primary_section)
+    if len(primary_links) != 3:
+        issues.append(f"{relative_source}: primary actions must contain exactly 3 links")
+    for title, target in V160_STATIC_PRIMARY_ACTIONS.values():
+        if title not in primary_section:
+            issues.append(f"{relative_source}: missing primary action {title}")
+        if target not in primary_links:
+            issues.append(f"{relative_source}: missing primary action link to {target}")
+            continue
+        if target.startswith("#"):
+            if f'id="{target[1:]}"' not in text:
+                issues.append(
+                    f"{relative_source}: broken primary action anchor {target}"
+                )
+            continue
+        link_path = _local_markdown_link_path(repo_root, source, target)
+        if not link_path.exists():
+            issues.append(f"{relative_source}: broken primary action link to {target}")
+        elif link_path.stat().st_size == 0:
             issues.append(
-                f"{relative_source}: missing v1.6 dashboard artifact path {visible_path}"
+                f"{relative_source}: primary action link target is empty: {target}"
             )
-        for target in required_links:
-            if target not in links:
-                issues.append(
-                    f"{relative_source}: missing v1.6 dashboard link to {target}"
-                )
-                continue
-            link_path = _local_markdown_link_path(repo_root, source, target)
-            if not link_path.exists():
-                issues.append(f"{relative_source}: broken v1.6 dashboard link to {target}")
-            elif link_path.stat().st_size == 0:
-                issues.append(
-                    f"{relative_source}: v1.6 dashboard link target is empty: {target}"
-                )
 
     return issues
 

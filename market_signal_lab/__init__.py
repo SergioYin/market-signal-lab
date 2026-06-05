@@ -1,3 +1,3 @@
 """Explainable trading signal and backtesting research toolkit."""
 
-__version__ = "1.22.0"
+__version__ = "1.22.1"

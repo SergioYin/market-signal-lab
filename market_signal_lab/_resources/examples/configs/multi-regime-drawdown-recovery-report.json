@@ -1,0 +1,11 @@
+{
+  "csv_path": "examples/data/sample_multi_regime.csv",
+  "symbol": "DRAWDOWN_RECOVERY_REGIME",
+  "short_window": 3,
+  "long_window": 5,
+  "fee_bps": 10.0,
+  "output": "reports/multi-regime-drawdown-recovery-report.md",
+  "json_output": "reports/multi-regime-drawdown-recovery-report.json",
+  "html_output": "reports/multi-regime-drawdown-recovery-report.html",
+  "manifest_output": "reports/multi-regime-drawdown-recovery-manifest.md"
+}

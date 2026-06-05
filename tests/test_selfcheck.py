@@ -11,6 +11,21 @@ from market_signal_lab.beginner_prediction_checklist import (
 from scripts import selfcheck
 
 
+def test_selfcheck_pytest_excludes_wheel_smoke(monkeypatch) -> None:
+    calls = []
+
+    def fake_run(*args, **kwargs):
+        calls.append((args, kwargs))
+        return subprocess.CompletedProcess(args[0], 0, "", "")
+
+    monkeypatch.setattr(selfcheck.subprocess, "run", fake_run)
+
+    assert selfcheck.run_pytest() is True
+
+    command = calls[0][0][0]
+    assert command[-3:] == ["pytest", "-m", "not wheel_smoke"]
+
+
 def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/index.html") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/index.html") in selfcheck.HTML_LINK_SOURCES
@@ -50,24 +65,29 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "research-only" in gallery
     assert "not investment advice" in gallery
     assert "not a guarantee of future returns" in gallery
-    assert "Regime Comparison" in gallery
-    assert "Open These First" in gallery
-    assert "v1.6.0 static artifact dashboard" in gallery
-    assert 'aria-label="Static artifact dashboard"' in gallery
+    assert "Regime comparison" in gallery
+    assert "Secondary Docs And Release Links" in gallery
+    assert 'aria-label="Primary actions"' in gallery
     for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
         assert required_text in gallery
-    assert "no JavaScript, remote data, broker connection, or trading account" in gallery
-    for card_id, (title, visible_path, required_links) in (
-        selfcheck.V160_STATIC_DASHBOARD_CARDS.items()
-    ):
-        assert f'data-artifact="{card_id}"' in gallery
-        assert f"<h2>{title}</h2>" in gallery
-        assert visible_path in gallery
-        for link in required_links:
-            assert f'href="{link}"' in gallery
+    assert "no JavaScript, no external assets, no live data" in gallery
+    assert selfcheck.V160_STATIC_GALLERY_REQUIRED_COMMAND in gallery
+    for required_text in selfcheck.V160_STATIC_GALLERY_REQUIRED_SECTIONS:
+        assert required_text in gallery
+    for title, link in selfcheck.V160_STATIC_PRIMARY_ACTIONS.values():
+        assert title in gallery
+        assert f'href="{link}"' in gallery
+    primary_section = selfcheck.HTML_PRIMARY_ACTIONS_SECTION_RE.search(gallery)
+    assert primary_section is not None
+    primary_section = primary_section.group(1)
+    assert primary_section.count("<a ") == 3
 
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
+        "../docs/local-audit-commands.md",
+        "../docs/release-notes-v1.22.1.md",
+        "../docs/release-notes-v1.22.0.md",
+        "../docs/release-v1.22.0.md",
         "sample-report.html",
         "methodology-audit-score.html",
         "methodology-audit-score.md",
@@ -117,6 +137,7 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/release-v1.19.0.md" in landing
     assert "docs/release-notes-v1.21.0.md" in landing
     assert "docs/release-v1.21.0.md" in landing
+    assert "docs/release-notes-v1.22.1.md" in landing
     assert "docs/release-notes-v1.22.0.md" in landing
     assert "docs/release-v1.22.0.md" in landing
     assert "reports/reviewer-evidence-bundle.md" in landing
@@ -239,6 +260,7 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/quick-tour-preview.svg",
         "reports/reviewer-evidence-bundle.md",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-notes-v1.22.1.md",
         "docs/release-notes-v1.22.0.md",
         "docs/release-v1.22.0.md",
         "docs/release-notes-v1.21.0.md",
@@ -456,7 +478,9 @@ def test_v160_static_dashboard_contract_accepts_current_tree() -> None:
     assert issues == []
 
 
-def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
+def test_v160_static_dashboard_contract_requires_three_primary_actions(
+    tmp_path: Path,
+) -> None:
     reports_dir = tmp_path / "reports"
     docs_dir = tmp_path / "docs"
     reports_dir.mkdir()
@@ -488,13 +512,10 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
     ):
         path.write_text("artifact\n", encoding="utf-8")
     (reports_dir / "index.html").write_text(
-        '<main aria-label="Static artifact dashboard">\n'
-        "<p>v1.6.0 static artifact dashboard</p>\n"
-        '<article data-artifact="single-report"><h2>Single Report</h2>\n'
-        '<p>reports/sample-report.html</p>\n'
-        '<a href="sample-report.html">HTML</a>\n'
-        '<a href="sample-report.md">Markdown</a>\n'
-        '<a href="sample-report.json">JSON</a></article>\n'
+        '<main>\n'
+        '<section class="primary-actions" aria-label="Primary actions">\n'
+        '<a href="sample-report.html">View sample report</a>\n'
+        "</section>\n"
         "</main>\n",
         encoding="utf-8",
     )
@@ -502,119 +523,56 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
     issues = selfcheck.find_v160_static_dashboard_issues(tmp_path)
 
     assert issues == [
-        "reports/index.html: missing v1.6 dashboard card pretrade-packet",
-        "reports/index.html: missing v1.6 dashboard title Pre-Trade Packet",
+        "reports/index.html: missing verification command",
+        "reports/index.html: missing simplified gallery text Static research sample",
+        "reports/index.html: missing simplified gallery text Beginner boundary",
+        "reports/index.html: missing simplified gallery text Run One Verification Command",
+        "reports/index.html: missing simplified gallery text What To Read First",
+        "reports/index.html: missing simplified gallery text Secondary Docs And Release Links",
+        "reports/index.html: primary actions must contain exactly 3 links",
+        "reports/index.html: missing primary action Beginner backtest checklist",
         (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/pretrade-packet.md"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to pretrade-packet.md",
-        "reports/index.html: missing v1.6 dashboard link to pretrade-packet.json",
-        "reports/index.html: missing v1.6 dashboard card scenario-card",
-        "reports/index.html: missing v1.6 dashboard title Scenario Card",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/scenario-card.md"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to scenario-card.md",
-        "reports/index.html: missing v1.6 dashboard link to scenario-card.json",
-        "reports/index.html: missing v1.6 dashboard card methodology-audit-score",
-        "reports/index.html: missing v1.6 dashboard title Methodology Audit Score",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/methodology-audit-score.html"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "methodology-audit-score.html"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "methodology-audit-score.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "methodology-audit-score.json"
-        ),
-        "reports/index.html: missing v1.6 dashboard card regime-comparison",
-        "reports/index.html: missing v1.6 dashboard title Regime Comparison",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/regime-comparison.html"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to regime-comparison.html",
-        "reports/index.html: missing v1.6 dashboard link to regime-comparison.md",
-        "reports/index.html: missing v1.6 dashboard link to regime-comparison.json",
-        "reports/index.html: missing v1.6 dashboard card fee-sensitivity",
-        "reports/index.html: missing v1.6 dashboard title Fee Sensitivity",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/fee-sensitivity.md"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.md",
-        "reports/index.html: missing v1.6 dashboard link to fee-sensitivity.json",
-        "reports/index.html: missing v1.6 dashboard card cross-asset-thesis-ledger",
-        "reports/index.html: missing v1.6 dashboard title Cross-Asset Thesis Ledger",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/cross-asset-thesis-ledger.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "cross-asset-thesis-ledger.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "cross-asset-thesis-ledger.json"
-        ),
-        "reports/index.html: missing v1.6 dashboard card reviewer-evidence-bundle",
-        "reports/index.html: missing v1.6 dashboard title Reviewer Evidence Bundle",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/reviewer-evidence-bundle.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "reviewer-evidence-bundle.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "reviewer-evidence-bundle.json"
-        ),
-        "reports/index.html: missing v1.6 dashboard card beginner-prediction-checklist",
-        "reports/index.html: missing v1.6 dashboard title Beginner Backtest Reading Checklist",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/beginner-prediction-checklist.md"
-        ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
+            "reports/index.html: missing primary action link to "
             "beginner-prediction-checklist.md"
         ),
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "beginner-prediction-checklist.json"
-        ),
-        "reports/index.html: missing v1.6 dashboard card split-sweep",
-        "reports/index.html: missing v1.6 dashboard title Split Sweep",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/sample-sweep-split.html"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.html",
-        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.md",
-        "reports/index.html: missing v1.6 dashboard link to sample-sweep-split.json",
-        "reports/index.html: missing v1.6 dashboard card manifest",
-        "reports/index.html: missing v1.6 dashboard title Manifest",
-        (
-            "reports/index.html: missing v1.6 dashboard artifact path "
-            "reports/sample-manifest.md"
-        ),
-        "reports/index.html: missing v1.6 dashboard link to sample-manifest.md",
-        (
-            "reports/index.html: missing v1.6 dashboard link to "
-            "../docs/static-gallery-manifest.md"
-        ),
+        "reports/index.html: missing primary action Run one verification command",
+        "reports/index.html: missing primary action link to #verify",
+    ]
+
+
+def test_v160_static_dashboard_contract_checks_primary_action_text_in_section(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+    for path in (
+        reports_dir / "sample-report.html",
+        reports_dir / "beginner-prediction-checklist.md",
+    ):
+        path.write_text("artifact\n", encoding="utf-8")
+    (reports_dir / "index.html").write_text(
+        '<main>\n'
+        "<p>Static research sample</p>\n"
+        "<p>Beginner boundary</p>\n"
+        "<h2>Run One Verification Command</h2>\n"
+        "<p>What To Read First</p>\n"
+        "<p>Secondary Docs And Release Links</p>\n"
+        '<p>Beginner backtest checklist</p>\n'
+        '<section aria-label="Primary actions" class="primary-actions featured">\n'
+        '<a href="sample-report.html">View sample report</a>\n'
+        '<a href="beginner-prediction-checklist.md">Read checklist</a>\n'
+        '<a href="#verify">Run one verification command</a>\n'
+        "</section>\n"
+        '<h2 id="verify">Verify</h2>\n'
+        "<pre>python -m market_signal_lab.cli --validate-thesis-ledger</pre>\n"
+        "</main>\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_v160_static_dashboard_issues(tmp_path)
+
+    assert issues == [
+        "reports/index.html: missing primary action Beginner backtest checklist"
     ]
 
 
@@ -684,7 +642,6 @@ def test_selfcheck_regenerates_cross_asset_thesis_ledger_artifacts() -> None:
     assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
     assert "cross-asset-thesis-ledger.md" in selfcheck.V130_STATIC_GALLERY_LINKS
     assert "cross-asset-thesis-ledger.json" in selfcheck.V130_STATIC_GALLERY_LINKS
-    assert 'data-artifact="cross-asset-thesis-ledger"' in selfcheck.GALLERY_HTML
     assert 'href="cross-asset-thesis-ledger.md"' in selfcheck.GALLERY_HTML
     assert 'href="cross-asset-thesis-ledger.json"' in selfcheck.GALLERY_HTML
     assert "QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE" in selfcheck.GALLERY_HTML
@@ -712,7 +669,6 @@ def test_beginner_prediction_checklist_artifacts_are_in_public_gallery_contract(
     assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
     assert "beginner-prediction-checklist.md" in selfcheck.V130_STATIC_GALLERY_LINKS
     assert "beginner-prediction-checklist.json" in selfcheck.V130_STATIC_GALLERY_LINKS
-    assert 'data-artifact="beginner-prediction-checklist"' in selfcheck.GALLERY_HTML
     assert 'href="beginner-prediction-checklist.md"' in selfcheck.GALLERY_HTML
     assert 'href="beginner-prediction-checklist.json"' in selfcheck.GALLERY_HTML
     assert "Beginner Backtest Reading Checklist" in selfcheck.GALLERY_HTML
@@ -1764,6 +1720,7 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-notes-v1.22.1.md",
         "release-notes-v1.22.0.md",
         "release-v1.22.0.md",
         "release-notes-v1.21.0.md",

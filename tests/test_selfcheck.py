@@ -4,6 +4,10 @@ import json
 import subprocess
 from pathlib import Path
 
+from market_signal_lab.beginner_prediction_checklist import (
+    build_beginner_prediction_checklist,
+    render_beginner_prediction_checklist,
+)
 from scripts import selfcheck
 
 
@@ -113,7 +117,10 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/release-v1.19.0.md" in landing
     assert "docs/release-notes-v1.21.0.md" in landing
     assert "docs/release-v1.21.0.md" in landing
+    assert "docs/release-notes-v1.22.0.md" in landing
+    assert "docs/release-v1.22.0.md" in landing
     assert "reports/reviewer-evidence-bundle.md" in landing
+    assert "reports/beginner-prediction-checklist.md" in landing
     assert "docs/release-notes-v1.18.0.md" in landing
     assert "docs/release-v1.17.0.md" in landing
     assert "docs/release-notes-v1.16.0.md" in landing
@@ -231,6 +238,9 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/quick-tour-preview.md",
         "docs/quick-tour-preview.svg",
         "reports/reviewer-evidence-bundle.md",
+        "reports/beginner-prediction-checklist.md",
+        "docs/release-notes-v1.22.0.md",
+        "docs/release-v1.22.0.md",
         "docs/release-notes-v1.21.0.md",
         "docs/release-v1.21.0.md",
         "docs/release-notes-v1.20.4.md",
@@ -468,6 +478,8 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
         reports_dir / "cross-asset-thesis-ledger.json",
         reports_dir / "reviewer-evidence-bundle.md",
         reports_dir / "reviewer-evidence-bundle.json",
+        reports_dir / "beginner-prediction-checklist.md",
+        reports_dir / "beginner-prediction-checklist.json",
         reports_dir / "sample-sweep-split.html",
         reports_dir / "sample-sweep-split.md",
         reports_dir / "sample-sweep-split.json",
@@ -569,6 +581,20 @@ def test_v160_static_dashboard_contract_requires_cards(tmp_path: Path) -> None:
             "reports/index.html: missing v1.6 dashboard link to "
             "reviewer-evidence-bundle.json"
         ),
+        "reports/index.html: missing v1.6 dashboard card beginner-prediction-checklist",
+        "reports/index.html: missing v1.6 dashboard title Beginner Backtest Reading Checklist",
+        (
+            "reports/index.html: missing v1.6 dashboard artifact path "
+            "reports/beginner-prediction-checklist.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "beginner-prediction-checklist.md"
+        ),
+        (
+            "reports/index.html: missing v1.6 dashboard link to "
+            "beginner-prediction-checklist.json"
+        ),
         "reports/index.html: missing v1.6 dashboard card split-sweep",
         "reports/index.html: missing v1.6 dashboard title Split Sweep",
         (
@@ -668,6 +694,155 @@ def test_pretrade_packet_acceptance_contract_accepts_current_tree() -> None:
     issues = selfcheck.find_pretrade_packet_acceptance_issues(selfcheck.REPO_ROOT)
 
     assert issues == []
+
+
+def test_beginner_prediction_checklist_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_beginner_prediction_checklist_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_beginner_prediction_checklist_artifacts_are_in_public_gallery_contract() -> None:
+    expected_artifacts = {
+        Path("reports/beginner-prediction-checklist.md"),
+        Path("reports/beginner-prediction-checklist.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "beginner-prediction-checklist.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "beginner-prediction-checklist.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'data-artifact="beginner-prediction-checklist"' in selfcheck.GALLERY_HTML
+    assert 'href="beginner-prediction-checklist.md"' in selfcheck.GALLERY_HTML
+    assert 'href="beginner-prediction-checklist.json"' in selfcheck.GALLERY_HTML
+    assert "Beginner Backtest Reading Checklist" in selfcheck.GALLERY_HTML
+
+
+def test_selfcheck_regenerates_beginner_prediction_checklist_via_cli() -> None:
+    assert any(
+        "--beginner-prediction-checklist" in command
+        for command in selfcheck._sample_artifact_commands()
+    )
+
+
+def test_beginner_prediction_checklist_contract_reports_boundary_regressions(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    docs_dir = tmp_path / "docs"
+    reports_dir.mkdir()
+    docs_dir.mkdir()
+
+    for source_path in selfcheck.BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES:
+        path = tmp_path / source_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# {source_path.name}\n", encoding="utf-8")
+
+    payload = build_beginner_prediction_checklist()
+    payload["recommended_sources_to_open"].remove("docs/risk-boundaries.md")
+    payload["public_reviewer_reuse_reason"] = "Public checklist."
+    payload["risk_boundaries"]["scope_limits"] = "Static artifact only."
+    payload["risk_boundaries"][
+        "leveraged_etf_daily_reset_path_dependency"
+    ] = "Leveraged examples require caution."
+    markdown = render_beginner_prediction_checklist(payload).replace(
+        "predictions of future returns, recommendations, trading instructions, or investment advice",
+        "predictions of future returns",
+    )
+
+    (reports_dir / "beginner-prediction-checklist.json").write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+    (reports_dir / "beginner-prediction-checklist.md").write_text(
+        markdown,
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_beginner_prediction_checklist_issues(tmp_path)
+
+    assert (
+        "reports/beginner-prediction-checklist.json: missing recommended source "
+        "docs/risk-boundaries.md"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: "
+        "public_reviewer_reuse_reason must explain why public reviewers can star "
+        "or reuse the artifact without weakening no-advice boundaries"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: scope limits must preserve "
+        "public-safe boundaries"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: leveraged ETF boundary must "
+        "preserve daily-reset/path-dependency wording"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.md: missing checklist text "
+        "predictions of future returns, recommendations, trading instructions, or investment advice"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.md: missing core no-advice phrase "
+        "predictions of future returns, recommendations, trading instructions, or investment advice"
+    ) in issues
+
+
+def test_beginner_prediction_checklist_contract_reports_schema_shape_regressions(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+
+    for source_path in selfcheck.BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES:
+        path = tmp_path / source_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"# {source_path.name}\n", encoding="utf-8")
+
+    payload = build_beginner_prediction_checklist()
+    payload["unexpected_schema_field"] = "extra"
+    payload["default_outputs"] = {
+        "json": "reports/beginner-prediction-checklist.json",
+        "markdown": "reports/beginner-prediction-checklist.md",
+    }
+    payload["reading_steps"][0]["unexpected_step_field"] = "extra"
+    payload["risk_boundaries"] = {
+        "scope_limits": payload["risk_boundaries"]["scope_limits"],
+        "historical_backtest_limits": payload["risk_boundaries"][
+            "historical_backtest_limits"
+        ],
+        "leveraged_etf_daily_reset_path_dependency": payload["risk_boundaries"][
+            "leveraged_etf_daily_reset_path_dependency"
+        ],
+    }
+
+    (reports_dir / "beginner-prediction-checklist.json").write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+    (reports_dir / "beginner-prediction-checklist.md").write_text(
+        render_beginner_prediction_checklist(payload),
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_beginner_prediction_checklist_issues(tmp_path)
+
+    assert (
+        "reports/beginner-prediction-checklist.json: top-level keys must match "
+        "the beginner prediction checklist schema order"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: default_outputs keys must "
+        "be markdown then json"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: reading_steps[1] keys must "
+        "be step, label, beginner_note"
+    ) in issues
+    assert (
+        "reports/beginner-prediction-checklist.json: risk_boundaries keys must "
+        "match the beginner prediction checklist schema order"
+    ) in issues
 
 
 def test_pretrade_packet_acceptance_contract_reports_packet_regressions(
@@ -1566,6 +1741,10 @@ def _write_v131_landing_fixture(
         "# Reviewer Evidence Bundle\n",
         encoding="utf-8",
     )
+    (reports_dir / "beginner-prediction-checklist.md").write_text(
+        "# Beginner Backtest Reading Checklist\n",
+        encoding="utf-8",
+    )
     for doc_name in (
         "cold-user-evidence-card.md",
         "index.md",
@@ -1585,6 +1764,8 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-notes-v1.22.0.md",
+        "release-v1.22.0.md",
         "release-notes-v1.21.0.md",
         "release-v1.21.0.md",
         "release-notes-v1.20.4.md",

@@ -13,6 +13,14 @@ from urllib.parse import unquote
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from market_signal_lab.beginner_prediction_checklist import (
+    BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_RISK_BOUNDARY_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_TOP_LEVEL_KEYS,
+    build_beginner_prediction_checklist,
+    render_beginner_prediction_checklist,
+)
 from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
@@ -90,6 +98,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.20.3.md"),
     Path("docs/release-notes-v1.20.4.md"),
     Path("docs/release-notes-v1.21.0.md"),
+    Path("docs/release-notes-v1.22.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -130,6 +139,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.20.3.md"),
     Path("docs/release-v1.20.4.md"),
     Path("docs/release-v1.21.0.md"),
+    Path("docs/release-v1.22.0.md"),
     Path("docs/risk-boundaries.md"),
 )
 FIXTURE_PROVENANCE_FILES = (
@@ -164,6 +174,9 @@ V131_ROOT_LANDING_LINKS = (
     "docs/public-share-copy.md",
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
+    "reports/beginner-prediction-checklist.md",
+    "docs/release-notes-v1.22.0.md",
+    "docs/release-v1.22.0.md",
     "docs/release-notes-v1.21.0.md",
     "docs/release-v1.21.0.md",
     "docs/release-notes-v1.20.4.md",
@@ -238,6 +251,8 @@ V130_STATIC_GALLERY_LINKS = (
     "cross-asset-thesis-ledger.json",
     "reviewer-evidence-bundle.md",
     "reviewer-evidence-bundle.json",
+    "beginner-prediction-checklist.md",
+    "beginner-prediction-checklist.json",
     "regime-comparison.html",
     "regime-comparison.md",
     "regime-comparison.json",
@@ -297,6 +312,14 @@ V160_STATIC_DASHBOARD_CARDS = {
         "reports/reviewer-evidence-bundle.md",
         ("reviewer-evidence-bundle.md", "reviewer-evidence-bundle.json"),
     ),
+    "beginner-prediction-checklist": (
+        "Beginner Backtest Reading Checklist",
+        "reports/beginner-prediction-checklist.md",
+        (
+            "beginner-prediction-checklist.md",
+            "beginner-prediction-checklist.json",
+        ),
+    ),
     "split-sweep": (
         "Split Sweep",
         "reports/sample-sweep-split.html",
@@ -323,6 +346,29 @@ REGIME_COMPARISON_HTML_REQUIRED_TEXT = (
 )
 PRETRADE_PACKET_JSON = Path("reports/pretrade-packet.json")
 PRETRADE_PACKET_MARKDOWN = Path("reports/pretrade-packet.md")
+BEGINNER_PREDICTION_CHECKLIST_JSON = Path(
+    "reports/beginner-prediction-checklist.json"
+)
+BEGINNER_PREDICTION_CHECKLIST_MARKDOWN = Path(
+    "reports/beginner-prediction-checklist.md"
+)
+BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
+    Path("reports/sample-report.md"),
+    Path("reports/sample-report.json"),
+    Path("reports/pretrade-packet.md"),
+    Path("reports/scenario-card.md"),
+    Path("docs/methodology-audit.md"),
+    Path("docs/risk-boundaries.md"),
+)
+BEGINNER_PREDICTION_CHECKLIST_CORE_NO_ADVICE_PHRASES = (
+    "predictions of future returns, recommendations, trading instructions, or investment advice",
+    "not guidance about QLD, TQQQ, or any leveraged ETF",
+    "No live-data workflow",
+    "broker or account workflow",
+    "orders or order routing, position sizing",
+    "recommendation engine, forecast engine",
+    "investment advice is provided",
+)
 PRETRADE_PACKET_TOP_LEVEL_KEYS = (
     "packet_type",
     "schema_version",
@@ -391,6 +437,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/cross-asset-thesis-ledger-acceptance.json"),
     Path("reports/reviewer-evidence-bundle.md"),
     Path("reports/reviewer-evidence-bundle.json"),
+    Path("reports/beginner-prediction-checklist.md"),
+    Path("reports/beginner-prediction-checklist.json"),
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
@@ -446,13 +494,13 @@ GALLERY_HTML = """<!doctype html>
         <h2>Pre-Trade Packet</h2>
         <p class="artifact-path">reports/pretrade-packet.md</p>
         <p>Research-only assumptions, historical diagnostics, beginner checklist, and risk boundaries.</p>
-        <p class="artifact-links"><a href="pretrade-packet.md">Packet Markdown</a><a href="pretrade-packet.json">Packet JSON</a></p>
+        <p class="artifact-links"><a href="pretrade-packet.md">Markdown</a><a href="pretrade-packet.json">JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="scenario-card">
         <h2>Scenario Card</h2>
         <p class="artifact-path">reports/scenario-card.md</p>
         <p>Compact research-only card with key metrics, diagnostics, risk labels, and next-review checklist.</p>
-        <p class="artifact-links"><a href="scenario-card.md">Card Markdown</a><a href="scenario-card.json">Card JSON</a></p>
+        <p class="artifact-links"><a href="scenario-card.md">Markdown</a><a href="scenario-card.json">JSON</a></p>
       </article>
       <article class="dashboard-card" data-artifact="methodology-audit-score">
         <h2>Methodology Audit Score</h2>
@@ -484,6 +532,12 @@ GALLERY_HTML = """<!doctype html>
         <p>Cold-review handoff route, deterministic verification commands, and explicit research-only boundaries.</p>
         <p class="artifact-links"><a href="reviewer-evidence-bundle.md">Markdown</a><a href="reviewer-evidence-bundle.json">JSON</a></p>
       </article>
+      <article class="dashboard-card" data-artifact="beginner-prediction-checklist">
+        <h2>Beginner Backtest Reading Checklist</h2>
+        <p class="artifact-path">reports/beginner-prediction-checklist.md</p>
+        <p>Static reading checklist for historical backtests and related checklist artifacts without advice or forecasts.</p>
+        <p class="artifact-links"><a href="beginner-prediction-checklist.md">Markdown</a><a href="beginner-prediction-checklist.json">JSON</a></p>
+      </article>
       <article class="dashboard-card" data-artifact="split-sweep">
         <h2>Split Sweep</h2>
         <p class="artifact-path">reports/sample-sweep-split.html</p>
@@ -494,7 +548,7 @@ GALLERY_HTML = """<!doctype html>
         <h2>Manifest</h2>
         <p class="artifact-path">reports/sample-manifest.md</p>
         <p>Reproduction record plus static gallery contract for local relative links.</p>
-        <p class="artifact-links"><a href="sample-manifest.md">Sample</a><a href="../docs/static-gallery-manifest.md">Static Demo</a></p>
+        <p class="artifact-links"><a href="sample-manifest.md">Sample</a><a href="../docs/static-gallery-manifest.md">Demo</a></p>
       </article>
     </section>
     <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
@@ -507,6 +561,7 @@ GALLERY_HTML = """<!doctype html>
       <li><a href="../docs/artifact-gallery.md">Artifact gallery notes</a></li>
       <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
       <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a></li>
+      <li><a href="beginner-prediction-checklist.md">Beginner backtest reading checklist</a></li>
       <li><a href="sample-manifest.md">Sample manifest</a></li>
     </ul>
     <h2>Parameter Sweep</h2>
@@ -583,6 +638,7 @@ def run_demo_acceptance_check() -> bool:
         *find_v160_static_dashboard_issues(REPO_ROOT),
         *find_regime_comparison_html_issues(REPO_ROOT),
         *find_pretrade_packet_acceptance_issues(REPO_ROOT),
+        *find_beginner_prediction_checklist_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -661,6 +717,15 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(reviewer_bundle, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    beginner_checklist = build_beginner_prediction_checklist()
+    (REPORTS_DIR / "beginner-prediction-checklist.md").write_text(
+        render_beginner_prediction_checklist(beginner_checklist),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "beginner-prediction-checklist.json").write_text(
+        json.dumps(beginner_checklist, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
@@ -676,8 +741,9 @@ def run_sample_artifact_generation() -> bool:
     print(
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
-        "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, thesis-ledger "
-        "acceptance, regime comparison, and HTML artifacts."
+        "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
+        "beginner backtest-reading checklist, thesis-ledger acceptance, regime "
+        "comparison, and HTML artifacts."
     )
     return True
 
@@ -1113,6 +1179,256 @@ def find_pretrade_packet_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[
     return issues
 
 
+def find_beginner_prediction_checklist_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / BEGINNER_PREDICTION_CHECKLIST_JSON
+    markdown_path = repo_root / BEGINNER_PREDICTION_CHECKLIST_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: checklist JSON is missing"
+        )
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: checklist must be a JSON object"
+        )
+        payload = {}
+
+    for key in BEGINNER_PREDICTION_CHECKLIST_TOP_LEVEL_KEYS:
+        if key not in payload:
+            issues.append(f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: missing {key}")
+    if tuple(payload) != BEGINNER_PREDICTION_CHECKLIST_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: top-level keys must match "
+            "the beginner prediction checklist schema order"
+        )
+
+    if payload.get("artifact_type") != "beginner_prediction_checklist":
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: artifact_type must be beginner_prediction_checklist"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: schema_version must be 1.0")
+    for key in (
+        "research_only",
+        "static_only",
+        "historical_diagnostics_only",
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+    ):
+        if payload.get(key) is not True:
+            issues.append(f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: {key} must be true")
+
+    purpose = payload.get("purpose")
+    if not _contains_all_terms(
+        purpose,
+        (
+            "historical backtest",
+            "prediction of future returns",
+            "recommendation",
+            "advice",
+        ),
+    ):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: purpose must preserve non-prediction wording"
+        )
+
+    reuse_reason = payload.get("public_reviewer_reuse_reason")
+    if not _contains_all_terms(
+        reuse_reason,
+        (
+            "public reviewers",
+            "star or reuse",
+            "deterministic",
+            "static review template",
+            "future-return predictions",
+            "recommendations",
+            "trading instructions",
+            "investment advice",
+        ),
+    ):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: public_reviewer_reuse_reason must explain why public reviewers can star or reuse the artifact without weakening no-advice boundaries"
+        )
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if tuple(defaults) != BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS:
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: default_outputs keys must "
+            "be markdown then json"
+        )
+    if defaults.get("markdown") != str(BEGINNER_PREDICTION_CHECKLIST_MARKDOWN):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: default_outputs.markdown must be {BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}"
+        )
+    if defaults.get("json") != str(BEGINNER_PREDICTION_CHECKLIST_JSON):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: default_outputs.json must be {BEGINNER_PREDICTION_CHECKLIST_JSON}"
+        )
+
+    recommended_sources = payload.get("recommended_sources_to_open")
+    if not _is_non_empty_string_list(recommended_sources):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: recommended_sources_to_open must be a non-empty list of local paths"
+        )
+        recommended_source_paths: set[Path] = set()
+    else:
+        recommended_source_paths = {Path(path) for path in recommended_sources}
+        for source_path in recommended_source_paths:
+            if source_path.is_absolute() or _is_external_or_anchor_only_link(
+                str(source_path)
+            ):
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: recommended source must be a local relative path: {source_path}"
+                )
+                continue
+            resolved_source = repo_root / source_path
+            if not resolved_source.exists():
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: recommended source is missing: {source_path}"
+                )
+            elif resolved_source.stat().st_size == 0:
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: recommended source is empty: {source_path}"
+                )
+        for source_path in BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES:
+            if source_path not in recommended_source_paths:
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: missing recommended source {source_path}"
+                )
+
+    steps = payload.get("reading_steps")
+    if not isinstance(steps, list) or len(steps) < 5:
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: reading_steps must include the beginner reading route"
+        )
+    else:
+        for index, step in enumerate(steps, start=1):
+            if not isinstance(step, dict):
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: reading_steps[{index}] must be an object"
+                )
+                continue
+            if tuple(step) != BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS:
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: "
+                    f"reading_steps[{index}] keys must be step, label, "
+                    "beginner_note"
+                )
+            for key in BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS:
+                if not isinstance(step.get(key), str) or not step[key].strip():
+                    issues.append(
+                        f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: reading_steps[{index}].{key} must be a non-empty string"
+                    )
+
+    do_not_use_for = payload.get("do_not_use_for")
+    if not _is_non_empty_string_list(do_not_use_for):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: do_not_use_for must be a non-empty list of boundary phrases"
+        )
+    else:
+        for required_phrase in (
+            "prediction of future returns",
+            "investment advice",
+            "trading recommendation",
+            "live execution or signal use",
+            "broker, account, or order workflow",
+            "position sizing",
+        ):
+            if required_phrase not in do_not_use_for:
+                issues.append(
+                    f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: do_not_use_for must include {required_phrase}"
+                )
+
+    boundaries = _dict_value(payload.get("risk_boundaries"))
+    if tuple(boundaries) != BEGINNER_PREDICTION_CHECKLIST_RISK_BOUNDARY_KEYS:
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: risk_boundaries keys must "
+            "match the beginner prediction checklist schema order"
+        )
+    if not _contains_all_terms(
+        boundaries.get("historical_backtest_limits"),
+        ("supplied rows", "simplified calculations", "future returns"),
+    ):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: historical backtest limits must preserve sample/backtest wording"
+        )
+    if not _contains_all_terms(
+        boundaries.get("leveraged_etf_daily_reset_path_dependency"),
+        ("daily reset", "path-dependent", "volatility drag", "losses"),
+    ):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: leveraged ETF boundary must preserve daily-reset/path-dependency wording"
+        )
+    if not _contains_all_terms(
+        boundaries.get("scope_limits"),
+        ("no live-data", "broker", "orders", "position sizing", "forecast"),
+    ):
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: scope limits must preserve public-safe boundaries"
+        )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}: checklist Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}: checklist Markdown is empty"
+            )
+
+    for required_text in (
+        "# Beginner Backtest Reading Checklist",
+        "## Why Public Reviewers Might Star Or Reuse It",
+        "## How To Read A Historical Backtest",
+        "## Risk Boundaries",
+        "star or reuse",
+        "Leveraged ETF daily-reset and path-dependency risk",
+        "predictions of future returns, recommendations, trading instructions, or investment advice",
+        "no_live_data",
+        "python -m market_signal_lab.cli --beginner-prediction-checklist",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}: missing checklist text {required_text}"
+            )
+    combined_boundary_text = "\n".join(
+        str(value)
+        for value in (
+            purpose,
+            reuse_reason,
+            boundaries.get("historical_backtest_limits"),
+            boundaries.get("leveraged_etf_daily_reset_path_dependency"),
+            boundaries.get("scope_limits"),
+            markdown,
+        )
+    )
+    for required_phrase in BEGINNER_PREDICTION_CHECKLIST_CORE_NO_ADVICE_PHRASES:
+        if required_phrase not in combined_boundary_text:
+            issues.append(
+                f"{BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}: missing core no-advice phrase {required_phrase}"
+            )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -1469,6 +1785,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/fee-sensitivity.md",
             "--json-output",
             "reports/fee-sensitivity.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
         ],
         [
             sys.executable,

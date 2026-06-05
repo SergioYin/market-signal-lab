@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "market-signal-lab"
-version = "1.21.0"
+version = "1.22.0"
 description = "Explainable trading-signal research and backtesting sandbox"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -23,6 +23,9 @@ classifiers = [
     "Topic :: Office/Business :: Financial",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
 [project.urls]
 Homepage = "https://sergioyin.github.io/market-signal-lab/"
 Repository = "https://github.com/SergioYin/market-signal-lab"
@@ -35,3 +38,6 @@ testpaths = ["tests"]
 
 [project.scripts]
 market-signal-lab = "market_signal_lab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["market_signal_lab*"]

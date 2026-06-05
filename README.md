@@ -14,14 +14,17 @@ python -m market_signal_lab.cli --validate-thesis-ledger
 
 Then open the static first screen at <https://sergioyin.github.io/market-signal-lab/> or [`reports/index.html`](reports/index.html), and compare the generated acceptance output with the checked-in artifacts.
 
-Three proof artifacts:
+Proof artifacts:
 
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet from the bundled sample CSV.
 - [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md) - checked-in PASS/WARN/FAIL acceptance artifact for the ledger packet.
 - [Static Gallery Manifest](docs/static-gallery-manifest.md) - Pages-safe artifact inventory showing local relative links, no JavaScript, and no external assets.
 - [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md) - compact cold-review handoff linking gallery, thesis-ledger acceptance, verification commands, and no-advice boundaries.
+- [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) - beginner-readable guardrail for reading historical backtests without treating them as predictions of future returns or advice.
 
 For a compact cold-review handoff, use the [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), [Promotion Checklist](docs/promotion-checklist.md), [Methodology Audit](docs/methodology-audit.md), [Methodology Audit Review File Schema](docs/methodology-audit-review-schema.md), and the [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg).
+
+The v1.22.0 beginner backtest-reading checklist increment adds a deterministic `--beginner-prediction-checklist` CLI route and checked-in [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) / [JSON](reports/beginner-prediction-checklist.json) artifacts so beginners can read historical backtest outputs without treating them as predictions of future returns, recommendations, trading instructions, or investment advice. It preserves the no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
 The v1.21.0 reviewer evidence-bundle increment adds a deterministic `--reviewer-evidence-bundle` CLI route and checked-in [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md) / [JSON](reports/reviewer-evidence-bundle.json) artifacts so cold reviewers can follow the static gallery -> thesis-ledger acceptance -> methodology-risk route with explicit no-live-data, no-broker/account/order, no-position-sizing, no-recommendation, no-forecast, and no-advice boundaries.
 
@@ -49,7 +52,7 @@ The v1.14.0 methodology-audit-template increment adds a static `--methodology-au
 
 The v1.13.0 methodology-audit increment adds a static reviewer checklist for common sample-backtest pitfalls: look-ahead bias, survivorship bias, overfitting, fees and slippage, leveraged ETF-like daily reset risk, and no-advice/no-live-trading boundaries. It is documentation only and adds no JavaScript, live-data, broker, account, order, forecast, recommendation, position-sizing, or execution workflow.
 
-The v1.1 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
+The v1.1.0 exposure/trade review increment adds historical model-exposure metadata to single backtest Markdown and JSON artifacts, including periods in market/cash, average exposure, exposure changes, modeled entries/exits, and modeled fee drag. These fields are review metadata only, not advice, trading guidance, or a list of trades to place. For beginners, exposure changes, modeled entries, and modeled exits are historical model states, not executed trades or instructions.
 
 The scenario/risk interpretation section adds a beginner-readable `## Scenario/Risk Interpretation` block to single backtest Markdown/HTML reports and a `scenario_risk_interpretation` object to JSON. It summarizes exposure, max drawdown, modeled fee drag, and same-period buy-and-hold comparison as historical diagnostics only. It is not advice, not a forecast, not trading guidance, and not a broker connection or execution feature.
 
@@ -85,6 +88,7 @@ The v0.9.0 demo increment adds a beginner-readable split-sweep walkthrough and c
 - [Single Backtest Report](reports/sample-report.md) - includes `## Scenario/Risk Interpretation` and modeled exposure review sections for the bundled research-only sample.
 - [Single Backtest JSON](reports/sample-report.json) - includes `scenario_risk_interpretation` and `exposure_trade_review` objects for the same run.
 - [Pre-Trade Research Packet](reports/pretrade-packet.md) - assumptions, historical diagnostics, checklist, and risk boundaries generated from the existing single-backtest path.
+- [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) - static beginner checklist for reading historical backtest artifacts without treating them as predictions of future returns, recommendations, or advice.
 - [Scenario Card](reports/scenario-card.md) - compact research-only assumptions, key metrics, diagnostics, risk labels, and artifact-inspection checklist from the existing single-backtest path.
 - [Methodology Audit Score HTML](reports/methodology-audit-score.html) - static browser-openable PASS/WARN/FAIL methodology-audit score summary generated from reviewer-entered JSON.
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
@@ -105,7 +109,7 @@ For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001:
 
 The v1.6.0 first-screen dashboard cards show the artifact paths directly: `reports/sample-report.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`.
 
-The v1.9.0 cross-asset thesis ledger adds `reports/cross-asset-thesis-ledger.md` and `reports/cross-asset-thesis-ledger.json` to that first inspection path. The v1.8.0 scenario card adds `reports/scenario-card.md` and `reports/scenario-card.json`. The v1.7.0 packet card adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json`.
+The v1.22.0 beginner backtest-reading checklist adds `reports/beginner-prediction-checklist.md` and `reports/beginner-prediction-checklist.json` to that first inspection path. The v1.9.0 cross-asset thesis ledger adds `reports/cross-asset-thesis-ledger.md` and `reports/cross-asset-thesis-ledger.json`. The v1.8.0 scenario card adds `reports/scenario-card.md` and `reports/scenario-card.json`. The v1.7.0 packet card adds `reports/pretrade-packet.md` and `reports/pretrade-packet.json`.
 
 Validate the checked-in thesis-ledger JSON packet and write acceptance artifacts before installing the package:
 
@@ -369,6 +373,7 @@ python -m market_signal_lab.cli examples/data/sample_tqqq_qld_like.csv --symbol 
 Run the project selfcheck:
 
 ```bash
+python -m pip install -e ".[test]"
 python scripts/selfcheck.py
 ```
 
@@ -425,6 +430,8 @@ Before using any findings, read:
 - [Local Audit Commands](docs/local-audit-commands.md)
 - [Public Share Copy](docs/public-share-copy.md)
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
+- [v1.22.0 Release Notes](docs/release-notes-v1.22.0.md)
+- [v1.22.0 Release Checklist](docs/release-v1.22.0.md)
 - [v1.21.0 Release Notes](docs/release-notes-v1.21.0.md)
 - [v1.21.0 Release Checklist](docs/release-v1.21.0.md)
 - [v1.20.4 Release Notes](docs/release-notes-v1.20.4.md)
@@ -487,7 +494,7 @@ Before using any findings, read:
 - [v1.2.1 Release Checklist](docs/release-v1.2.1.md)
 - [v1.2.0 Release Notes](docs/release-notes-v1.2.0.md)
 - [v1.2.0 Release Checklist](docs/release-v1.2.0.md)
-- [v1.1 Release Notes](docs/release-notes-v1.1.0.md)
+- [v1.1.0 Release Notes](docs/release-notes-v1.1.0.md)
 - [v0.9.0 Release Notes](docs/release-notes-v0.9.0.md)
 - [v0.9.0 Release Checklist](docs/release-v0.9.0.md)
 - [v0.8.0 Release Notes](docs/release-notes-v0.8.0.md)

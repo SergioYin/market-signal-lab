@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 from pathlib import Path
 
 from market_signal_lab import __version__
@@ -29,14 +30,17 @@ def test_project_metadata_declares_mit_license_file() -> None:
 
 def test_project_metadata_declares_public_package_context() -> None:
     pyproject = (PROJECT_ROOT / "pyproject.toml").read_text()
+    metadata = tomllib.loads(pyproject)
+    project = metadata["project"]
 
-    assert 'readme = "README.md"' in pyproject
+    assert project["readme"] == "README.md"
+    assert project["dependencies"] == []
+    assert project["optional-dependencies"]["test"] == ["pytest>=8"]
     assert 'authors = [{ name = "SergioYin" }]' in pyproject
     assert '"backtesting"' in pyproject
-    assert "[project.urls]" in pyproject
-    assert 'Homepage = "https://sergioyin.github.io/market-signal-lab/"' in pyproject
-    assert 'Repository = "https://github.com/SergioYin/market-signal-lab"' in pyproject
-    assert 'market-signal-lab = "market_signal_lab.cli:main"' in pyproject
+    assert project["urls"]["Homepage"] == "https://sergioyin.github.io/market-signal-lab/"
+    assert project["urls"]["Repository"] == "https://github.com/SergioYin/market-signal-lab"
+    assert project["scripts"]["market-signal-lab"] == "market_signal_lab.cli:main"
 
 
 def test_package_version_matches_project_metadata() -> None:
@@ -48,4 +52,4 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.21.0"
+    assert __version__ == "1.22.0"

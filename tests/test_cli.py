@@ -6,6 +6,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from market_signal_lab.beginner_prediction_checklist import (
+    BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_RISK_BOUNDARY_KEYS,
+    BEGINNER_PREDICTION_CHECKLIST_TOP_LEVEL_KEYS,
+    BOUNDARY_FLAGS,
+    build_beginner_prediction_checklist,
+)
 from market_signal_lab.report import (
     EXPOSURE_TRADE_REVIEW_NOTE,
     SCENARIO_RISK_COMPARISON_KEYS,
@@ -18,7 +28,6 @@ from market_signal_lab.report import (
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
-
 
 def test_cli_prints_version_without_requiring_csv_path() -> None:
     result = subprocess.run(
@@ -34,7 +43,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.21.0"
+    assert result.stdout.strip() == "market-signal-lab 1.22.0"
     assert result.stderr == ""
 
 
@@ -75,6 +84,264 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     assert payload["no_orders_or_position_sizing"] is True
     assert payload["no_recommendations_or_forecasts"] is True
     assert payload["inspection_steps"][0]["path"] == "reports/index.html"
+
+
+def test_cli_writes_beginner_prediction_checklist_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "beginner-prediction-checklist.md"
+    json_path = tmp_path / "reports" / "beginner-prediction-checklist.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Beginner Backtest Reading Checklist" in markdown
+    assert payload["artifact_type"] == "beginner_prediction_checklist"
+    assert payload["schema_version"] == "1.0"
+    for key in BOUNDARY_FLAGS:
+        assert payload[key] is True
+    assert payload["default_outputs"] == {
+        "markdown": "reports/beginner-prediction-checklist.md",
+        "json": "reports/beginner-prediction-checklist.json",
+    }
+    assert "reports/sample-report.md" in payload["recommended_sources_to_open"]
+    assert len(payload["reading_steps"]) >= 5
+    leveraged_boundary = payload["risk_boundaries"][
+        "leveraged_etf_daily_reset_path_dependency"
+    ]
+    assert "path-dependent" in leveraged_boundary
+
+
+def test_cli_beginner_prediction_checklist_json_schema_keys(
+    tmp_path: Path,
+) -> None:
+    json_path = tmp_path / "checklist.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert tuple(payload) == BEGINNER_PREDICTION_CHECKLIST_TOP_LEVEL_KEYS
+    assert (
+        tuple(payload["default_outputs"])
+        == BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS
+    )
+    assert (
+        tuple(payload["risk_boundaries"])
+        == BEGINNER_PREDICTION_CHECKLIST_RISK_BOUNDARY_KEYS
+    )
+    assert all(
+        tuple(step) == BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS
+        for step in payload["reading_steps"]
+    )
+
+
+def test_beginner_prediction_checklist_builds_fresh_step_objects() -> None:
+    payload = build_beginner_prediction_checklist()
+    payload["reading_steps"][0]["unexpected_step_field"] = "extra"
+
+    fresh_payload = build_beginner_prediction_checklist()
+
+    assert (
+        tuple(fresh_payload["reading_steps"][0])
+        == BEGINNER_PREDICTION_CHECKLIST_READING_STEP_KEYS
+    )
+
+
+def test_cli_writes_beginner_prediction_checklist_custom_outputs(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "custom-checklist.md"
+    json_path = tmp_path / "custom-checklist.json"
+    run_cwd = tmp_path / "run-cwd"
+    run_cwd.mkdir()
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+        ],
+        cwd=run_cwd,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    assert "# Beginner Backtest Reading Checklist" in markdown_path.read_text(
+        encoding="utf-8"
+    )
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["artifact_type"] == "beginner_prediction_checklist"
+
+
+def test_cli_rejects_csv_for_beginner_prediction_checklist() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--beginner-prediction-checklist does not take csv_path" in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--beginner-prediction-checklist does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--beginner-prediction-checklist cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--scenario-card"],
+            "--beginner-prediction-checklist cannot be combined with --scenario-card",
+        ),
+        (
+            ["--validate-thesis-ledger"],
+            "--beginner-prediction-checklist cannot be combined with --validate-thesis-ledger",
+        ),
+        (
+            ["--methodology-audit-template"],
+            "--beginner-prediction-checklist cannot be combined with --methodology-audit-template",
+        ),
+        (
+            ["--methodology-audit-review-template"],
+            "--beginner-prediction-checklist cannot be combined with --methodology-audit-review-template",
+        ),
+        (
+            ["--score-methodology-audit", "review.json"],
+            "--beginner-prediction-checklist cannot be combined with --score-methodology-audit",
+        ),
+        (
+            ["--reviewer-evidence-bundle"],
+            "--beginner-prediction-checklist cannot be combined with --reviewer-evidence-bundle",
+        ),
+        (
+            ["--regime-comparison"],
+            "--beginner-prediction-checklist cannot be combined with --regime-comparison",
+        ),
+        (
+            ["--sweep"],
+            "--beginner-prediction-checklist cannot be combined with --sweep",
+        ),
+        (
+            ["--html-output", "checklist.html"],
+            "--beginner-prediction-checklist writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--beginner-prediction-checklist does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_beginner_prediction_checklist_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_beginner_prediction_checklist(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--beginner-prediction-checklist",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        f"--beginner-prediction-checklist cannot be combined with {flag}"
+        in result.stderr
+    )
 
 
 def test_cli_rejects_csv_for_reviewer_evidence_bundle() -> None:

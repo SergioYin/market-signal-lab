@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.21.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.22.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -39,6 +39,7 @@ The checked-in [Static Sample Gallery](../reports/index.html) starts with a comp
 - Scenario card: `reports/scenario-card.md`, with links to [Markdown](../reports/scenario-card.md) and [JSON](../reports/scenario-card.json).
 - Methodology audit score: `reports/methodology-audit-score.html`, with links to [HTML](../reports/methodology-audit-score.html), [Markdown](../reports/methodology-audit-score.md), and [JSON](../reports/methodology-audit-score.json).
 - Cross-asset thesis ledger: `reports/cross-asset-thesis-ledger.md`, with links to [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
+- Beginner backtest-reading checklist: `reports/beginner-prediction-checklist.md`, with links to [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
 - Regime comparison: `reports/regime-comparison.html`, with links to [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
 - Fee sensitivity: `reports/fee-sensitivity.md`, with links to [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
 - Split sweep: `reports/sample-sweep-split.html`, with links to [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), [JSON](../reports/sample-sweep-split.json), and the [walkthrough](split-sweep-walkthrough.md).
@@ -68,6 +69,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
 - [Reviewer evidence bundle Markdown](../reports/reviewer-evidence-bundle.md)
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json)
+- [Beginner backtest-reading checklist Markdown](../reports/beginner-prediction-checklist.md)
+- [Beginner backtest-reading checklist JSON](../reports/beginner-prediction-checklist.json)
 - [Quick-tour preview](quick-tour-preview.md)
 - [Quick-tour preview SVG](quick-tour-preview.svg)
 - [Three-minute review route](three-minute-review.md)

@@ -14,6 +14,10 @@ from typing import Any
 
 from market_signal_lab import __version__
 from market_signal_lab.backtest import backtest_long_cash
+from market_signal_lab.beginner_prediction_checklist import (
+    build_beginner_prediction_checklist,
+    render_beginner_prediction_checklist,
+)
 from market_signal_lab.data import (
     REQUIRED_COLUMNS,
     PriceBar,
@@ -83,11 +87,18 @@ THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT = Path(
 )
 REVIEWER_EVIDENCE_BUNDLE_OUTPUT = Path("reports/reviewer-evidence-bundle.md")
 REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT = Path("reports/reviewer-evidence-bundle.json")
+BEGINNER_PREDICTION_CHECKLIST_OUTPUT = Path(
+    "reports/beginner-prediction-checklist.md"
+)
+BEGINNER_PREDICTION_CHECKLIST_JSON_OUTPUT = Path(
+    "reports/beginner-prediction-checklist.json"
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+    _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
 
     try:
         if args.methodology_audit_review_template:
@@ -110,6 +121,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.reviewer_evidence_bundle:
             args = _resolve_reviewer_evidence_bundle_args(args, parser)
             report, json_payload, manifest_payload = _run_reviewer_evidence_bundle()
+        elif args.beginner_prediction_checklist:
+            args = _resolve_beginner_prediction_checklist_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_beginner_prediction_checklist()
+            )
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -126,6 +142,43 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
 
     return 0
+
+
+def _reject_beginner_prediction_checklist_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.beginner_prediction_checklist:
+        return
+
+    for flag, selected in (
+        ("--pretrade-packet", args.pretrade_packet),
+        ("--scenario-card", args.scenario_card),
+        ("--validate-thesis-ledger", args.validate_thesis_ledger is not None),
+        ("--methodology-audit-template", args.methodology_audit_template),
+        (
+            "--methodology-audit-review-template",
+            args.methodology_audit_review_template,
+        ),
+        ("--score-methodology-audit", args.score_methodology_audit is not None),
+        ("--reviewer-evidence-bundle", args.reviewer_evidence_bundle),
+        ("--regime-comparison", args.regime_comparison),
+        ("--sweep", args.sweep),
+        ("--symbol", args.symbol is not None),
+        ("--short-window", args.short_window is not None),
+        ("--long-window", args.long_window is not None),
+        ("--fee-bps", args.fee_bps is not None),
+        ("--short-windows", args.short_windows is not None),
+        ("--long-windows", args.long_windows is not None),
+        ("--top-n", args.top_n is not None),
+        ("--split-ratio", args.split_ratio is not None),
+        ("--split-cutoff", args.split_cutoff is not None),
+    ):
+        if selected:
+            parser.error(
+                "--beginner-prediction-checklist cannot be combined with "
+                f"{flag}"
+            )
 
 
 def _write_outputs(
@@ -205,7 +258,7 @@ def _relative_output_link(source_path: Path, target_path: Path) -> str:
 def _build_parser() -> ArgumentParser:
     parser = ArgumentParser(
         prog="market-signal-lab",
-        description="Generate a moving-average crossover report from OHLC CSV data.",
+        description="Generate static research artifacts and moving-average backtest reports.",
     )
     parser.add_argument(
         "--version",
@@ -341,6 +394,21 @@ def _build_parser() -> ArgumentParser:
             "thesis-ledger acceptance route, methodology risks, and no-advice "
             "boundaries. Defaults to reports/reviewer-evidence-bundle.md and "
             "reports/reviewer-evidence-bundle.json."
+        ),
+    )
+    parser.add_argument(
+        "--beginner-prediction-checklist",
+        action="store_true",
+        default=False,
+        help=(
+            "Write a static beginner checklist explaining how to read historical "
+            "backtest and related checklist artifacts without treating them as "
+            "predictions of future returns, recommendations, or advice. Does "
+            "not read CSV data, fetch live data, connect to brokers, create "
+            "orders, size positions, or use strategy parameters. Only --output and "
+            "--json-output customize its files; defaults to "
+            "reports/beginner-prediction-checklist.md and "
+            "reports/beginner-prediction-checklist.json."
         ),
     )
     parser.add_argument(
@@ -560,6 +628,35 @@ def _resolve_reviewer_evidence_bundle_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.reviewer_evidence_bundle = True
+    return resolved
+
+
+def _resolve_beginner_prediction_checklist_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--beginner-prediction-checklist does not take csv_path")
+    if args.config is not None:
+        parser.error("--beginner-prediction-checklist does not take --config")
+    if args.html_output is not None:
+        parser.error("--beginner-prediction-checklist writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            "--beginner-prediction-checklist does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or BEGINNER_PREDICTION_CHECKLIST_OUTPUT
+    resolved.json_output = (
+        args.json_output or BEGINNER_PREDICTION_CHECKLIST_JSON_OUTPUT
+    )
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.beginner_prediction_checklist = True
     return resolved
 
 
@@ -937,6 +1034,14 @@ def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, An
 def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_reviewer_evidence_bundle()
     report = render_reviewer_evidence_bundle(payload)
+    return report, payload, {}
+
+
+def _run_beginner_prediction_checklist() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_beginner_prediction_checklist()
+    report = render_beginner_prediction_checklist(payload)
     return report, payload, {}
 
 

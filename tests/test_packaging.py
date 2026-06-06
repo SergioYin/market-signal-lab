@@ -14,6 +14,14 @@ from market_signal_lab import __version__
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+INSTALLED_DEFAULT_COMMAND_RESOURCES = (
+    "examples/configs/multi-regime-bull-report.json",
+    "examples/configs/multi-regime-choppy-report.json",
+    "examples/configs/multi-regime-drawdown-recovery-report.json",
+    "examples/data/sample_multi_regime.csv",
+    "examples/data/sample_multi_regime.csv.provenance.json",
+    "reports/cross-asset-thesis-ledger.json",
+)
 
 
 def test_project_declares_minimal_build_system() -> None:
@@ -58,6 +66,8 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
         "_resources/**/*.csv",
         "_resources/**/*.json",
     ]
+    for resource in INSTALLED_DEFAULT_COMMAND_RESOURCES:
+        assert (PROJECT_ROOT / "market_signal_lab" / "_resources" / resource).is_file()
 
 
 @pytest.mark.wheel_smoke
@@ -130,6 +140,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
 
     for flag in (
         "--beginner-prediction-checklist",
+        "--prediction-readiness-audit",
         "--validate-thesis-ledger",
         "--regime-comparison",
     ):
@@ -139,6 +150,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
+    assert (empty_cwd / "reports" / "prediction-readiness-audit.json").is_file()
     assert (empty_cwd / "reports" / "regime-comparison.html").is_file()
 
 
@@ -151,7 +163,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.22.1"
+    assert __version__ == "1.23.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

@@ -47,6 +47,10 @@ from market_signal_lab.packet import (
     build_pretrade_research_packet,
     render_pretrade_research_packet,
 )
+from market_signal_lab.prediction_readiness_audit import (
+    build_prediction_readiness_audit,
+    render_prediction_readiness_audit,
+)
 from market_signal_lab.report import (
     build_exposure_trade_review,
     build_scenario_risk_interpretation,
@@ -96,11 +100,17 @@ BEGINNER_PREDICTION_CHECKLIST_OUTPUT = Path(
 BEGINNER_PREDICTION_CHECKLIST_JSON_OUTPUT = Path(
     "reports/beginner-prediction-checklist.json"
 )
+PREDICTION_READINESS_AUDIT_OUTPUT = Path("reports/prediction-readiness-audit.md")
+PREDICTION_READINESS_AUDIT_JSON_OUTPUT = Path(
+    "reports/prediction-readiness-audit.json"
+)
+PREDICTION_READINESS_AUDIT_FLAG = "--prediction-readiness-audit"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+    _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
 
     try:
@@ -129,6 +139,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_beginner_prediction_checklist()
             )
+        elif args.prediction_readiness_audit is not None:
+            args = _resolve_prediction_readiness_audit_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_prediction_readiness_audit(args)
+            )
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -154,6 +169,37 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
     if not args.beginner_prediction_checklist:
         return
 
+    _reject_mode_conflicts(
+        args,
+        parser,
+        "--beginner-prediction-checklist",
+        include_prediction_readiness_audit=True,
+    )
+
+
+def _reject_prediction_readiness_audit_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if args.prediction_readiness_audit is None:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        PREDICTION_READINESS_AUDIT_FLAG,
+        include_beginner_prediction_checklist=True,
+    )
+
+
+def _reject_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+    mode_flag: str,
+    *,
+    include_beginner_prediction_checklist: bool = False,
+    include_prediction_readiness_audit: bool = False,
+) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
         ("--scenario-card", args.scenario_card),
@@ -165,6 +211,16 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         ),
         ("--score-methodology-audit", args.score_methodology_audit is not None),
         ("--reviewer-evidence-bundle", args.reviewer_evidence_bundle),
+        (
+            "--beginner-prediction-checklist",
+            include_beginner_prediction_checklist
+            and args.beginner_prediction_checklist,
+        ),
+        (
+            PREDICTION_READINESS_AUDIT_FLAG,
+            include_prediction_readiness_audit
+            and args.prediction_readiness_audit is not None,
+        ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
         ("--symbol", args.symbol is not None),
@@ -178,10 +234,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         ("--split-cutoff", args.split_cutoff is not None),
     ):
         if selected:
-            parser.error(
-                "--beginner-prediction-checklist cannot be combined with "
-                f"{flag}"
-            )
+            parser.error(f"{mode_flag} cannot be combined with {flag}")
 
 
 def _write_outputs(
@@ -413,6 +466,23 @@ def _build_parser() -> ArgumentParser:
             "--json-output customize its files; defaults to "
             "reports/beginner-prediction-checklist.md and "
             "reports/beginner-prediction-checklist.json."
+        ),
+    )
+    parser.add_argument(
+        PREDICTION_READINESS_AUDIT_FLAG,
+        nargs="?",
+        const=THESIS_LEDGER_DEFAULT_JSON,
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Audit a static thesis-ledger JSON artifact for prediction-readiness "
+            "review labels. When PATH is omitted, reads "
+            "reports/cross-asset-thesis-ledger.json if it exists, otherwise "
+            "uses the bundled demo ledger. Only --output and --json-output "
+            "customize files; defaults to reports/prediction-readiness-audit.md "
+            "and reports/prediction-readiness-audit.json when neither is set. "
+            "Uses only a static JSON artifact and does not provide forecasts, "
+            "recommendations, trading instructions, or investment advice."
         ),
     )
     parser.add_argument(
@@ -662,6 +732,45 @@ def _resolve_beginner_prediction_checklist_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.beginner_prediction_checklist = True
+    return resolved
+
+
+def _resolve_prediction_readiness_audit_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.config is not None:
+        parser.error(f"{PREDICTION_READINESS_AUDIT_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{PREDICTION_READINESS_AUDIT_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{PREDICTION_READINESS_AUDIT_FLAG} does not write experiment manifests"
+        )
+
+    input_path = args.prediction_readiness_audit
+    if args.csv_path is not None:
+        if input_path != THESIS_LEDGER_DEFAULT_JSON:
+            parser.error(
+                f"{PREDICTION_READINESS_AUDIT_FLAG} accepts only one ledger "
+                "JSON path"
+            )
+        input_path = args.csv_path
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.prediction_readiness_audit = input_path
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    if resolved.output is None and resolved.json_output is None:
+        resolved.output = PREDICTION_READINESS_AUDIT_OUTPUT
+        resolved.json_output = PREDICTION_READINESS_AUDIT_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
     return resolved
 
 
@@ -1047,6 +1156,21 @@ def _run_beginner_prediction_checklist() -> tuple[
 ]:
     payload = build_beginner_prediction_checklist()
     report = render_beginner_prediction_checklist(payload)
+    return report, payload, {}
+
+
+def _run_prediction_readiness_audit(
+    args: Namespace,
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    input_path = Path(args.prediction_readiness_audit)
+    try:
+        ledger = _load_defaultable_json(input_path, THESIS_LEDGER_DEFAULT_JSON)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Invalid prediction-readiness audit JSON {input_path}: {exc.msg}"
+        ) from exc
+    payload = build_prediction_readiness_audit(ledger, str(input_path))
+    report = render_prediction_readiness_audit(payload)
     return report, payload, {}
 
 

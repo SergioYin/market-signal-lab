@@ -21,6 +21,12 @@ from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
 )
+from market_signal_lab.prediction_readiness_audit import (
+    PREDICTION_READINESS_AUDIT_TOP_LEVEL_KEYS,
+    PREDICTION_READINESS_CRITERION_KEYS,
+    build_prediction_readiness_audit,
+    render_prediction_readiness_audit,
+)
 from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
@@ -100,6 +106,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.21.0.md"),
     Path("docs/release-notes-v1.22.0.md"),
     Path("docs/release-notes-v1.22.1.md"),
+    Path("docs/release-notes-v1.23.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -176,6 +183,7 @@ V131_ROOT_LANDING_LINKS = (
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-notes-v1.23.0.md",
     "docs/release-notes-v1.22.1.md",
     "docs/release-notes-v1.22.0.md",
     "docs/release-v1.22.0.md",
@@ -255,6 +263,8 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-evidence-bundle.json",
     "beginner-prediction-checklist.md",
     "beginner-prediction-checklist.json",
+    "prediction-readiness-audit.md",
+    "prediction-readiness-audit.json",
     "regime-comparison.html",
     "regime-comparison.md",
     "regime-comparison.json",
@@ -274,6 +284,10 @@ V160_STATIC_PRIMARY_ACTIONS = {
     "beginner-checklist": (
         "Beginner backtest checklist",
         "beginner-prediction-checklist.md",
+    ),
+    "prediction-readiness-audit": (
+        "Prediction-readiness audit",
+        "prediction-readiness-audit.md",
     ),
     "verification-command": ("Run one verification command", "#verify"),
 }
@@ -308,6 +322,8 @@ BEGINNER_PREDICTION_CHECKLIST_JSON = Path(
 BEGINNER_PREDICTION_CHECKLIST_MARKDOWN = Path(
     "reports/beginner-prediction-checklist.md"
 )
+PREDICTION_READINESS_AUDIT_JSON = Path("reports/prediction-readiness-audit.json")
+PREDICTION_READINESS_AUDIT_MARKDOWN = Path("reports/prediction-readiness-audit.md")
 BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
@@ -395,6 +411,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-evidence-bundle.json"),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
+    Path("reports/prediction-readiness-audit.md"),
+    Path("reports/prediction-readiness-audit.json"),
     Path("reports/sample-sweep-split.md"),
     Path("reports/sample-sweep-split.json"),
     Path("reports/sample-sweep-split.html"),
@@ -443,6 +461,7 @@ GALLERY_HTML = """<!doctype html>
     <section class="primary-actions" aria-label="Primary actions">
       <a href="sample-report.html">View sample report</a>
       <a href="beginner-prediction-checklist.md">Beginner backtest checklist</a>
+      <a href="prediction-readiness-audit.md">Prediction-readiness audit</a>
       <a href="#verify">Run one verification command</a>
     </section>
     <h2 id="verify">Run One Verification Command</h2>
@@ -453,6 +472,8 @@ GALLERY_HTML = """<!doctype html>
     <p>The sample report shows Scenario/Risk Interpretation text and matching scenario_risk_interpretation JSON for one historical backtest-shaped artifact.</p>
     <p class="artifact-path">reports/beginner-prediction-checklist.md</p>
     <p>The Beginner Backtest Reading Checklist explains how to read assumptions, fees, exposure, drawdown, and caveats without treating a backtest as a prediction.</p>
+    <p class="artifact-path">reports/prediction-readiness-audit.md</p>
+    <p>The Prediction-readiness audit checks whether the static thesis-ledger artifact keeps historical diagnostics, non-advice boundaries, benchmark fields, fees, drawdown, exposure, train/test review questions, and leveraged ETF-like caveats visible. It is a documentation-boundary audit only, not a trading signal, order workflow, position-sizing input, forecast, recommendation, or investment-advice approval.</p>
     <p><strong>Leveraged ETF-like limits:</strong> the sample names are placeholders, and leveraged ETF products can behave in ways beginners may not expect. Daily resets make multi-day results depend on the path of daily moves; losses can grow quickly; and real funds include fund expenses, financing costs, tracking differences, taxes, liquidity, and market impact that these sample artifacts do not model.</p>
     <p><strong>Regime-comparison limits:</strong> the bull, choppy, and drawdown-recovery labels are deterministic fixture scenarios for research review and tests. They are not market classifications, recommendations, forecasts, or a guarantee of future returns.</p>
     <h2>Secondary Docs And Release Links</h2>
@@ -473,6 +494,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
           <li><a href="sample-sweep-split.html">Split sweep</a>, <a href="sample-sweep-split.md">Markdown</a>, and <a href="sample-sweep-split.json">JSON</a></li>
           <li><a href="sample-sweep.html">Parameter sweep</a>, <a href="sample-sweep.md">Markdown</a>, and <a href="sample-sweep.json">JSON</a></li>
@@ -487,6 +509,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-notes-v1.23.0.md">v1.23.0 release notes</a></li>
           <li><a href="../docs/release-notes-v1.22.1.md">v1.22.1 release notes</a></li>
           <li><a href="../docs/release-notes-v1.22.0.md">v1.22.0 release notes</a></li>
           <li><a href="../docs/release-v1.22.0.md">v1.22.0 release checklist</a></li>
@@ -568,6 +591,7 @@ def run_demo_acceptance_check() -> bool:
         *find_regime_comparison_html_issues(REPO_ROOT),
         *find_pretrade_packet_acceptance_issues(REPO_ROOT),
         *find_beginner_prediction_checklist_issues(REPO_ROOT),
+        *find_prediction_readiness_audit_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -637,6 +661,18 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(ledger_acceptance, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    prediction_readiness_audit = build_prediction_readiness_audit(
+        ledger,
+        "reports/cross-asset-thesis-ledger.json",
+    )
+    (REPORTS_DIR / "prediction-readiness-audit.md").write_text(
+        render_prediction_readiness_audit(prediction_readiness_audit),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "prediction-readiness-audit.json").write_text(
+        json.dumps(prediction_readiness_audit, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
     reviewer_bundle = build_reviewer_evidence_bundle()
     (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
         render_reviewer_evidence_bundle(reviewer_bundle),
@@ -671,8 +707,8 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "beginner backtest-reading checklist, thesis-ledger acceptance, regime "
-        "comparison, and HTML artifacts."
+        "beginner backtest-reading checklist, prediction-readiness audit, "
+        "thesis-ledger acceptance, regime comparison, and HTML artifacts."
     )
     return True
 
@@ -819,8 +855,8 @@ def find_v160_static_dashboard_issues(repo_root: Path = REPO_ROOT) -> list[str]:
     links = _local_links_for_source(relative_source, text)
     primary_section = primary_sections[0] if len(primary_sections) == 1 else ""
     primary_links = HTML_HREF_RE.findall(primary_section)
-    if len(primary_links) != 3:
-        issues.append(f"{relative_source}: primary actions must contain exactly 3 links")
+    if len(primary_links) != 4:
+        issues.append(f"{relative_source}: primary actions must contain exactly 4 links")
     for title, target in V160_STATIC_PRIMARY_ACTIONS.values():
         if title not in primary_section:
             issues.append(f"{relative_source}: missing primary action {title}")
@@ -1372,6 +1408,171 @@ def find_beginner_prediction_checklist_issues(
         if required_phrase not in combined_boundary_text:
             issues.append(
                 f"{BEGINNER_PREDICTION_CHECKLIST_MARKDOWN}: missing core no-advice phrase {required_phrase}"
+            )
+
+    return issues
+
+
+def find_prediction_readiness_audit_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / PREDICTION_READINESS_AUDIT_JSON
+    markdown_path = repo_root / PREDICTION_READINESS_AUDIT_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: audit JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: audit must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != PREDICTION_READINESS_AUDIT_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: top-level keys must match "
+            "the prediction-readiness audit schema order"
+        )
+    if payload.get("audit_type") != "prediction_readiness_audit":
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: audit_type must be prediction_readiness_audit"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: schema_version must be 1.0")
+    for key in (
+        "research_only",
+        "historical_diagnostics_only",
+        "not_investment_advice",
+    ):
+        if payload.get(key) is not True:
+            issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: {key} must be true")
+    if payload.get("source_artifact") != "reports/cross-asset-thesis-ledger.json":
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: source_artifact must point to reports/cross-asset-thesis-ledger.json"
+        )
+
+    summary = _dict_value(payload.get("summary"))
+    if summary.get("overall_label") not in {"PASS", "WARN", "FAIL"}:
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: summary.overall_label must be PASS, WARN, or FAIL"
+        )
+    if not _contains_all_terms(
+        summary.get("review_boundary"),
+        (
+            "static historical artifact",
+            "not a prediction",
+            "forecast",
+            "recommendation",
+            "trading instruction",
+            "investment-advice",
+        ),
+    ):
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: summary.review_boundary must preserve non-prediction wording"
+        )
+
+    criteria = payload.get("criteria")
+    if not isinstance(criteria, list) or len(criteria) != 6:
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: criteria must include the six prediction-readiness checks"
+        )
+        criteria = []
+    labels: list[str] = []
+    criterion_names: set[str] = set()
+    for index, criterion in enumerate(criteria, start=1):
+        if not isinstance(criterion, dict):
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_JSON}: criteria[{index}] must be an object"
+            )
+            continue
+        if tuple(criterion) != PREDICTION_READINESS_CRITERION_KEYS:
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_JSON}: criteria[{index}] keys must be criterion, label, status, evidence, review_note"
+            )
+        criterion_names.add(str(criterion.get("criterion")))
+        labels.append(str(criterion.get("label")))
+        if criterion.get("label") not in {"PASS", "WARN", "FAIL"}:
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_JSON}: criteria[{index}].label must be PASS, WARN, or FAIL"
+            )
+        for key in PREDICTION_READINESS_CRITERION_KEYS:
+            if not isinstance(criterion.get(key), str) or not criterion[key].strip():
+                issues.append(
+                    f"{PREDICTION_READINESS_AUDIT_JSON}: criteria[{index}].{key} must be a non-empty string"
+                )
+
+    for required_criterion in (
+        "static_data",
+        "non_advice_boundary",
+        "benchmark_presence",
+        "fee_drawdown_exposure_presence",
+        "train_test_diagnostics",
+        "leveraged_etf_caveats",
+    ):
+        if required_criterion not in criterion_names:
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_JSON}: missing criterion {required_criterion}"
+            )
+    if summary.get("pass_count") != labels.count("PASS"):
+        issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: summary.pass_count is stale")
+    if summary.get("warn_count") != labels.count("WARN"):
+        issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: summary.warn_count is stale")
+    if summary.get("fail_count") != labels.count("FAIL"):
+        issues.append(f"{PREDICTION_READINESS_AUDIT_JSON}: summary.fail_count is stale")
+
+    commands = payload.get("verification_commands")
+    if not _is_non_empty_string_list(commands):
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_JSON}: verification_commands must be a non-empty list"
+        )
+    else:
+        for required_command in (
+            "python -m market_signal_lab.cli --prediction-readiness-audit",
+            "python -m market_signal_lab.cli --validate-thesis-ledger",
+            "python -m pytest",
+        ):
+            if required_command not in commands:
+                issues.append(
+                    f"{PREDICTION_READINESS_AUDIT_JSON}: missing verification command {required_command}"
+                )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{PREDICTION_READINESS_AUDIT_MARKDOWN}: audit Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_MARKDOWN}: audit Markdown is empty"
+            )
+
+    for required_text in (
+        "# Prediction-Readiness Audit",
+        "## How to Read This",
+        "## Summary",
+        "## Leveraged ETF Risk Boundary",
+        "## Criteria",
+        "## Evidence Notes",
+        "## Verification Commands",
+        "not as a market outlook, action cue, or position-sizing input",
+        "Daily reset and compounding can make multi-day results path-dependent",
+        "python -m market_signal_lab.cli --prediction-readiness-audit",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{PREDICTION_READINESS_AUDIT_MARKDOWN}: missing audit text {required_text}"
             )
 
     return issues

@@ -22,6 +22,10 @@ Open the public static demo:
 
 - <https://sergioyin.github.io/market-signal-lab/>
 
+If you are reading this on GitHub, open that hosted demo first. The relative
+artifact links below point to checked-in files for review, not to a live trading
+or prediction app.
+
 Then skim these in order:
 
 - [Static Sample Gallery](reports/index.html) - browser-openable index for the checked-in artifacts.
@@ -61,6 +65,21 @@ Before reading any output, check:
 - Are leveraged ETF-like examples labeled as simplified and risky, especially across multiple days?
 
 Use the full [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) and [JSON version](reports/beginner-prediction-checklist.json) when reviewing a sample.
+
+## Prediction-readiness audit quickstart
+
+Generate a deterministic audit from the checked-in thesis ledger:
+
+```bash
+python -m market_signal_lab.cli --prediction-readiness-audit
+```
+
+By default this reads `reports/cross-asset-thesis-ledger.json` and writes
+`reports/prediction-readiness-audit.md` plus
+`reports/prediction-readiness-audit.json`. The audit labels static data,
+non-advice boundaries, benchmark fields, fee/drawdown/exposure diagnostics,
+train/test diagnostics, and leveraged ETF-like caveats for review only.
+It is a research-boundary audit, not a readiness score for trading or forecasting.
 
 ## Sample output summary
 
@@ -389,6 +408,7 @@ Before using any findings, read:
 - [Local Audit Commands](docs/local-audit-commands.md)
 - [Public Share Copy](docs/public-share-copy.md)
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
+- [v1.23.0 Release Notes](docs/release-notes-v1.23.0.md)
 - [v1.22.1 Release Notes](docs/release-notes-v1.22.1.md)
 - [v1.22.0 Release Notes](docs/release-notes-v1.22.0.md)
 - [v1.22.0 Release Checklist](docs/release-v1.22.0.md)

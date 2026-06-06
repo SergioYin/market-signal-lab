@@ -80,11 +80,16 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     primary_section = selfcheck.HTML_PRIMARY_ACTIONS_SECTION_RE.search(gallery)
     assert primary_section is not None
     primary_section = primary_section.group(1)
-    assert primary_section.count("<a ") == 3
+    assert "documentation-boundary audit only" in gallery
+    assert "not a trading signal" in gallery
+    assert "order workflow" in gallery
+    assert "position-sizing input" in gallery
+    assert primary_section.count("<a ") == 4
 
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-notes-v1.23.0.md",
         "../docs/release-notes-v1.22.1.md",
         "../docs/release-notes-v1.22.0.md",
         "../docs/release-v1.22.0.md",
@@ -137,6 +142,7 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/release-v1.19.0.md" in landing
     assert "docs/release-notes-v1.21.0.md" in landing
     assert "docs/release-v1.21.0.md" in landing
+    assert "docs/release-notes-v1.23.0.md" in landing
     assert "docs/release-notes-v1.22.1.md" in landing
     assert "docs/release-notes-v1.22.0.md" in landing
     assert "docs/release-v1.22.0.md" in landing
@@ -260,6 +266,7 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/quick-tour-preview.svg",
         "reports/reviewer-evidence-bundle.md",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-notes-v1.23.0.md",
         "docs/release-notes-v1.22.1.md",
         "docs/release-notes-v1.22.0.md",
         "docs/release-v1.22.0.md",
@@ -478,7 +485,7 @@ def test_v160_static_dashboard_contract_accepts_current_tree() -> None:
     assert issues == []
 
 
-def test_v160_static_dashboard_contract_requires_three_primary_actions(
+def test_v160_static_dashboard_contract_requires_four_primary_actions(
     tmp_path: Path,
 ) -> None:
     reports_dir = tmp_path / "reports"
@@ -529,11 +536,16 @@ def test_v160_static_dashboard_contract_requires_three_primary_actions(
         "reports/index.html: missing simplified gallery text Run One Verification Command",
         "reports/index.html: missing simplified gallery text What To Read First",
         "reports/index.html: missing simplified gallery text Secondary Docs And Release Links",
-        "reports/index.html: primary actions must contain exactly 3 links",
+        "reports/index.html: primary actions must contain exactly 4 links",
         "reports/index.html: missing primary action Beginner backtest checklist",
         (
             "reports/index.html: missing primary action link to "
             "beginner-prediction-checklist.md"
+        ),
+        "reports/index.html: missing primary action Prediction-readiness audit",
+        (
+            "reports/index.html: missing primary action link to "
+            "prediction-readiness-audit.md"
         ),
         "reports/index.html: missing primary action Run one verification command",
         "reports/index.html: missing primary action link to #verify",
@@ -548,6 +560,7 @@ def test_v160_static_dashboard_contract_checks_primary_action_text_in_section(
     for path in (
         reports_dir / "sample-report.html",
         reports_dir / "beginner-prediction-checklist.md",
+        reports_dir / "prediction-readiness-audit.md",
     ):
         path.write_text("artifact\n", encoding="utf-8")
     (reports_dir / "index.html").write_text(
@@ -561,6 +574,7 @@ def test_v160_static_dashboard_contract_checks_primary_action_text_in_section(
         '<section aria-label="Primary actions" class="primary-actions featured">\n'
         '<a href="sample-report.html">View sample report</a>\n'
         '<a href="beginner-prediction-checklist.md">Read checklist</a>\n'
+        '<a href="prediction-readiness-audit.md">Prediction-readiness audit</a>\n'
         '<a href="#verify">Run one verification command</a>\n'
         "</section>\n"
         '<h2 id="verify">Verify</h2>\n'
@@ -657,6 +671,69 @@ def test_beginner_prediction_checklist_contract_accepts_current_tree() -> None:
     issues = selfcheck.find_beginner_prediction_checklist_issues(selfcheck.REPO_ROOT)
 
     assert issues == []
+
+
+def test_prediction_readiness_audit_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_prediction_readiness_audit_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_prediction_readiness_audit_selfcheck_accepts_valid_fixture(
+    tmp_path: Path,
+) -> None:
+    _write_prediction_readiness_audit_fixture(tmp_path)
+
+    issues = selfcheck.find_prediction_readiness_audit_issues(tmp_path)
+
+    assert issues == []
+
+
+def test_prediction_readiness_audit_selfcheck_detects_broken_audit_artifacts(
+    tmp_path: Path,
+) -> None:
+    payload = _write_prediction_readiness_audit_fixture(tmp_path)
+    payload["summary"]["pass_count"] = 99
+    payload["summary"]["review_boundary"] = "Use this audit for trade approval."
+    payload["verification_commands"] = ["python -m pytest"]
+    payload["criteria"] = [
+        item
+        for item in payload["criteria"]
+        if item["criterion"] != "static_data"
+    ]
+    (tmp_path / "reports" / "prediction-readiness-audit.json").write_text(
+        json.dumps(payload, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "reports" / "prediction-readiness-audit.md").write_text(
+        "# Prediction-Readiness Audit\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_prediction_readiness_audit_issues(tmp_path)
+
+    assert (
+        "reports/prediction-readiness-audit.json: summary.review_boundary must "
+        "preserve non-prediction wording"
+    ) in issues
+    assert (
+        "reports/prediction-readiness-audit.json: criteria must include the "
+        "six prediction-readiness checks"
+    ) in issues
+    assert (
+        "reports/prediction-readiness-audit.json: missing criterion static_data"
+    ) in issues
+    assert (
+        "reports/prediction-readiness-audit.json: summary.pass_count is stale"
+    ) in issues
+    assert (
+        "reports/prediction-readiness-audit.json: missing verification command "
+        "python -m market_signal_lab.cli --prediction-readiness-audit"
+    ) in issues
+    assert (
+        "reports/prediction-readiness-audit.md: missing audit text "
+        "## How to Read This"
+    ) in issues
 
 
 def test_beginner_prediction_checklist_artifacts_are_in_public_gallery_contract() -> None:
@@ -1601,6 +1678,35 @@ def _valid_pretrade_packet_payload() -> dict[str, object]:
     }
 
 
+def _write_prediction_readiness_audit_fixture(
+    tmp_path: Path,
+    *,
+    payload_overrides: dict[str, object] | None = None,
+    markdown: str | None = None,
+) -> dict[str, object]:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+    ledger = selfcheck.build_cross_asset_thesis_ledger(selfcheck.CSV_PATH)
+    payload = selfcheck.build_prediction_readiness_audit(
+        ledger,
+        "reports/cross-asset-thesis-ledger.json",
+    )
+    if payload_overrides:
+        payload.update(payload_overrides)
+
+    (reports_dir / "prediction-readiness-audit.json").write_text(
+        json.dumps(payload, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (reports_dir / "prediction-readiness-audit.md").write_text(
+        markdown
+        if markdown is not None
+        else selfcheck.render_prediction_readiness_audit(payload),
+        encoding="utf-8",
+    )
+    return payload
+
+
 def _regime_comparison_command() -> list[str]:
     regime_commands = [
         command
@@ -1720,6 +1826,7 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-notes-v1.23.0.md",
         "release-notes-v1.22.1.md",
         "release-notes-v1.22.0.md",
         "release-v1.22.0.md",

@@ -1,6 +1,6 @@
 # Static Demo Manifest
 
-This manifest defines the public static demo surface for Market Signal Lab v1.22.1. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
+This manifest defines the public static demo surface for Market Signal Lab v1.23.0. It exists so a cold reviewer can open one first screen, follow local links, and verify the artifact trail without installing the package.
 
 Start at the [Root Landing](../index.html), then open the [Static Sample Gallery](../reports/index.html). Both are plain HTML pages with no JavaScript, no remote assets, no live market data calls, no broker connection, and no account flow. Every link is repository-local and relative, so the same files can be opened from a checkout or served from a static host such as GitHub Pages.
 
@@ -32,10 +32,11 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 
 ## Gallery First Screen
 
-The checked-in [Static Sample Gallery](../reports/index.html) starts with a compact no-JavaScript three-CTA landing:
+The checked-in [Static Sample Gallery](../reports/index.html) starts with a compact no-JavaScript research-only CTA landing:
 
 - [View sample report](../reports/sample-report.html)
 - [Beginner backtest checklist](../reports/beginner-prediction-checklist.md)
+- [Prediction-readiness audit](../reports/prediction-readiness-audit.md)
 - [Run one verification command](../reports/index.html#verify): `python -m market_signal_lab.cli --validate-thesis-ledger`
 
 The same page then exposes repository-local secondary links grouped under Core Artifacts, More Samples, and Docs And Releases:
@@ -48,10 +49,11 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Fee sensitivity: [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
 - Cross-asset thesis ledger: [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
 - Reviewer evidence bundle: [Markdown](../reports/reviewer-evidence-bundle.md) and [JSON](../reports/reviewer-evidence-bundle.json).
+- Prediction-readiness audit: [Markdown](../reports/prediction-readiness-audit.md) and [JSON](../reports/prediction-readiness-audit.json).
 - Beginner backtest-reading checklist: [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
 - Split sweep: [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), and [JSON](../reports/sample-sweep-split.json).
 - Parameter sweep: [HTML](../reports/sample-sweep.html), [Markdown](../reports/sample-sweep.md), and [JSON](../reports/sample-sweep.json).
-- Manifest and docs: [Sample manifest](../reports/sample-manifest.md), [Artifact gallery notes](artifact-gallery.md), [Static demo manifest](static-gallery-manifest.md), [Static gallery walkthrough](static-gallery-walkthrough.svg), [Split-sweep walkthrough](split-sweep-walkthrough.md), [Local audit commands](local-audit-commands.md), [v1.22.1 release notes](release-notes-v1.22.1.md), [v1.22.0 release notes](release-notes-v1.22.0.md), and [v1.22.0 release checklist](release-v1.22.0.md).
+- Manifest and docs: [Sample manifest](../reports/sample-manifest.md), [Artifact gallery notes](artifact-gallery.md), [Static demo manifest](static-gallery-manifest.md), [Static gallery walkthrough](static-gallery-walkthrough.svg), [Split-sweep walkthrough](split-sweep-walkthrough.md), [Local audit commands](local-audit-commands.md), [v1.23.0 release notes](release-notes-v1.23.0.md), [v1.22.1 release notes](release-notes-v1.22.1.md), [v1.22.0 release notes](release-notes-v1.22.0.md), and [v1.22.0 release checklist](release-v1.22.0.md).
 
 ## Pages-Safe Artifact Inventory
 
@@ -77,6 +79,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
 - [Reviewer evidence bundle Markdown](../reports/reviewer-evidence-bundle.md)
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json)
+- [Prediction-readiness audit Markdown](../reports/prediction-readiness-audit.md)
+- [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json)
 - [Beginner backtest-reading checklist Markdown](../reports/beginner-prediction-checklist.md)
 - [Beginner backtest-reading checklist JSON](../reports/beginner-prediction-checklist.json)
 - [Quick-tour preview](quick-tour-preview.md)

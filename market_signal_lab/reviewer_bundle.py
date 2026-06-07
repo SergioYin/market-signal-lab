@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
@@ -42,8 +44,18 @@ BOUNDARY_FLAGS = {
     "no_recommendations_or_forecasts": True,
 }
 
+INTEGRITY_ARTIFACT_PATHS = (
+    "reports/index.html",
+    "reports/cross-asset-thesis-ledger.json",
+    "reports/cross-asset-thesis-ledger-acceptance.md",
+    "reports/cross-asset-thesis-ledger-acceptance.json",
+    "docs/methodology-audit.md",
+)
 
-def build_reviewer_evidence_bundle() -> dict[str, Any]:
+
+def build_reviewer_evidence_bundle(
+    artifact_root: Path | str = Path("."),
+) -> dict[str, Any]:
     """Build a deterministic public-safe reviewer evidence bundle payload."""
 
     return {
@@ -63,6 +75,110 @@ def build_reviewer_evidence_bundle() -> dict[str, Any]:
             "python scripts/selfcheck.py",
             "python -m pytest",
         ],
+        "artifact_integrity_summary": build_artifact_integrity_summary(
+            artifact_root,
+            INTEGRITY_ARTIFACT_PATHS,
+        ),
+    }
+
+
+def build_artifact_integrity_summary(
+    artifact_root: Path | str,
+    artifact_paths: tuple[str, ...] = INTEGRITY_ARTIFACT_PATHS,
+) -> dict[str, Any]:
+    """Return deterministic SHA-256 byte hashes for local static artifacts."""
+
+    root = Path(artifact_root)
+    artifacts = [
+        _artifact_integrity_record(root, artifact_path)
+        for artifact_path in artifact_paths
+    ]
+    status_counts = _artifact_status_counts(artifacts)
+    integrity_status = _artifact_integrity_status(status_counts)
+    return {
+        "summary_type": "artifact_integrity_summary",
+        "algorithm": "sha256",
+        "scope": "local static reviewer evidence artifacts only; hashes confirm file bytes at generation time, not financial correctness",
+        "integrity_status": integrity_status,
+        "interpretation": _artifact_integrity_interpretation(
+            integrity_status,
+            status_counts,
+            len(artifacts),
+        ),
+        "caveat": "This is a local file-byte integrity check only; it does not validate financial correctness, future performance, recommendations, or investment suitability.",
+        "artifact_count": len(artifacts),
+        "present_count": status_counts["present"],
+        "missing_count": status_counts["missing"],
+        "invalid_count": status_counts["invalid_path"],
+        "artifacts": artifacts,
+    }
+
+
+def _artifact_status_counts(artifacts: list[dict[str, Any]]) -> dict[str, int]:
+    return {
+        status: sum(1 for artifact in artifacts if artifact["status"] == status)
+        for status in ("present", "missing", "invalid_path")
+    }
+
+
+def _artifact_integrity_status(status_counts: dict[str, int]) -> str:
+    if status_counts["invalid_path"] > 0:
+        return "FAIL"
+    if status_counts["missing"] > 0:
+        return "WARN"
+    return "PASS"
+
+
+def _artifact_integrity_interpretation(
+    integrity_status: str,
+    status_counts: dict[str, int],
+    artifact_count: int,
+) -> str:
+    if integrity_status == "FAIL":
+        return (
+            "FAIL: One or more configured artifact paths were rejected as unsafe, "
+            "so the integrity summary is not complete until the path list is fixed."
+        )
+    if integrity_status == "WARN":
+        return (
+            "WARN: "
+            f"{status_counts['present']} of {artifact_count} expected static reviewer "
+            "artifacts were present and hashed; missing artifacts should be regenerated "
+            "before cold review."
+        )
+    return (
+        "PASS: All expected static reviewer artifacts were present and hashed at "
+        "generation time."
+    )
+
+
+def _artifact_integrity_record(root: Path, artifact_path: str) -> dict[str, Any]:
+    requested_path = PurePosixPath(artifact_path)
+    if requested_path.is_absolute() or ".." in requested_path.parts:
+        return _empty_artifact_integrity_record(
+            "[invalid artifact path]",
+            "invalid_path",
+        )
+
+    path = root / artifact_path
+    if not path.is_file():
+        return _empty_artifact_integrity_record(artifact_path, "missing")
+
+    data = path.read_bytes()
+    return {
+        "path": artifact_path,
+        "status": "present",
+        "byte_count": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    }
+
+
+def _empty_artifact_integrity_record(path: str, status: str) -> dict[str, Any]:
+    return {
+        "path": path,
+        "status": status,
+        "byte_count": 0,
+        "sha256": None,
     }
 
 
@@ -85,6 +201,32 @@ def render_reviewer_evidence_bundle(payload: dict[str, Any]) -> str:
         "",
     ]
     lines.extend(f"- `{command}`" for command in payload["verification_commands"])
+    integrity = payload["artifact_integrity_summary"]
+    lines.extend(
+        [
+            "",
+            "## Artifact hash summary",
+            "",
+            f"- Integrity status: `{integrity['integrity_status']}`",
+            f"- Interpretation: {integrity['interpretation']}",
+            f"- Caveat: {integrity['caveat']}",
+            f"- Algorithm: `{integrity['algorithm']}`",
+            f"- Scope: {integrity['scope']}",
+            f"- Present artifacts: `{integrity['present_count']}` of `{integrity['artifact_count']}`",
+            "",
+            "| Path | Status | Bytes | SHA-256 |",
+            "| --- | --- | ---: | --- |",
+        ]
+    )
+    lines.extend(
+        "| {path} | {status} | {byte_count} | {sha256} |".format(
+            path=artifact["path"],
+            status=artifact["status"],
+            byte_count=artifact["byte_count"],
+            sha256=artifact["sha256"] or "missing",
+        )
+        for artifact in integrity["artifacts"]
+    )
     lines.extend(
         [
             "",

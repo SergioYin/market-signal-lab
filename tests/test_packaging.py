@@ -139,6 +139,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert version_result.stdout.strip() == f"market-signal-lab {installed_version}"
 
     for flag in (
+        "--reviewer-evidence-bundle",
         "--beginner-prediction-checklist",
         "--prediction-readiness-audit",
         "--validate-thesis-ledger",
@@ -146,6 +147,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     ):
         _run_wheel_smoke_command(console_script, flag, empty_cwd, env)
 
+    assert (empty_cwd / "reports" / "reviewer-evidence-bundle.md").is_file()
     assert (empty_cwd / "reports" / "beginner-prediction-checklist.md").is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
@@ -163,7 +165,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.23.0"
+    assert __version__ == "1.24.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

@@ -449,7 +449,8 @@ def _build_parser() -> ArgumentParser:
         help=(
             "Write a static reviewer evidence bundle linking the gallery, "
             "thesis-ledger acceptance route, methodology risks, and no-advice "
-            "boundaries. Defaults to reports/reviewer-evidence-bundle.md and "
+            "boundaries, with an artifact hash summary for local static review "
+            "files. Defaults to reports/reviewer-evidence-bundle.md and "
             "reports/reviewer-evidence-bundle.json."
         ),
     )

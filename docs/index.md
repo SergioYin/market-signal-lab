@@ -37,7 +37,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Cross-asset thesis ledger](../reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE evidence packet generated from the bundled sample CSV by selfcheck.
 - [Cross-asset thesis ledger JSON](../reports/cross-asset-thesis-ledger.json) - structured version of the same offline research-only packet.
 - [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `python -m market_signal_lab.cli --validate-thesis-ledger` from a fresh checkout, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
-- [Reviewer evidence bundle](../reports/reviewer-evidence-bundle.md) - compact static handoff tying gallery, thesis-ledger acceptance, verification commands, methodology risks, and no-advice boundaries together.
+- [Reviewer evidence bundle](../reports/reviewer-evidence-bundle.md) - compact static handoff tying gallery, thesis-ledger acceptance, verification commands, methodology risks, no-advice boundaries, and the [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary) together.
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json) - structured version of the same public-safe handoff.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
 - [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json) - structured version of the same review-only audit.
@@ -74,6 +74,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.24.0 Release Notes](release-notes-v1.24.0.md)
 - [v1.23.0 Release Notes](release-notes-v1.23.0.md)
 - [v1.22.1 Release Notes](release-notes-v1.22.1.md)
 - [v1.22.0 Release Notes](release-notes-v1.22.0.md)

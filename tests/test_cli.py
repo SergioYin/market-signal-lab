@@ -44,7 +44,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.23.0"
+    assert result.stdout.strip() == "market-signal-lab 1.24.0"
     assert result.stderr == ""
 
 
@@ -85,6 +85,24 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     assert payload["no_orders_or_position_sizing"] is True
     assert payload["no_recommendations_or_forecasts"] is True
     assert payload["inspection_steps"][0]["path"] == "reports/index.html"
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "WARN"
+    assert integrity["interpretation"].startswith("WARN:")
+    assert "file-byte integrity check only" in integrity["caveat"]
+    assert integrity["artifact_count"] == 5
+    assert integrity["present_count"] == 0
+    assert integrity["missing_count"] == 5
+    assert integrity["artifacts"][0] == {
+        "path": "reports/index.html",
+        "status": "missing",
+        "byte_count": 0,
+        "sha256": None,
+    }
+    assert "## Artifact hash summary" in markdown
+    assert "- Integrity status: `WARN`" in markdown
+    assert "not financial correctness" in markdown
+    assert "| reports/index.html | missing | 0 | missing |" in markdown
 
 
 def test_cli_writes_beginner_prediction_checklist_defaults(tmp_path: Path) -> None:

@@ -16,6 +16,23 @@ This bundle is a compact cold-review handoff for Market Signal Lab. It points a 
 - `python scripts/selfcheck.py`
 - `python -m pytest`
 
+## Artifact hash summary
+
+- Integrity status: `PASS`
+- Interpretation: PASS: All expected static reviewer artifacts were present and hashed at generation time.
+- Caveat: This is a local file-byte integrity check only; it does not validate financial correctness, future performance, recommendations, or investment suitability.
+- Algorithm: `sha256`
+- Scope: local static reviewer evidence artifacts only; hashes confirm file bytes at generation time, not financial correctness
+- Present artifacts: `5` of `5`
+
+| Path | Status | Bytes | SHA-256 |
+| --- | --- | ---: | --- |
+| reports/index.html | present | 7299 | 240a659106c04c4a4b0220cd781a48e0bcc8ac200840b0c63ac10a30f0323a20 |
+| reports/cross-asset-thesis-ledger.json | present | 37420 | ce5efe33b26e3e800f61978594513fb12baa922ab51e1fc01b41ea0d27b7f495 |
+| reports/cross-asset-thesis-ledger-acceptance.md | present | 4965 | 351100a40f6e76c9fb28b40234cd6e7a824c11a022235223e5501a86d49b2a14 |
+| reports/cross-asset-thesis-ledger-acceptance.json | present | 6008 | 8ac3de4bc1bc71a96f77feeb86796ae0bd103a92a2523b11b5c58f165a5057dc |
+| docs/methodology-audit.md | present | 4970 | 8913048eb92849915d844090f56d908e744aa84c9d0248c37adade3e13189e3a |
+
 ## Beginner risk boundaries
 
 - All metrics are historical diagnostics from bundled static/synthetic sample data.

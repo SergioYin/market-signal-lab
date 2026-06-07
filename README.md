@@ -81,6 +81,14 @@ non-advice boundaries, benchmark fields, fee/drawdown/exposure diagnostics,
 train/test diagnostics, and leveraged ETF-like caveats for review only.
 It is a research-boundary audit, not a readiness score for trading or forecasting.
 
+## Reviewer evidence bundle integrity
+
+Cold reviewers can open `reports/reviewer-evidence-bundle.md` and use its artifact hash summary to confirm the listed static review files were present with recorded SHA-256 bytes at generation time. The hashes are artifact-integrity evidence only; they do not validate financial correctness, future performance, recommendations, or investment suitability. Regenerate the bundle and refresh that summary with:
+
+```bash
+python -m market_signal_lab.cli --reviewer-evidence-bundle
+```
+
 ## Sample output summary
 
 The checked-in sample artifacts show:

@@ -673,7 +673,7 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(prediction_readiness_audit, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
-    reviewer_bundle = build_reviewer_evidence_bundle()
+    reviewer_bundle = build_reviewer_evidence_bundle(REPO_ROOT)
     (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
         render_reviewer_evidence_bundle(reviewer_bundle),
         encoding="utf-8",

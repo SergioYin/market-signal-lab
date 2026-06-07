@@ -48,7 +48,7 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Regime comparison: [HTML](../reports/regime-comparison.html), [Markdown](../reports/regime-comparison.md), and [JSON](../reports/regime-comparison.json).
 - Fee sensitivity: [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
 - Cross-asset thesis ledger: [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
-- Reviewer evidence bundle: [Markdown](../reports/reviewer-evidence-bundle.md) and [JSON](../reports/reviewer-evidence-bundle.json).
+- Reviewer evidence bundle integrity summary: [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary), [Markdown](../reports/reviewer-evidence-bundle.md), and [JSON](../reports/reviewer-evidence-bundle.json).
 - Prediction-readiness audit: [Markdown](../reports/prediction-readiness-audit.md) and [JSON](../reports/prediction-readiness-audit.json).
 - Beginner backtest-reading checklist: [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
 - Split sweep: [HTML](../reports/sample-sweep-split.html), [Markdown](../reports/sample-sweep-split.md), and [JSON](../reports/sample-sweep-split.json).

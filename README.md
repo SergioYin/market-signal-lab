@@ -26,9 +26,11 @@ If you are reading this on GitHub, open that hosted demo first. The relative
 artifact links below point to checked-in files for review, not to a live trading
 or prediction app.
 
-Then skim these in order:
+Then skim these in order. They are static review artifacts only, not advice,
+forecasts, recommendations, or trading instructions:
 
 - [Static Sample Gallery](reports/index.html) - browser-openable index for the checked-in artifacts.
+- [Cold-User Review Route](reports/cold-user-review-route.md) - compact first-time public-review path regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
 - [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) - plain-language checks for reading historical backtests without turning them into predictions, recommendations, or advice.
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE comparison with a matching [PASS/WARN/FAIL acceptance summary](reports/cross-asset-thesis-ledger-acceptance.md).
 
@@ -39,6 +41,8 @@ git clone https://github.com/SergioYin/market-signal-lab.git
 cd market-signal-lab
 python -m market_signal_lab.cli --validate-thesis-ledger
 ```
+
+For the first-time public-review route, run `python -m market_signal_lab.cli --cold-user-review-route`.
 
 The command validates the checked-in thesis-ledger JSON and writes acceptance artifacts. Compare its output with:
 
@@ -103,7 +107,7 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 
 ## Core artifacts
 
-- Start here: [Static Sample Gallery](reports/index.html) and [Static Gallery Manifest](docs/static-gallery-manifest.md).
+- Start here: [Static Sample Gallery](reports/index.html), [Cold-User Review Route](reports/cold-user-review-route.md), and [Static Gallery Manifest](docs/static-gallery-manifest.md).
 - Main report path: [Single Backtest Report](reports/sample-report.md), [JSON](reports/sample-report.json), [Scenario Card](reports/scenario-card.md), and [Research Packet](reports/pretrade-packet.md).
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
 - Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).

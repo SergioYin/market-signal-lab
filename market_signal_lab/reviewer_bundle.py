@@ -195,7 +195,7 @@ def render_reviewer_evidence_bundle(payload: dict[str, Any]) -> str:
         f"1. Open `{payload['inspection_steps'][0]['path']}` to inspect checked-in sample artifacts before installing anything.",
         f"2. Read `{payload['inspection_steps'][1]['path']}` for the current cross-asset thesis-ledger acceptance summary.",
         f"3. Rerun `{payload['inspection_steps'][2]['command']}` to regenerate the acceptance artifacts from the checked-in JSON packet.",
-        f"4. Review `{payload['inspection_steps'][3]['path']}` before treating any historical diagnostic as reusable evidence.",
+        f"4. Review `{payload['inspection_steps'][3]['path']}` before citing any historical diagnostic as review context.",
         "",
         "## Verification commands",
         "",

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "market-signal-lab"
-version = "1.24.0"
+version = "1.25.0"
 description = "Research-only static backtest artifact packaging sandbox"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -46,4 +46,9 @@ market-signal-lab = "market_signal_lab.cli:main"
 include = ["market_signal_lab*"]
 
 [tool.setuptools.package-data]
-market_signal_lab = ["_resources/**/*.csv", "_resources/**/*.json"]
+market_signal_lab = [
+    "_resources/**/*.csv",
+    "_resources/**/*.html",
+    "_resources/**/*.json",
+    "_resources/**/*.md",
+]

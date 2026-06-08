@@ -261,6 +261,8 @@ V130_STATIC_GALLERY_LINKS = (
     "cross-asset-thesis-ledger.json",
     "reviewer-evidence-bundle.md",
     "reviewer-evidence-bundle.json",
+    "cold-user-review-route.md",
+    "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
     "beginner-prediction-checklist.json",
     "prediction-readiness-audit.md",
@@ -464,8 +466,9 @@ GALLERY_HTML = """<!doctype html>
       <a href="prediction-readiness-audit.md">Prediction-readiness audit</a>
       <a href="#verify">Run one verification command</a>
     </section>
+    <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <h2 id="verify">Run One Verification Command</h2>
-    <p>From the repository root, run this deterministic local check. It validates the checked-in thesis-ledger packet shape and public research boundaries; it does not prove profitability or future performance.</p>
+    <p>From the repository root, run this deterministic local check. It checks the checked-in thesis-ledger packet shape and public research boundaries; it does not validate financial correctness, profitability, or future performance.</p>
     <pre><code>python -m market_signal_lab.cli --validate-thesis-ledger</code></pre>
     <h2>What To Read First</h2>
     <p class="artifact-path">reports/sample-report.html</p>
@@ -494,6 +497,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
           <li><a href="sample-sweep-split.html">Split sweep</a>, <a href="sample-sweep-split.md">Markdown</a>, and <a href="sample-sweep-split.json">JSON</a></li>
@@ -1236,7 +1240,7 @@ def find_beginner_prediction_checklist_issues(
         reuse_reason,
         (
             "public reviewers",
-            "star or reuse",
+            "reference this artifact",
             "deterministic",
             "static review template",
             "future-return predictions",
@@ -1246,7 +1250,7 @@ def find_beginner_prediction_checklist_issues(
         ),
     ):
         issues.append(
-            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: public_reviewer_reuse_reason must explain why public reviewers can star or reuse the artifact without weakening no-advice boundaries"
+            f"{BEGINNER_PREDICTION_CHECKLIST_JSON}: public_reviewer_reuse_reason must explain why public reviewers can reference the artifact without weakening no-advice boundaries"
         )
 
     defaults = _dict_value(payload.get("default_outputs"))
@@ -1380,10 +1384,10 @@ def find_beginner_prediction_checklist_issues(
 
     for required_text in (
         "# Beginner Backtest Reading Checklist",
-        "## Why Public Reviewers Might Star Or Reuse It",
+        "## Why Public Reviewers Might Reference It",
         "## How To Read A Historical Backtest",
         "## Risk Boundaries",
-        "star or reuse",
+        "reference this artifact",
         "Leveraged ETF daily-reset and path-dependency risk",
         "predictions of future returns, recommendations, trading instructions, or investment advice",
         "no_live_data",

@@ -20,6 +20,11 @@ from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
 )
+from market_signal_lab.cold_user_review_route import (
+    INTEGRITY_ARTIFACT_PATHS,
+    build_cold_user_review_route,
+    render_cold_user_review_route,
+)
 from market_signal_lab.data import (
     REQUIRED_COLUMNS,
     PriceBar,
@@ -105,16 +110,26 @@ PREDICTION_READINESS_AUDIT_JSON_OUTPUT = Path(
     "reports/prediction-readiness-audit.json"
 )
 PREDICTION_READINESS_AUDIT_FLAG = "--prediction-readiness-audit"
+COLD_USER_REVIEW_ROUTE_OUTPUT = Path("reports/cold-user-review-route.md")
+COLD_USER_REVIEW_ROUTE_JSON_OUTPUT = Path("reports/cold-user-review-route.json")
+COLD_USER_REVIEW_ROUTE_FLAG = "--cold-user-review-route"
+COLD_USER_REVIEW_ROUTE_STATIC_RESOURCES = tuple(
+    Path(path) for path in INTEGRITY_ARTIFACT_PATHS
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+    _reject_cold_user_review_route_mode_conflicts(args, parser)
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
 
     try:
-        if args.methodology_audit_review_template:
+        if args.cold_user_review_route:
+            args = _resolve_cold_user_review_route_args(args, parser)
+            report, json_payload, manifest_payload = _run_cold_user_review_route()
+        elif args.methodology_audit_review_template:
             args = _resolve_methodology_audit_review_template_args(args, parser)
             report, json_payload, manifest_payload = (
                 _run_methodology_audit_review_template()
@@ -174,6 +189,23 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         parser,
         "--beginner-prediction-checklist",
         include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+    )
+
+
+def _reject_cold_user_review_route_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.cold_user_review_route:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        COLD_USER_REVIEW_ROUTE_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
     )
 
 
@@ -189,6 +221,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         parser,
         PREDICTION_READINESS_AUDIT_FLAG,
         include_beginner_prediction_checklist=True,
+        include_cold_user_review_route=True,
     )
 
 
@@ -199,6 +232,7 @@ def _reject_mode_conflicts(
     *,
     include_beginner_prediction_checklist: bool = False,
     include_prediction_readiness_audit: bool = False,
+    include_cold_user_review_route: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -220,6 +254,10 @@ def _reject_mode_conflicts(
             PREDICTION_READINESS_AUDIT_FLAG,
             include_prediction_readiness_audit
             and args.prediction_readiness_audit is not None,
+        ),
+        (
+            COLD_USER_REVIEW_ROUTE_FLAG,
+            include_cold_user_review_route and args.cold_user_review_route,
         ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
@@ -452,6 +490,21 @@ def _build_parser() -> ArgumentParser:
             "boundaries, with an artifact hash summary for local static review "
             "files. Defaults to reports/reviewer-evidence-bundle.md and "
             "reports/reviewer-evidence-bundle.json."
+        ),
+    )
+    parser.add_argument(
+        COLD_USER_REVIEW_ROUTE_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic cold-user review route and checklist for "
+            "checked-in static artifacts, including repo-relative artifact "
+            "hashes and public review boundaries. Defaults to "
+            "reports/cold-user-review-route.md and "
+            "reports/cold-user-review-route.json. Does not read CSV data, "
+            "fetch live data, connect to brokers, create orders, size "
+            "positions, or provide forecasts, recommendations, or investment "
+            "advice."
         ),
     )
     parser.add_argument(
@@ -704,6 +757,33 @@ def _resolve_reviewer_evidence_bundle_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.reviewer_evidence_bundle = True
+    return resolved
+
+
+def _resolve_cold_user_review_route_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{COLD_USER_REVIEW_ROUTE_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{COLD_USER_REVIEW_ROUTE_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(f"{COLD_USER_REVIEW_ROUTE_FLAG} writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{COLD_USER_REVIEW_ROUTE_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or COLD_USER_REVIEW_ROUTE_OUTPUT
+    resolved.json_output = args.json_output or COLD_USER_REVIEW_ROUTE_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.cold_user_review_route = True
     return resolved
 
 
@@ -1152,6 +1232,13 @@ def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]
     return report, payload, {}
 
 
+def _run_cold_user_review_route() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    with _bundled_resource_worktree(COLD_USER_REVIEW_ROUTE_STATIC_RESOURCES) as root:
+        payload = build_cold_user_review_route(root)
+    report = render_cold_user_review_route(payload)
+    return report, payload, {}
+
+
 def _run_beginner_prediction_checklist() -> tuple[
     str, dict[str, Any], dict[str, Any]
 ]:
@@ -1515,11 +1602,13 @@ def _load_defaultable_json(path: Path, bundled_default: Path) -> Any:
     )
 
 
-def _bundled_resource_worktree() -> tempfile.TemporaryDirectory[str]:
+def _bundled_resource_worktree(
+    logical_paths: Sequence[Path] | None = None,
+) -> tempfile.TemporaryDirectory[str]:
     worktree = tempfile.TemporaryDirectory(prefix="market-signal-lab-")
     root = Path(worktree.name)
     try:
-        for logical_path in (
+        for logical_path in logical_paths or (
             *BUNDLED_REGIME_CONFIGS,
             Path("examples/data/sample_multi_regime.csv"),
             Path("examples/data/sample_multi_regime.csv.provenance.json"),

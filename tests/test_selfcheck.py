@@ -800,8 +800,8 @@ def test_beginner_prediction_checklist_contract_reports_boundary_regressions(
     ) in issues
     assert (
         "reports/beginner-prediction-checklist.json: "
-        "public_reviewer_reuse_reason must explain why public reviewers can star "
-        "or reuse the artifact without weakening no-advice boundaries"
+        "public_reviewer_reuse_reason must explain why public reviewers can "
+        "reference the artifact without weakening no-advice boundaries"
     ) in issues
     assert (
         "reports/beginner-prediction-checklist.json: scope limits must preserve "

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import re
 import subprocess
@@ -20,7 +21,12 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/configs/multi-regime-drawdown-recovery-report.json",
     "examples/data/sample_multi_regime.csv",
     "examples/data/sample_multi_regime.csv.provenance.json",
+    "docs/methodology-audit.md",
+    "reports/beginner-prediction-checklist.md",
     "reports/cross-asset-thesis-ledger.json",
+    "reports/index.html",
+    "reports/reviewer-evidence-bundle.md",
+    "reports/sample-report.md",
 )
 
 
@@ -64,7 +70,9 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
 
     assert package_data["market_signal_lab"] == [
         "_resources/**/*.csv",
+        "_resources/**/*.html",
         "_resources/**/*.json",
+        "_resources/**/*.md",
     ]
     for resource in INSTALLED_DEFAULT_COMMAND_RESOURCES:
         assert (PROJECT_ROOT / "market_signal_lab" / "_resources" / resource).is_file()
@@ -141,6 +149,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     for flag in (
         "--reviewer-evidence-bundle",
         "--beginner-prediction-checklist",
+        "--cold-user-review-route",
         "--prediction-readiness-audit",
         "--validate-thesis-ledger",
         "--regime-comparison",
@@ -152,6 +161,16 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
+    cold_user_route = json.loads(
+        (empty_cwd / "reports" / "cold-user-review-route.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert cold_user_route["artifact_integrity_summary"]["integrity_status"] == "PASS"
+    assert (
+        cold_user_route["artifact_integrity_summary"]["present_count"]
+        == cold_user_route["artifact_integrity_summary"]["artifact_count"]
+    )
     assert (empty_cwd / "reports" / "prediction-readiness-audit.json").is_file()
     assert (empty_cwd / "reports" / "regime-comparison.html").is_file()
 
@@ -165,7 +184,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.24.0"
+    assert __version__ == "1.25.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

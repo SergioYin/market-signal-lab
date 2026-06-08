@@ -101,7 +101,7 @@ def build_beginner_prediction_checklist() -> dict[str, Any]:
             "returns, recommendation, or advice."
         ),
         "public_reviewer_reuse_reason": (
-            "Public reviewers can star or reuse this artifact as a deterministic "
+            "Public reviewers can reference this artifact as a deterministic "
             "static review template for checking whether backtest writeups keep "
             "historical results separate from future-return predictions, "
             "recommendations, trading instructions, and investment advice."
@@ -149,7 +149,7 @@ def render_beginner_prediction_checklist(payload: dict[str, Any]) -> str:
         f"- {payload['purpose']}",
         "- It is deterministic and generated without live market data, broker connections, account access, orders, or position sizing.",
         "",
-        "## Why Public Reviewers Might Star Or Reuse It",
+        "## Why Public Reviewers Might Reference It",
         "",
         f"- {payload['public_reviewer_reuse_reason']}",
         "",

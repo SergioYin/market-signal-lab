@@ -39,6 +39,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `python -m market_signal_lab.cli --validate-thesis-ledger` from a fresh checkout, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
 - [Reviewer evidence bundle](../reports/reviewer-evidence-bundle.md) - compact static handoff tying gallery, thesis-ledger acceptance, verification commands, methodology risks, no-advice boundaries, and the [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary) together.
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json) - structured version of the same public-safe handoff.
+- [Reviewer rerun receipt](../reports/reviewer-rerun-receipt.md) - deterministic stdlib-only receipt listing public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
+- [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json) - structured version of the same rerun receipt.
 - [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts, regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
@@ -76,6 +78,8 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.26.0 Release Notes](release-v1.26.0.md)
+- [v1.26.0 Release Docs](release-notes-v1.26.0.md)
 - [v1.25.0 Release Notes](release-v1.25.0.md)
 - [v1.24.0 Release Notes](release-notes-v1.24.0.md)
 - [v1.23.0 Release Notes](release-notes-v1.23.0.md)

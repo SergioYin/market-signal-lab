@@ -26,6 +26,15 @@ from market_signal_lab.report import (
     SCENARIO_RISK_INTERPRETATION_KEYS,
     SCENARIO_RISK_INTERPRETATION_NOTE,
 )
+from market_signal_lab.reviewer_rerun_receipt import (
+    CHECKLIST_KEYS,
+    EXPECTED_ARTIFACT_KEYS,
+    BOUNDARY_FLAGS as REVIEWER_RERUN_RECEIPT_BOUNDARY_FLAGS,
+    REVIEWER_RERUN_RECEIPT_TOP_LEVEL_KEYS,
+    VERIFICATION_COMMAND_KEYS,
+    VERIFICATION_COMMANDS as REVIEWER_RERUN_RECEIPT_COMMANDS,
+    build_reviewer_rerun_receipt,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -44,7 +53,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.25.0"
+    assert result.stdout.strip() == "market-signal-lab 1.26.0"
     assert result.stderr == ""
 
 
@@ -103,6 +112,245 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     assert "- Integrity status: `WARN`" in markdown
     assert "not financial correctness" in markdown
     assert "| reports/index.html | missing | 0 | missing |" in markdown
+
+
+def test_cli_writes_reviewer_rerun_receipt_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "reviewer-rerun-receipt.md"
+    json_path = tmp_path / "reports" / "reviewer-rerun-receipt.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Reviewer Rerun Receipt" in markdown
+    assert payload["artifact_type"] == "reviewer_rerun_receipt"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/reviewer-rerun-receipt.md",
+        "json": "reports/reviewer-rerun-receipt.json",
+    }
+    for key in REVIEWER_RERUN_RECEIPT_BOUNDARY_FLAGS:
+        assert payload[key] is True
+    expected_commands = {
+        command["command"] for command in REVIEWER_RERUN_RECEIPT_COMMANDS
+    }
+    actual_commands = {
+        command["command"] for command in payload["verification_commands"]
+    }
+    assert actual_commands == expected_commands
+    for command in expected_commands:
+        assert command in markdown
+    for boundary in payload["review_boundaries"]:
+        assert boundary in markdown
+    assert {item["status"] for item in payload["checklist"]} == {"PASS", "WARN"}
+
+
+def test_cli_writes_reviewer_rerun_receipt_custom_outputs(
+    tmp_path: Path,
+) -> None:
+    markdown_path = tmp_path / "receipt.md"
+    json_path = tmp_path / "receipt.json"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
+            "--output",
+            str(markdown_path),
+            "--json-output",
+            str(json_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    assert "# Reviewer Rerun Receipt" in markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert payload["artifact_type"] == "reviewer_rerun_receipt"
+
+
+def test_reviewer_rerun_receipt_json_schema_keys() -> None:
+    payload = build_reviewer_rerun_receipt()
+
+    assert tuple(payload) == REVIEWER_RERUN_RECEIPT_TOP_LEVEL_KEYS
+    assert isinstance(payload["verification_commands"], list)
+    assert isinstance(payload["expected_artifacts"], list)
+    assert isinstance(payload["checklist"], list)
+    assert all(
+        tuple(command) == VERIFICATION_COMMAND_KEYS
+        for command in payload["verification_commands"]
+    )
+    assert all(
+        tuple(artifact) == EXPECTED_ARTIFACT_KEYS
+        for artifact in payload["expected_artifacts"]
+    )
+    assert all(tuple(item) == CHECKLIST_KEYS for item in payload["checklist"])
+
+
+def test_reviewer_rerun_receipt_builds_fresh_nested_objects() -> None:
+    payload = build_reviewer_rerun_receipt()
+    payload["verification_commands"][0]["unexpected_command_field"] = "extra"
+    payload["verification_commands"][0]["expected_artifacts"].append("extra")
+    payload["expected_artifacts"][0]["unexpected_artifact_field"] = "extra"
+    payload["checklist"][0]["unexpected_checklist_field"] = "extra"
+
+    fresh_payload = build_reviewer_rerun_receipt()
+
+    assert (
+        tuple(fresh_payload["verification_commands"][0])
+        == VERIFICATION_COMMAND_KEYS
+    )
+    assert (
+        "extra"
+        not in fresh_payload["verification_commands"][0]["expected_artifacts"]
+    )
+    assert tuple(fresh_payload["expected_artifacts"][0]) == EXPECTED_ARTIFACT_KEYS
+    assert tuple(fresh_payload["checklist"][0]) == CHECKLIST_KEYS
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--reviewer-rerun-receipt does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--reviewer-rerun-receipt cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--scenario-card"],
+            "--reviewer-rerun-receipt cannot be combined with --scenario-card",
+        ),
+        (
+            ["--validate-thesis-ledger"],
+            "--reviewer-rerun-receipt cannot be combined with --validate-thesis-ledger",
+        ),
+        (
+            ["--reviewer-evidence-bundle"],
+            "--reviewer-rerun-receipt cannot be combined with --reviewer-evidence-bundle",
+        ),
+        (
+            ["--cold-user-review-route"],
+            "--reviewer-rerun-receipt cannot be combined with --cold-user-review-route",
+        ),
+        (
+            ["--prediction-readiness-audit"],
+            "--reviewer-rerun-receipt cannot be combined with --prediction-readiness-audit",
+        ),
+        (
+            ["--beginner-prediction-checklist"],
+            "--reviewer-rerun-receipt cannot be combined with --beginner-prediction-checklist",
+        ),
+        (
+            ["--html-output", "receipt.html"],
+            "--reviewer-rerun-receipt writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--reviewer-rerun-receipt does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_reviewer_rerun_receipt_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_reviewer_rerun_receipt(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        f"--reviewer-rerun-receipt cannot be combined with {flag}"
+        in result.stderr
+    )
+
+
+def test_cli_rejects_csv_for_reviewer_rerun_receipt() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--reviewer-rerun-receipt does not take csv_path" in result.stderr
 
 
 def test_cli_writes_beginner_prediction_checklist_defaults(tmp_path: Path) -> None:

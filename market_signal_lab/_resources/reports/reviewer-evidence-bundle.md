@@ -27,7 +27,7 @@ This bundle is a compact cold-review handoff for Market Signal Lab. It points a 
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/index.html | present | 7679 | 208bc2c8559ae749f90ce8c08b0e39eea4da4c213e7ec7af1726520d42584c69 |
+| reports/index.html | present | 7812 | 1308bc3f503f4a9125d1d7bd7b2ed75c62c74009ddb31959da2b5cdf01cd41e3 |
 | reports/cross-asset-thesis-ledger.json | present | 37420 | ce5efe33b26e3e800f61978594513fb12baa922ab51e1fc01b41ea0d27b7f495 |
 | reports/cross-asset-thesis-ledger-acceptance.md | present | 4965 | 351100a40f6e76c9fb28b40234cd6e7a824c11a022235223e5501a86d49b2a14 |
 | reports/cross-asset-thesis-ledger-acceptance.json | present | 6008 | 8ac3de4bc1bc71a96f77feeb86796ae0bd103a92a2523b11b5c58f165a5057dc |

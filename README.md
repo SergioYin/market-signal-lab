@@ -31,6 +31,7 @@ forecasts, recommendations, or trading instructions:
 
 - [Static Sample Gallery](reports/index.html) - browser-openable index for the checked-in artifacts.
 - [Cold-User Review Route](reports/cold-user-review-route.md) - compact first-time public-review path regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
+- [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md) - exact public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
 - [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) - plain-language checks for reading historical backtests without turning them into predictions, recommendations, or advice.
 - [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE comparison with a matching [PASS/WARN/FAIL acceptance summary](reports/cross-asset-thesis-ledger-acceptance.md).
 
@@ -43,6 +44,8 @@ python -m market_signal_lab.cli --validate-thesis-ledger
 ```
 
 For the first-time public-review route, run `python -m market_signal_lab.cli --cold-user-review-route`.
+
+For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
 The command validates the checked-in thesis-ledger JSON and writes acceptance artifacts. Compare its output with:
 
@@ -112,6 +115,7 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
 - Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
 - Review guides: [Methodology Audit](docs/methodology-audit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
+- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
 
 For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 

@@ -8,6 +8,10 @@ from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
 )
+from market_signal_lab.reviewer_rerun_receipt import (
+    build_reviewer_rerun_receipt,
+    render_reviewer_rerun_receipt,
+)
 from scripts import selfcheck
 
 
@@ -56,6 +60,10 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     )
     assert Path("reports/methodology-audit-score.html") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/methodology-audit-score.html") in selfcheck.HTML_LINK_SOURCES
+    assert Path("reports/reviewer-rerun-receipt.md") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/reviewer-rerun-receipt.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -66,6 +74,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "not investment advice" in gallery
     assert "not a guarantee of future returns" in gallery
     assert "Regime comparison" in gallery
+    assert "Reviewer rerun receipt" in gallery
     assert "Secondary Docs And Release Links" in gallery
     assert 'aria-label="Primary actions"' in gallery
     for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
@@ -89,10 +98,10 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
-        "../docs/release-notes-v1.23.0.md",
-        "../docs/release-notes-v1.22.1.md",
-        "../docs/release-notes-v1.22.0.md",
-        "../docs/release-v1.22.0.md",
+        "../docs/release-v1.26.0.md",
+        "../docs/release-notes-v1.26.0.md",
+        "../docs/release-v1.25.0.md",
+        "../docs/release-notes-v1.24.0.md",
         "sample-report.html",
         "methodology-audit-score.html",
         "methodology-audit-score.md",
@@ -265,7 +274,10 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/quick-tour-preview.md",
         "docs/quick-tour-preview.svg",
         "reports/reviewer-evidence-bundle.md",
+        "reports/reviewer-rerun-receipt.md",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.26.0.md",
+        "docs/release-notes-v1.26.0.md",
         "docs/release-notes-v1.23.0.md",
         "docs/release-notes-v1.22.1.md",
         "docs/release-notes-v1.22.0.md",
@@ -734,6 +746,72 @@ def test_prediction_readiness_audit_selfcheck_detects_broken_audit_artifacts(
         "reports/prediction-readiness-audit.md: missing audit text "
         "## How to Read This"
     ) in issues
+
+
+def test_reviewer_rerun_receipt_contract_accepts_current_tree() -> None:
+    issues = selfcheck.find_reviewer_rerun_receipt_issues(selfcheck.REPO_ROOT)
+
+    assert issues == []
+
+
+def test_reviewer_rerun_receipt_artifacts_are_public_sample_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/reviewer-rerun-receipt.md"),
+        Path("reports/reviewer-rerun-receipt.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "reviewer-rerun-receipt.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "reviewer-rerun-receipt.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'href="reviewer-rerun-receipt.md"' in selfcheck.GALLERY_HTML
+    assert 'href="reviewer-rerun-receipt.json"' in selfcheck.GALLERY_HTML
+    assert "Reviewer rerun receipt" in selfcheck.GALLERY_HTML
+
+
+def test_selfcheck_regenerates_reviewer_rerun_receipt_via_cli() -> None:
+    assert any(
+        "--reviewer-rerun-receipt" in command
+        for command in selfcheck._sample_artifact_commands()
+    )
+
+
+def test_reviewer_rerun_receipt_contract_reports_boundary_regressions(
+    tmp_path: Path,
+) -> None:
+    reports_dir = tmp_path / "reports"
+    reports_dir.mkdir()
+    payload = build_reviewer_rerun_receipt()
+    payload["no_live_data"] = False
+    payload["verification_commands"] = []
+    payload["checklist"][0]["status"] = "FAIL"
+    (reports_dir / "reviewer-rerun-receipt.json").write_text(
+        json.dumps(payload),
+        encoding="utf-8",
+    )
+    (reports_dir / "reviewer-rerun-receipt.md").write_text(
+        render_reviewer_rerun_receipt(build_reviewer_rerun_receipt()).replace(
+            "No command fetches live market data",
+            "Commands may fetch data",
+        ),
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_reviewer_rerun_receipt_issues(tmp_path)
+
+    assert "reports/reviewer-rerun-receipt.json: no_live_data must be true" in issues
+    assert (
+        "reports/reviewer-rerun-receipt.json: verification_commands must be a non-empty list"
+        in issues
+    )
+    assert (
+        "reports/reviewer-rerun-receipt.json: checklist statuses must include PASS and WARN only"
+        in issues
+    )
+    assert (
+        "reports/reviewer-rerun-receipt.md: missing receipt text No command fetches live market data"
+        in issues
+    )
 
 
 def test_beginner_prediction_checklist_artifacts_are_in_public_gallery_contract() -> None:
@@ -1803,6 +1881,10 @@ def _write_v131_landing_fixture(
         "# Reviewer Evidence Bundle\n",
         encoding="utf-8",
     )
+    (reports_dir / "reviewer-rerun-receipt.md").write_text(
+        "# Reviewer Rerun Receipt\n",
+        encoding="utf-8",
+    )
     (reports_dir / "beginner-prediction-checklist.md").write_text(
         "# Beginner Backtest Reading Checklist\n",
         encoding="utf-8",
@@ -1826,6 +1908,8 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-v1.26.0.md",
+        "release-notes-v1.26.0.md",
         "release-notes-v1.23.0.md",
         "release-notes-v1.22.1.md",
         "release-notes-v1.22.0.md",

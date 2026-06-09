@@ -66,6 +66,10 @@ from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
 )
+from market_signal_lab.reviewer_rerun_receipt import (
+    build_reviewer_rerun_receipt,
+    render_reviewer_rerun_receipt,
+)
 from market_signal_lab.scenario_card import build_scenario_card, render_scenario_card
 from market_signal_lab.split import TrainTestSplit, split_train_test
 from market_signal_lab.strategies import moving_average_crossover_strategy
@@ -99,6 +103,8 @@ THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT = Path(
 )
 REVIEWER_EVIDENCE_BUNDLE_OUTPUT = Path("reports/reviewer-evidence-bundle.md")
 REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT = Path("reports/reviewer-evidence-bundle.json")
+REVIEWER_RERUN_RECEIPT_OUTPUT = Path("reports/reviewer-rerun-receipt.md")
+REVIEWER_RERUN_RECEIPT_JSON_OUTPUT = Path("reports/reviewer-rerun-receipt.json")
 BEGINNER_PREDICTION_CHECKLIST_OUTPUT = Path(
     "reports/beginner-prediction-checklist.md"
 )
@@ -121,12 +127,16 @@ COLD_USER_REVIEW_ROUTE_STATIC_RESOURCES = tuple(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = _build_parser()
     args = parser.parse_args(argv)
+    _reject_reviewer_rerun_receipt_mode_conflicts(args, parser)
     _reject_cold_user_review_route_mode_conflicts(args, parser)
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
 
     try:
-        if args.cold_user_review_route:
+        if args.reviewer_rerun_receipt:
+            args = _resolve_reviewer_rerun_receipt_args(args, parser)
+            report, json_payload, manifest_payload = _run_reviewer_rerun_receipt()
+        elif args.cold_user_review_route:
             args = _resolve_cold_user_review_route_args(args, parser)
             report, json_payload, manifest_payload = _run_cold_user_review_route()
         elif args.methodology_audit_review_template:
@@ -190,6 +200,24 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         "--beginner-prediction-checklist",
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+    )
+
+
+def _reject_reviewer_rerun_receipt_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.reviewer_rerun_receipt:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        "--reviewer-rerun-receipt",
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
     )
 
 
@@ -206,6 +234,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         COLD_USER_REVIEW_ROUTE_FLAG,
         include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
+        include_reviewer_rerun_receipt=True,
     )
 
 
@@ -222,6 +251,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         PREDICTION_READINESS_AUDIT_FLAG,
         include_beginner_prediction_checklist=True,
         include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
     )
 
 
@@ -233,6 +263,7 @@ def _reject_mode_conflicts(
     include_beginner_prediction_checklist: bool = False,
     include_prediction_readiness_audit: bool = False,
     include_cold_user_review_route: bool = False,
+    include_reviewer_rerun_receipt: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -245,6 +276,10 @@ def _reject_mode_conflicts(
         ),
         ("--score-methodology-audit", args.score_methodology_audit is not None),
         ("--reviewer-evidence-bundle", args.reviewer_evidence_bundle),
+        (
+            "--reviewer-rerun-receipt",
+            include_reviewer_rerun_receipt and args.reviewer_rerun_receipt,
+        ),
         (
             "--beginner-prediction-checklist",
             include_beginner_prediction_checklist
@@ -490,6 +525,20 @@ def _build_parser() -> ArgumentParser:
             "boundaries, with an artifact hash summary for local static review "
             "files. Defaults to reports/reviewer-evidence-bundle.md and "
             "reports/reviewer-evidence-bundle.json."
+        ),
+    )
+    parser.add_argument(
+        "--reviewer-rerun-receipt",
+        action="store_true",
+        default=False,
+        help=(
+            "Write a static reviewer rerun receipt with exact public verification "
+            "commands, expected artifacts, no-live-data/no-advice boundaries, and "
+            "a PASS/WARN checklist. Defaults to "
+            "reports/reviewer-rerun-receipt.md and "
+            "reports/reviewer-rerun-receipt.json. Does not read CSV data, fetch "
+            "live data, connect to brokers, inspect accounts, route orders, size "
+            "positions, forecast, recommend, or provide investment advice."
         ),
     )
     parser.add_argument(
@@ -784,6 +833,31 @@ def _resolve_cold_user_review_route_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.cold_user_review_route = True
+    return resolved
+
+
+def _resolve_reviewer_rerun_receipt_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--reviewer-rerun-receipt does not take csv_path")
+    if args.config is not None:
+        parser.error("--reviewer-rerun-receipt does not take --config")
+    if args.html_output is not None:
+        parser.error("--reviewer-rerun-receipt writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error("--reviewer-rerun-receipt does not write experiment manifests")
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or REVIEWER_RERUN_RECEIPT_OUTPUT
+    resolved.json_output = args.json_output or REVIEWER_RERUN_RECEIPT_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.reviewer_rerun_receipt = True
     return resolved
 
 
@@ -1236,6 +1310,12 @@ def _run_cold_user_review_route() -> tuple[str, dict[str, Any], dict[str, Any]]:
     with _bundled_resource_worktree(COLD_USER_REVIEW_ROUTE_STATIC_RESOURCES) as root:
         payload = build_cold_user_review_route(root)
     report = render_cold_user_review_route(payload)
+    return report, payload, {}
+
+
+def _run_reviewer_rerun_receipt() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_reviewer_rerun_receipt()
+    report = render_reviewer_rerun_receipt(payload)
     return report, payload, {}
 
 

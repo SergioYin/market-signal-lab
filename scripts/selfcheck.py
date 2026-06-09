@@ -31,6 +31,17 @@ from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
 )
+from market_signal_lab.reviewer_rerun_receipt import (
+    BOUNDARY_FLAGS as REVIEWER_RERUN_RECEIPT_BOUNDARY_FLAGS,
+    CHECKLIST_KEYS,
+    EXPECTED_ARTIFACTS,
+    EXPECTED_ARTIFACT_KEYS,
+    REVIEWER_RERUN_RECEIPT_TOP_LEVEL_KEYS,
+    VERIFICATION_COMMANDS,
+    VERIFICATION_COMMAND_KEYS,
+    build_reviewer_rerun_receipt,
+    render_reviewer_rerun_receipt,
+)
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
     render_cross_asset_thesis_ledger,
@@ -107,6 +118,8 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.22.0.md"),
     Path("docs/release-notes-v1.22.1.md"),
     Path("docs/release-notes-v1.23.0.md"),
+    Path("docs/release-v1.26.0.md"),
+    Path("docs/release-notes-v1.26.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -182,7 +195,10 @@ V131_ROOT_LANDING_LINKS = (
     "docs/public-share-copy.md",
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
+    "reports/reviewer-rerun-receipt.md",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.26.0.md",
+    "docs/release-notes-v1.26.0.md",
     "docs/release-notes-v1.23.0.md",
     "docs/release-notes-v1.22.1.md",
     "docs/release-notes-v1.22.0.md",
@@ -261,6 +277,8 @@ V130_STATIC_GALLERY_LINKS = (
     "cross-asset-thesis-ledger.json",
     "reviewer-evidence-bundle.md",
     "reviewer-evidence-bundle.json",
+    "reviewer-rerun-receipt.md",
+    "reviewer-rerun-receipt.json",
     "cold-user-review-route.md",
     "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
@@ -326,6 +344,8 @@ BEGINNER_PREDICTION_CHECKLIST_MARKDOWN = Path(
 )
 PREDICTION_READINESS_AUDIT_JSON = Path("reports/prediction-readiness-audit.json")
 PREDICTION_READINESS_AUDIT_MARKDOWN = Path("reports/prediction-readiness-audit.md")
+REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
+REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
 BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
@@ -411,6 +431,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/cross-asset-thesis-ledger-acceptance.json"),
     Path("reports/reviewer-evidence-bundle.md"),
     Path("reports/reviewer-evidence-bundle.json"),
+    Path("reports/reviewer-rerun-receipt.md"),
+    Path("reports/reviewer-rerun-receipt.json"),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
     Path("reports/prediction-readiness-audit.md"),
@@ -497,6 +519,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
@@ -513,10 +536,10 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
-          <li><a href="../docs/release-notes-v1.23.0.md">v1.23.0 release notes</a></li>
-          <li><a href="../docs/release-notes-v1.22.1.md">v1.22.1 release notes</a></li>
-          <li><a href="../docs/release-notes-v1.22.0.md">v1.22.0 release notes</a></li>
-          <li><a href="../docs/release-v1.22.0.md">v1.22.0 release checklist</a></li>
+          <li><a href="../docs/release-v1.26.0.md">v1.26.0 release notes</a></li>
+          <li><a href="../docs/release-notes-v1.26.0.md">v1.26.0 release docs</a></li>
+          <li><a href="../docs/release-v1.25.0.md">v1.25.0 release notes</a></li>
+          <li><a href="../docs/release-notes-v1.24.0.md">v1.24.0 release notes</a></li>
         </ul>
       </section>
     </div>
@@ -594,6 +617,7 @@ def run_demo_acceptance_check() -> bool:
         *find_v160_static_dashboard_issues(REPO_ROOT),
         *find_regime_comparison_html_issues(REPO_ROOT),
         *find_pretrade_packet_acceptance_issues(REPO_ROOT),
+        *find_reviewer_rerun_receipt_issues(REPO_ROOT),
         *find_beginner_prediction_checklist_issues(REPO_ROOT),
         *find_prediction_readiness_audit_issues(REPO_ROOT),
     ]
@@ -686,6 +710,15 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(reviewer_bundle, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    reviewer_receipt = build_reviewer_rerun_receipt()
+    (REPORTS_DIR / "reviewer-rerun-receipt.md").write_text(
+        render_reviewer_rerun_receipt(reviewer_receipt),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "reviewer-rerun-receipt.json").write_text(
+        json.dumps(reviewer_receipt, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
     beginner_checklist = build_beginner_prediction_checklist()
     (REPORTS_DIR / "beginner-prediction-checklist.md").write_text(
         render_beginner_prediction_checklist(beginner_checklist),
@@ -711,8 +744,9 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "beginner backtest-reading checklist, prediction-readiness audit, "
-        "thesis-ledger acceptance, regime comparison, and HTML artifacts."
+        "reviewer rerun receipt, beginner backtest-reading checklist, "
+        "prediction-readiness audit, thesis-ledger acceptance, regime "
+        "comparison, and HTML artifacts."
     )
     return True
 
@@ -1162,6 +1196,166 @@ def find_pretrade_packet_acceptance_issues(repo_root: Path = REPO_ROOT) -> list[
     if markdown.count("- [ ] ") < 7:
         issues.append(
             f"{PRETRADE_PACKET_MARKDOWN}: packet Markdown must render the seven checklist items"
+        )
+
+    return issues
+
+
+def find_reviewer_rerun_receipt_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / REVIEWER_RERUN_RECEIPT_JSON
+    markdown_path = repo_root / REVIEWER_RERUN_RECEIPT_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(f"{REVIEWER_RERUN_RECEIPT_JSON}: receipt JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{REVIEWER_RERUN_RECEIPT_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(f"{REVIEWER_RERUN_RECEIPT_JSON}: receipt must be a JSON object")
+        payload = {}
+
+    if tuple(payload) != REVIEWER_RERUN_RECEIPT_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: top-level keys must match "
+            "the reviewer rerun receipt schema order"
+        )
+    if payload.get("artifact_type") != "reviewer_rerun_receipt":
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: artifact_type must be reviewer_rerun_receipt"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(f"{REVIEWER_RERUN_RECEIPT_JSON}: schema_version must be 1.0")
+    for key in REVIEWER_RERUN_RECEIPT_BOUNDARY_FLAGS:
+        if payload.get(key) is not True:
+            issues.append(f"{REVIEWER_RERUN_RECEIPT_JSON}: {key} must be true")
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(REVIEWER_RERUN_RECEIPT_MARKDOWN):
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: default_outputs.markdown must be {REVIEWER_RERUN_RECEIPT_MARKDOWN}"
+        )
+    if defaults.get("json") != str(REVIEWER_RERUN_RECEIPT_JSON):
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: default_outputs.json must be {REVIEWER_RERUN_RECEIPT_JSON}"
+        )
+
+    commands = payload.get("verification_commands")
+    if not isinstance(commands, list) or not commands:
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: verification_commands must be a non-empty list"
+        )
+    else:
+        command_values = []
+        for index, command in enumerate(commands):
+            if not isinstance(command, dict):
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: verification_commands[{index}] must be an object"
+                )
+                continue
+            if tuple(command) != VERIFICATION_COMMAND_KEYS:
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: verification_commands[{index}] keys must be command, purpose, expected_artifacts"
+                )
+            command_values.append(command.get("command"))
+        for required_command in (
+            command["command"] for command in VERIFICATION_COMMANDS
+        ):
+            if required_command not in command_values:
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: missing verification command {required_command}"
+                )
+
+    artifacts = payload.get("expected_artifacts")
+    if not isinstance(artifacts, list) or not artifacts:
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: expected_artifacts must be a non-empty list"
+        )
+    else:
+        artifact_paths = []
+        for index, artifact in enumerate(artifacts):
+            if not isinstance(artifact, dict):
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: expected_artifacts[{index}] must be an object"
+                )
+                continue
+            if tuple(artifact) != EXPECTED_ARTIFACT_KEYS:
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: expected_artifacts[{index}] keys must be path, format, source_command"
+                )
+            artifact_paths.append(artifact.get("path"))
+        for required_path in (artifact["path"] for artifact in EXPECTED_ARTIFACTS):
+            if required_path not in artifact_paths:
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: missing expected artifact {required_path}"
+                )
+
+    checklist = payload.get("checklist")
+    if not isinstance(checklist, list) or not checklist:
+        issues.append(f"{REVIEWER_RERUN_RECEIPT_JSON}: checklist must be non-empty")
+    else:
+        statuses = set()
+        for index, item in enumerate(checklist):
+            if not isinstance(item, dict):
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: checklist[{index}] must be an object"
+                )
+                continue
+            if tuple(item) != CHECKLIST_KEYS:
+                issues.append(
+                    f"{REVIEWER_RERUN_RECEIPT_JSON}: checklist[{index}] keys must be status, check, note"
+                )
+            statuses.add(item.get("status"))
+        if statuses != {"PASS", "WARN"}:
+            issues.append(
+                f"{REVIEWER_RERUN_RECEIPT_JSON}: checklist statuses must include PASS and WARN only"
+            )
+
+    if not markdown_path.exists():
+        issues.append(f"{REVIEWER_RERUN_RECEIPT_MARKDOWN}: receipt Markdown is missing")
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(f"{REVIEWER_RERUN_RECEIPT_MARKDOWN}: receipt Markdown is empty")
+
+    for required_text in (
+        "# Reviewer Rerun Receipt",
+        "## Public Verification Commands",
+        "## Expected Artifacts",
+        "## PASS/WARN Checklist",
+        "## No-Live-Data / No-Advice Boundaries",
+        "python -m market_signal_lab.cli --reviewer-rerun-receipt",
+        "python -m market_signal_lab.cli --cold-user-review-route",
+        "python -m market_signal_lab.cli --prediction-readiness-audit",
+        "python scripts/selfcheck.py",
+        "python -m pytest",
+        "No command fetches live market data",
+        "provides investment advice",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{REVIEWER_RERUN_RECEIPT_MARKDOWN}: missing receipt text {required_text}"
+            )
+
+    expected_payload = build_reviewer_rerun_receipt()
+    if payload != expected_payload:
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_JSON}: does not match deterministic reviewer rerun receipt output; run python -m market_signal_lab.cli --reviewer-rerun-receipt"
+        )
+    expected_markdown = render_reviewer_rerun_receipt(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{REVIEWER_RERUN_RECEIPT_MARKDOWN}: does not match deterministic reviewer rerun receipt output; run python -m market_signal_lab.cli --reviewer-rerun-receipt"
         )
 
     return issues
@@ -1938,6 +2132,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "reports/fee-sensitivity.md",
             "--json-output",
             "reports/fee-sensitivity.json",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-rerun-receipt",
         ],
         [
             sys.executable,

@@ -26,6 +26,7 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/cross-asset-thesis-ledger.json",
     "reports/index.html",
     "reports/reviewer-evidence-bundle.md",
+    "reports/reviewer-rerun-receipt.md",
     "reports/sample-report.md",
 )
 
@@ -148,6 +149,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
 
     for flag in (
         "--reviewer-evidence-bundle",
+        "--reviewer-rerun-receipt",
         "--beginner-prediction-checklist",
         "--cold-user-review-route",
         "--prediction-readiness-audit",
@@ -157,6 +159,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         _run_wheel_smoke_command(console_script, flag, empty_cwd, env)
 
     assert (empty_cwd / "reports" / "reviewer-evidence-bundle.md").is_file()
+    assert (empty_cwd / "reports" / "reviewer-rerun-receipt.md").is_file()
     assert (empty_cwd / "reports" / "beginner-prediction-checklist.md").is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
@@ -184,7 +187,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.25.0"
+    assert __version__ == "1.26.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

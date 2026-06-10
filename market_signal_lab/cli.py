@@ -62,6 +62,10 @@ from market_signal_lab.report import (
     render_regime_comparison_report,
     render_experiment_report,
 )
+from market_signal_lab.reviewer_acceptance_scorecard import (
+    build_reviewer_acceptance_scorecard,
+    render_reviewer_acceptance_scorecard,
+)
 from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
@@ -105,6 +109,13 @@ REVIEWER_EVIDENCE_BUNDLE_OUTPUT = Path("reports/reviewer-evidence-bundle.md")
 REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT = Path("reports/reviewer-evidence-bundle.json")
 REVIEWER_RERUN_RECEIPT_OUTPUT = Path("reports/reviewer-rerun-receipt.md")
 REVIEWER_RERUN_RECEIPT_JSON_OUTPUT = Path("reports/reviewer-rerun-receipt.json")
+REVIEWER_ACCEPTANCE_SCORECARD_OUTPUT = Path(
+    "reports/reviewer-acceptance-scorecard.md"
+)
+REVIEWER_ACCEPTANCE_SCORECARD_JSON_OUTPUT = Path(
+    "reports/reviewer-acceptance-scorecard.json"
+)
+REVIEWER_ACCEPTANCE_SCORECARD_FLAG = "--reviewer-acceptance-scorecard"
 BEGINNER_PREDICTION_CHECKLIST_OUTPUT = Path(
     "reports/beginner-prediction-checklist.md"
 )
@@ -131,6 +142,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_cold_user_review_route_mode_conflicts(args, parser)
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
+    _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -139,6 +151,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.cold_user_review_route:
             args = _resolve_cold_user_review_route_args(args, parser)
             report, json_payload, manifest_payload = _run_cold_user_review_route()
+        elif args.reviewer_acceptance_scorecard:
+            args = _resolve_reviewer_acceptance_scorecard_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_reviewer_acceptance_scorecard()
+            )
         elif args.methodology_audit_review_template:
             args = _resolve_methodology_audit_review_template_args(args, parser)
             report, json_payload, manifest_payload = (
@@ -201,6 +218,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
     )
 
 
@@ -218,6 +236,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
+        include_reviewer_acceptance_scorecard=True,
     )
 
 
@@ -235,6 +254,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
         include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
     )
 
 
@@ -252,6 +272,25 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_beginner_prediction_checklist=True,
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+    )
+
+
+def _reject_reviewer_acceptance_scorecard_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.reviewer_acceptance_scorecard:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        REVIEWER_ACCEPTANCE_SCORECARD_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
     )
 
 
@@ -264,6 +303,7 @@ def _reject_mode_conflicts(
     include_prediction_readiness_audit: bool = False,
     include_cold_user_review_route: bool = False,
     include_reviewer_rerun_receipt: bool = False,
+    include_reviewer_acceptance_scorecard: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -293,6 +333,11 @@ def _reject_mode_conflicts(
         (
             COLD_USER_REVIEW_ROUTE_FLAG,
             include_cold_user_review_route and args.cold_user_review_route,
+        ),
+        (
+            REVIEWER_ACCEPTANCE_SCORECARD_FLAG,
+            include_reviewer_acceptance_scorecard
+            and args.reviewer_acceptance_scorecard,
         ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
@@ -542,6 +587,21 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        REVIEWER_ACCEPTANCE_SCORECARD_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic reviewer acceptance scorecard summarizing "
+            "public-review readiness, reproducibility evidence, risk "
+            "boundaries, and next actions using existing static artifact "
+            "paths. Defaults to reports/reviewer-acceptance-scorecard.md and "
+            "reports/reviewer-acceptance-scorecard.json. Does not read CSV "
+            "data, fetch live data, connect to brokers, create orders, size "
+            "positions, or provide forecasts, recommendations, trading "
+            "instructions, or investment advice."
+        ),
+    )
+    parser.add_argument(
         COLD_USER_REVIEW_ROUTE_FLAG,
         action="store_true",
         default=False,
@@ -788,6 +848,11 @@ def _resolve_reviewer_evidence_bundle_args(
             "--reviewer-evidence-bundle cannot be combined with "
             "--score-methodology-audit"
         )
+    if args.reviewer_acceptance_scorecard:
+        parser.error(
+            "--reviewer-evidence-bundle cannot be combined with "
+            f"{REVIEWER_ACCEPTANCE_SCORECARD_FLAG}"
+        )
     if args.regime_comparison:
         parser.error("--reviewer-evidence-bundle cannot be combined with --regime-comparison")
     if args.sweep:
@@ -806,6 +871,37 @@ def _resolve_reviewer_evidence_bundle_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.reviewer_evidence_bundle = True
+    return resolved
+
+
+def _resolve_reviewer_acceptance_scorecard_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{REVIEWER_ACCEPTANCE_SCORECARD_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{REVIEWER_ACCEPTANCE_SCORECARD_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{REVIEWER_ACCEPTANCE_SCORECARD_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{REVIEWER_ACCEPTANCE_SCORECARD_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or REVIEWER_ACCEPTANCE_SCORECARD_OUTPUT
+    resolved.json_output = (
+        args.json_output or REVIEWER_ACCEPTANCE_SCORECARD_JSON_OUTPUT
+    )
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.reviewer_acceptance_scorecard = True
     return resolved
 
 
@@ -1303,6 +1399,14 @@ def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, An
 def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_reviewer_evidence_bundle()
     report = render_reviewer_evidence_bundle(payload)
+    return report, payload, {}
+
+
+def _run_reviewer_acceptance_scorecard() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_reviewer_acceptance_scorecard()
+    report = render_reviewer_acceptance_scorecard(payload)
     return report, payload, {}
 
 

@@ -15,6 +15,7 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Cold User Evidence Card](cold-user-evidence-card.md) - concise reviewer handoff for the checked-in public artifacts, PASS/WARN/FAIL language, and research-only boundaries.
+- [Reviewer Acceptance Scorecard Guide](reviewer-acceptance-scorecard.md) - public-safe guide to the scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
 - [Public Share Summary](public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
 - [Reviewer FAQ](reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
@@ -41,6 +42,9 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json) - structured version of the same public-safe handoff.
 - [Reviewer rerun receipt](../reports/reviewer-rerun-receipt.md) - deterministic stdlib-only receipt listing public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json) - structured version of the same rerun receipt.
+- [Reviewer acceptance scorecard guide](reviewer-acceptance-scorecard.md) - explains the generated scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
+- [Reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md) - deterministic PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary.
+- [Reviewer acceptance scorecard JSON](../reports/reviewer-acceptance-scorecard.json) - structured version of the same scorecard.
 - [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts, regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
@@ -80,6 +84,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 - [v1.26.0 Release Notes](release-v1.26.0.md)
 - [v1.26.0 Release Docs](release-notes-v1.26.0.md)
+- [v1.27.0 Release Notes](release-v1.27.0.md)
 - [v1.25.0 Release Notes](release-v1.25.0.md)
 - [v1.24.0 Release Notes](release-notes-v1.24.0.md)
 - [v1.23.0 Release Notes](release-notes-v1.23.0.md)

@@ -27,6 +27,10 @@ from market_signal_lab.prediction_readiness_audit import (
     build_prediction_readiness_audit,
     render_prediction_readiness_audit,
 )
+from market_signal_lab.reviewer_acceptance_scorecard import (
+    build_reviewer_acceptance_scorecard,
+    render_reviewer_acceptance_scorecard,
+)
 from market_signal_lab.reviewer_bundle import (
     build_reviewer_evidence_bundle,
     render_reviewer_evidence_bundle,
@@ -120,6 +124,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.23.0.md"),
     Path("docs/release-v1.26.0.md"),
     Path("docs/release-notes-v1.26.0.md"),
+    Path("docs/release-v1.27.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -196,9 +201,11 @@ V131_ROOT_LANDING_LINKS = (
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
     "reports/reviewer-rerun-receipt.md",
+    "reports/reviewer-acceptance-scorecard.md",
     "reports/beginner-prediction-checklist.md",
     "docs/release-v1.26.0.md",
     "docs/release-notes-v1.26.0.md",
+    "docs/release-v1.27.0.md",
     "docs/release-notes-v1.23.0.md",
     "docs/release-notes-v1.22.1.md",
     "docs/release-notes-v1.22.0.md",
@@ -279,6 +286,8 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-evidence-bundle.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
+    "reviewer-acceptance-scorecard.md",
+    "reviewer-acceptance-scorecard.json",
     "cold-user-review-route.md",
     "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
@@ -433,6 +442,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-evidence-bundle.json"),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
+    Path("reports/reviewer-acceptance-scorecard.md"),
+    Path("reports/reviewer-acceptance-scorecard.json"),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
     Path("reports/prediction-readiness-audit.md"),
@@ -520,6 +531,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
+          <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
@@ -536,6 +548,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.27.0.md">v1.27.0 release notes</a></li>
           <li><a href="../docs/release-v1.26.0.md">v1.26.0 release notes</a></li>
           <li><a href="../docs/release-notes-v1.26.0.md">v1.26.0 release docs</a></li>
           <li><a href="../docs/release-v1.25.0.md">v1.25.0 release notes</a></li>
@@ -717,6 +730,15 @@ def run_sample_artifact_generation() -> bool:
     )
     (REPORTS_DIR / "reviewer-rerun-receipt.json").write_text(
         json.dumps(reviewer_receipt, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    reviewer_acceptance_scorecard = build_reviewer_acceptance_scorecard()
+    (REPORTS_DIR / "reviewer-acceptance-scorecard.md").write_text(
+        render_reviewer_acceptance_scorecard(reviewer_acceptance_scorecard),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "reviewer-acceptance-scorecard.json").write_text(
+        json.dumps(reviewer_acceptance_scorecard, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
     beginner_checklist = build_beginner_prediction_checklist()

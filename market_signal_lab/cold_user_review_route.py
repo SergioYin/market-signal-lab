@@ -91,11 +91,37 @@ ROUTE_STEPS = (
         "expected_public_signal": "The route can be checked from local files without private context.",
     },
     {
+        "step": "review_rerun_receipt",
+        "label": "Review the public rerun receipt",
+        "path": "reports/reviewer-rerun-receipt.md",
+        "review_question": (
+            "Can a reviewer see the exact public rerun commands and expected "
+            "artifacts?"
+        ),
+        "expected_public_signal": (
+            "The receipt lists deterministic commands, PASS/WARN checks, and "
+            "no-live-data/no-advice boundaries."
+        ),
+    },
+    {
         "step": "inspect_methodology_risks",
         "label": "Inspect methodology and risk caveats",
         "path": "docs/methodology-audit.md",
         "review_question": "Are look-ahead, fees, overfitting, and leveraged ETF risks visible?",
         "expected_public_signal": "Known research limitations are documented next to the artifacts.",
+    },
+    {
+        "step": "review_acceptance_scorecard",
+        "label": "Finish with the reviewer acceptance scorecard",
+        "path": "reports/reviewer-acceptance-scorecard.md",
+        "review_question": (
+            "Does the final handoff summarize public-review readiness and "
+            "remaining WARN items?"
+        ),
+        "expected_public_signal": (
+            "The scorecard closes the research-only handoff without approving "
+            "trading use."
+        ),
     },
 )
 
@@ -142,6 +168,8 @@ DO_NOT_USE_FOR = (
 )
 VERIFICATION_COMMANDS = (
     "python -m market_signal_lab.cli --cold-user-review-route",
+    "python -m market_signal_lab.cli --reviewer-rerun-receipt",
+    "python -m market_signal_lab.cli --reviewer-acceptance-scorecard",
     "python -m market_signal_lab.cli --reviewer-evidence-bundle",
     "python -m market_signal_lab.cli --beginner-prediction-checklist",
     "python scripts/selfcheck.py",

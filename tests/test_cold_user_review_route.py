@@ -52,8 +52,16 @@ def test_cold_user_review_route_schema_and_markdown_are_public_safe() -> None:
         "reports/sample-report.md",
         "reports/beginner-prediction-checklist.md",
         "reports/reviewer-evidence-bundle.md",
+        "reports/reviewer-rerun-receipt.md",
         "docs/methodology-audit.md",
+        "reports/reviewer-acceptance-scorecard.md",
     ]
+    assert payload["route"][-1]["step"] == "review_acceptance_scorecard"
+    assert "research-only handoff" in payload["route"][-1]["expected_public_signal"]
+    assert "reports/reviewer-acceptance-scorecard.md" in markdown
+    assert "reports/reviewer-rerun-receipt.md" in markdown
+    assert "python -m market_signal_lab.cli --reviewer-rerun-receipt" in markdown
+    assert "python -m market_signal_lab.cli --reviewer-acceptance-scorecard" in markdown
     assert "# Cold-User Review Route" in markdown
     assert "reports/index.html" in markdown
     assert "no live data" in markdown
@@ -205,8 +213,8 @@ def test_cli_writes_cold_user_review_route_defaults(tmp_path: Path) -> None:
     )
     integrity = payload["artifact_integrity_summary"]
     assert integrity["integrity_status"] == "PASS"
-    assert integrity["artifact_count"] == 5
-    assert integrity["present_count"] == 5
+    assert integrity["artifact_count"] == 7
+    assert integrity["present_count"] == 7
     assert integrity["missing_count"] == 0
     assert "| reports/index.html | present |" in markdown
 

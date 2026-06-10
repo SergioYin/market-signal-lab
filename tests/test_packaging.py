@@ -25,6 +25,8 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/beginner-prediction-checklist.md",
     "reports/cross-asset-thesis-ledger.json",
     "reports/index.html",
+    "reports/reviewer-acceptance-scorecard.json",
+    "reports/reviewer-acceptance-scorecard.md",
     "reports/reviewer-evidence-bundle.md",
     "reports/reviewer-rerun-receipt.md",
     "reports/sample-report.md",
@@ -153,6 +155,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--beginner-prediction-checklist",
         "--cold-user-review-route",
         "--prediction-readiness-audit",
+        "--reviewer-acceptance-scorecard",
         "--validate-thesis-ledger",
         "--regime-comparison",
     ):
@@ -161,6 +164,16 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (empty_cwd / "reports" / "reviewer-evidence-bundle.md").is_file()
     assert (empty_cwd / "reports" / "reviewer-rerun-receipt.md").is_file()
     assert (empty_cwd / "reports" / "beginner-prediction-checklist.md").is_file()
+    scorecard_payload = json.loads(
+        (
+            empty_cwd / "reports" / "reviewer-acceptance-scorecard.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert scorecard_payload["artifact_type"] == "reviewer_acceptance_scorecard"
+    assert scorecard_payload["overall_label"] == "WARN"
+    assert (
+        empty_cwd / "reports" / "reviewer-acceptance-scorecard.md"
+    ).is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -187,7 +200,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.26.0"
+    assert __version__ == "1.27.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

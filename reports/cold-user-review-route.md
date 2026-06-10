@@ -20,10 +20,18 @@ Use this deterministic route to review checked-in Market Signal Lab artifacts fr
    - Path: `reports/reviewer-evidence-bundle.md`
    - Review question: Does the handoff identify static files and deterministic verification commands?
    - Expected public signal: The route can be checked from local files without private context.
-5. **Inspect methodology and risk caveats**
+5. **Review the public rerun receipt**
+   - Path: `reports/reviewer-rerun-receipt.md`
+   - Review question: Can a reviewer see the exact public rerun commands and expected artifacts?
+   - Expected public signal: The receipt lists deterministic commands, PASS/WARN checks, and no-live-data/no-advice boundaries.
+6. **Inspect methodology and risk caveats**
    - Path: `docs/methodology-audit.md`
    - Review question: Are look-ahead, fees, overfitting, and leveraged ETF risks visible?
    - Expected public signal: Known research limitations are documented next to the artifacts.
+7. **Finish with the reviewer acceptance scorecard**
+   - Path: `reports/reviewer-acceptance-scorecard.md`
+   - Review question: Does the final handoff summarize public-review readiness and remaining WARN items?
+   - Expected public signal: The scorecard closes the research-only handoff without approving trading use.
 
 ## Checklist
 
@@ -38,15 +46,17 @@ Use this deterministic route to review checked-in Market Signal Lab artifacts fr
 - Integrity status: `PASS`
 - Algorithm: `sha256`
 - Scope: repo-relative checked-in static artifacts only; hashes confirm local file bytes at generation time, not financial correctness
-- Present artifacts: `5` of `5`
+- Present artifacts: `7` of `7`
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/index.html | present | 7679 | 208bc2c8559ae749f90ce8c08b0e39eea4da4c213e7ec7af1726520d42584c69 |
+| reports/index.html | present | 8048 | 07e6c7de48e33e59c90a0dbb1824c48a42493af3186632f092269d848bc099a3 |
 | reports/sample-report.md | present | 3543 | 20ba4fb3f9b1bc739f2e4ccf039e478ac41ddf570a199b6e075b783b54a48ebc |
 | reports/beginner-prediction-checklist.md | present | 3850 | 0fd3cdc924160aebd4a9b0ffca4542d95726125200104e7f06d1f5378834b3b0 |
-| reports/reviewer-evidence-bundle.md | present | 2925 | 95c996bdca95b10cd2becea77be6adc43af83449e2d778bd6ac6124c8ca0ecbc |
+| reports/reviewer-evidence-bundle.md | present | 2925 | a86dcb6b5e94972a04f2a8c29ae741543a1ae6d27c15112166d44513749bc202 |
+| reports/reviewer-rerun-receipt.md | present | 5242 | 4be8a9a754436b90a5e48988d66220869b4ec2abaf91dd8ba76a5c054b24f0ae |
 | docs/methodology-audit.md | present | 4970 | 8913048eb92849915d844090f56d908e744aa84c9d0248c37adade3e13189e3a |
+| reports/reviewer-acceptance-scorecard.md | present | 4732 | 9df7f918135aab67fceef4c394c84817d33fbb62ad9983763920348042e035c3 |
 
 ## Do Not Use This For
 
@@ -60,6 +70,8 @@ Use this deterministic route to review checked-in Market Signal Lab artifacts fr
 ## Verification Commands
 
 - `python -m market_signal_lab.cli --cold-user-review-route`
+- `python -m market_signal_lab.cli --reviewer-rerun-receipt`
+- `python -m market_signal_lab.cli --reviewer-acceptance-scorecard`
 - `python -m market_signal_lab.cli --reviewer-evidence-bundle`
 - `python -m market_signal_lab.cli --beginner-prediction-checklist`
 - `python scripts/selfcheck.py`

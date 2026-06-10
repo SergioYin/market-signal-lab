@@ -62,8 +62,11 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/methodology-audit-score.html") in selfcheck.HTML_LINK_SOURCES
     assert Path("reports/reviewer-rerun-receipt.md") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/reviewer-rerun-receipt.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/reviewer-acceptance-scorecard.md") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/reviewer-acceptance-scorecard.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -98,6 +101,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-v1.27.0.md",
         "../docs/release-v1.26.0.md",
         "../docs/release-notes-v1.26.0.md",
         "../docs/release-v1.25.0.md",
@@ -112,6 +116,10 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "cross-asset-thesis-ledger.json",
         "reviewer-evidence-bundle.md",
         "reviewer-evidence-bundle.json",
+        "reviewer-rerun-receipt.md",
+        "reviewer-rerun-receipt.json",
+        "reviewer-acceptance-scorecard.md",
+        "reviewer-acceptance-scorecard.json",
         "regime-comparison.html",
         "regime-comparison.md",
         "regime-comparison.json",
@@ -275,7 +283,9 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "docs/quick-tour-preview.svg",
         "reports/reviewer-evidence-bundle.md",
         "reports/reviewer-rerun-receipt.md",
+        "reports/reviewer-acceptance-scorecard.md",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.27.0.md",
         "docs/release-v1.26.0.md",
         "docs/release-notes-v1.26.0.md",
         "docs/release-notes-v1.23.0.md",
@@ -1885,6 +1895,10 @@ def _write_v131_landing_fixture(
         "# Reviewer Rerun Receipt\n",
         encoding="utf-8",
     )
+    (reports_dir / "reviewer-acceptance-scorecard.md").write_text(
+        "# Reviewer Acceptance Scorecard\n",
+        encoding="utf-8",
+    )
     (reports_dir / "beginner-prediction-checklist.md").write_text(
         "# Beginner Backtest Reading Checklist\n",
         encoding="utf-8",
@@ -1908,6 +1922,7 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-v1.27.0.md",
         "release-v1.26.0.md",
         "release-notes-v1.26.0.md",
         "release-notes-v1.23.0.md",

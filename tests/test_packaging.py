@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tomllib
 import venv
+import zipfile
 from pathlib import Path
 
 import pytest
@@ -29,7 +30,15 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/reviewer-acceptance-scorecard.md",
     "reports/reviewer-evidence-bundle.md",
     "reports/reviewer-rerun-receipt.md",
+    "reports/strategy-assumption-stress-kit.md",
+    "reports/strategy-assumption-stress-kit.json",
+    "reports/strategy-assumption-stress-kit.html",
     "reports/sample-report.md",
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES = (
+    "reports/strategy-assumption-stress-kit.html",
+    "reports/strategy-assumption-stress-kit.md",
+    "reports/strategy-assumption-stress-kit.json",
 )
 
 
@@ -114,6 +123,10 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
 
     wheels = sorted(wheelhouse.glob("market_signal_lab-*.whl"))
     assert len(wheels) == 1
+    _assert_wheel_includes_resources(
+        wheels[0],
+        STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES,
+    )
 
     install_venv = tmp_path / "install-venv"
     venv.EnvBuilder(with_pip=True).create(install_venv)
@@ -156,6 +169,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--cold-user-review-route",
         "--prediction-readiness-audit",
         "--reviewer-acceptance-scorecard",
+        "--strategy-assumption-stress-kit",
         "--validate-thesis-ledger",
         "--regime-comparison",
     ):
@@ -174,6 +188,14 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (
         empty_cwd / "reports" / "reviewer-acceptance-scorecard.md"
     ).is_file()
+    stress_kit_payload = json.loads(
+        (empty_cwd / "reports" / "strategy-assumption-stress-kit.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert stress_kit_payload["artifact_type"] == "strategy_assumption_stress_kit"
+    assert stress_kit_payload["no_live_data"] is True
+    assert (empty_cwd / "reports" / "strategy-assumption-stress-kit.md").is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -200,7 +222,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.27.0"
+    assert __version__ == "1.28.0"
 
 
 def _venv_python(venv_path: Path) -> Path:
@@ -261,6 +283,19 @@ def _project_version() -> str:
     match = re.search(r'^version = "([^"]+)"$', pyproject, re.MULTILINE)
     assert match is not None
     return match.group(1)
+
+
+def _assert_wheel_includes_resources(
+    wheel_path: Path,
+    logical_resource_paths: tuple[str, ...],
+) -> None:
+    with zipfile.ZipFile(wheel_path) as wheel:
+        packaged_paths = set(wheel.namelist())
+
+    for resource_path in logical_resource_paths:
+        assert (
+            f"market_signal_lab/_resources/{resource_path}" in packaged_paths
+        ), f"{resource_path} is missing from {wheel_path.name}"
 
 
 def _run_wheel_smoke_command(

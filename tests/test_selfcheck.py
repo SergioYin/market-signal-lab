@@ -12,6 +12,10 @@ from market_signal_lab.reviewer_rerun_receipt import (
     build_reviewer_rerun_receipt,
     render_reviewer_rerun_receipt,
 )
+from market_signal_lab.strategy_assumption_stress_kit import (
+    build_strategy_assumption_stress_kit,
+    render_strategy_assumption_stress_kit,
+)
 from scripts import selfcheck
 
 
@@ -64,6 +68,11 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/reviewer-rerun-receipt.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/reviewer-acceptance-scorecard.md") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/reviewer-acceptance-scorecard.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/strategy-assumption-stress-kit.md") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/strategy-assumption-stress-kit.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/strategy-assumption-stress-kit.html") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/strategy-assumption-stress-kit.html") in selfcheck.HTML_LINK_SOURCES
+    assert Path("docs/strategy-assumption-stress-kit.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
@@ -78,6 +87,9 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "not a guarantee of future returns" in gallery
     assert "Regime comparison" in gallery
     assert "Reviewer rerun receipt" in gallery
+    assert "Strategy assumption stress kit" in gallery
+    assert "Markdown release-readiness receipt" in gallery
+    assert "JSON receipt" in gallery
     assert "Secondary Docs And Release Links" in gallery
     assert 'aria-label="Primary actions"' in gallery
     for required_text in selfcheck.V130_STATIC_GALLERY_REQUIRED_TEXT:
@@ -120,6 +132,9 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "reviewer-rerun-receipt.json",
         "reviewer-acceptance-scorecard.md",
         "reviewer-acceptance-scorecard.json",
+        "strategy-assumption-stress-kit.md",
+        "strategy-assumption-stress-kit.json",
+        "strategy-assumption-stress-kit.html",
         "regime-comparison.html",
         "regime-comparison.md",
         "regime-comparison.json",
@@ -130,6 +145,35 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     }
     for link in expected_links:
         assert f'href="{link}"' in gallery
+
+
+def test_selfcheck_validates_strategy_assumption_stress_kit_contract() -> None:
+    assert (
+        selfcheck.find_strategy_assumption_stress_kit_issues(selfcheck.REPO_ROOT)
+        == []
+    )
+
+
+def test_selfcheck_rejects_stale_strategy_assumption_stress_kit(
+    tmp_path: Path,
+) -> None:
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    payload = build_strategy_assumption_stress_kit()
+    markdown = render_strategy_assumption_stress_kit(payload)
+    payload["purpose"] = "stale"
+    (reports / "strategy-assumption-stress-kit.json").write_text(
+        json.dumps(payload, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (reports / "strategy-assumption-stress-kit.md").write_text(
+        markdown,
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_strategy_assumption_stress_kit_issues(tmp_path)
+
+    assert any("does not match deterministic" in issue for issue in issues)
 
 
 def test_v131_root_landing_contract_accepts_current_tree() -> None:

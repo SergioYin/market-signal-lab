@@ -20,12 +20,13 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Reviewer FAQ](reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
 - [Methodology Audit](methodology-audit.md) - reviewer checklist for look-ahead bias, survivorship bias, overfitting, cost assumptions, leveraged ETF daily-reset risk, and no-advice/no-live-trading boundaries.
+- [Strategy Assumption Stress Kit Guide](strategy-assumption-stress-kit.md) - reviewer workflow, stress-check limits, and beginner leveraged ETF-like caveats for the generated stress kit.
 - [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - JSON schema-like documentation for reviewer-filled audit files, accepted check names, accepted statuses, and CLI validation errors.
 - [Evidence Card Walkthrough](evidence-card-walkthrough.svg) - visual local reading path for the evidence-card handoff.
 - [Quick-Tour Preview SVG](quick-tour-preview.svg) - static public-safe preview diagram for the cold-review route.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
-- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
+- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, strategy assumption stress kit, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
 - [Static Gallery Walkthrough](static-gallery-walkthrough.svg) - visual public-safe reading path for the static gallery, scenario card, JSON fields, and research-only boundaries.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
@@ -45,6 +46,10 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Reviewer acceptance scorecard guide](reviewer-acceptance-scorecard.md) - explains the generated scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
 - [Reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md) - deterministic PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary.
 - [Reviewer acceptance scorecard JSON](../reports/reviewer-acceptance-scorecard.json) - structured version of the same scorecard.
+- [Strategy assumption stress kit HTML](../reports/strategy-assumption-stress-kit.html) - browser-openable static stress kit for checking strategy assumptions, beginner boundaries, and leveraged ETF-like caveats without live data, broker workflows, forecasts, recommendations, or advice.
+- [Strategy assumption stress kit guide](strategy-assumption-stress-kit.md) - concise public guide for reviewer workflow, what stress checks do and do not prove, and beginner leveraged ETF-like caveats.
+- [Strategy assumption stress kit Markdown](../reports/strategy-assumption-stress-kit.md) - Markdown version of the same deterministic stress kit, including the release-readiness receipt.
+- [Strategy assumption stress kit JSON](../reports/strategy-assumption-stress-kit.json) - structured version of the same deterministic stress kit, including exact rerun commands, generated output paths, and no-live-data/no-advice boundary claims.
 - [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts, regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
@@ -78,13 +83,15 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 - [Public Share Summary](public-share-summary.md) - public-safe summary route for sharing the static artifact workflow.
 - [Promotion Checklist](promotion-checklist.md) - pre-share checklist for evidence links, runnable checks, and public copy boundaries.
 - [Methodology Audit](methodology-audit.md) - checklist for reviewing sample backtests without treating them as advice, forecasts, or live-trading systems.
+- [Strategy Assumption Stress Kit Guide](strategy-assumption-stress-kit.md) - public guide for reviewing assumption stress checks without treating them as robustness proof.
 - [Methodology Audit Review File Schema](methodology-audit-review-schema.md) - allowed review-file fields, check order, status values, and scoring output fields.
 
 ## Release Notes
 
+- [v1.28.0 Release Notes](release-v1.28.0.md)
+- [v1.27.0 Release Notes](release-v1.27.0.md)
 - [v1.26.0 Release Notes](release-v1.26.0.md)
 - [v1.26.0 Release Docs](release-notes-v1.26.0.md)
-- [v1.27.0 Release Notes](release-v1.27.0.md)
 - [v1.25.0 Release Notes](release-v1.25.0.md)
 - [v1.24.0 Release Notes](release-notes-v1.24.0.md)
 - [v1.23.0 Release Notes](release-notes-v1.23.0.md)

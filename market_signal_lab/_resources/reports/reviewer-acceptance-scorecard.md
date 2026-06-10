@@ -34,6 +34,7 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - `reports/cold-user-review-route.md`
 - `reports/reviewer-evidence-bundle.md`
 - `reports/beginner-prediction-checklist.md`
+- `reports/strategy-assumption-stress-kit.html`
 
 ### reproducibility_evidence
 
@@ -43,6 +44,8 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - `reports/cross-asset-thesis-ledger-acceptance.md`
 - `reports/cross-asset-thesis-ledger-acceptance.json`
 - `reports/sample-manifest.md`
+- `reports/strategy-assumption-stress-kit.md`
+- `reports/strategy-assumption-stress-kit.json`
 
 ### risk_boundaries
 
@@ -52,6 +55,9 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - `docs/risk-boundaries.md`
 - `reports/prediction-readiness-audit.md`
 - `reports/prediction-readiness-audit.json`
+- `reports/strategy-assumption-stress-kit.md`
+- `reports/strategy-assumption-stress-kit.json`
+- `reports/strategy-assumption-stress-kit.html`
 
 ### next_actions
 

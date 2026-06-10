@@ -66,6 +66,16 @@ def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
     assert "reports/cross-asset-thesis-ledger-acceptance.md" in payload[
         "artifact_paths"
     ]["reproducibility_evidence"]
+    stress_kit_paths = {
+        "reports/strategy-assumption-stress-kit.md",
+        "reports/strategy-assumption-stress-kit.json",
+        "reports/strategy-assumption-stress-kit.html",
+    }
+    scorecard_evidence_paths = {
+        path for item in payload["scorecard"] for path in item["evidence_paths"]
+    }
+    assert stress_kit_paths <= scorecard_evidence_paths
+    assert stress_kit_paths <= set(payload["artifact_paths"]["risk_boundaries"])
     assert payload["does_not_prove"] == [
         (
             "Profitability, future robustness, investment suitability, or "
@@ -152,7 +162,14 @@ def test_reviewer_acceptance_scorecard_evidence_paths_are_available() -> None:
     assert all((repo_root / path).is_file() for path in evidence_paths)
 
     git_result = subprocess.run(
-        ["git", "ls-files", *sorted(evidence_paths - generated_outputs)],
+        [
+            "git",
+            "ls-files",
+            "--cached",
+            "--others",
+            "--exclude-standard",
+            *sorted(evidence_paths - generated_outputs),
+        ],
         cwd=repo_root,
         capture_output=True,
         text=True,

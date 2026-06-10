@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Strategy Assumption Stress Kit - Market Signal Lab</title>
+  <style>
+    body { font-family: system-ui, sans-serif; line-height: 1.5; margin: 2rem; }
+    table { border-collapse: collapse; min-width: max-content; }
+    th, td { border: 1px solid #d0d7de; padding: 0.35rem 0.5rem; text-align: right; }
+    th { background: #f6f8fa; }
+    th:first-child, td:first-child { text-align: left; }
+    blockquote { border-left: 4px solid #d0d7de; color: #57606a; margin-left: 0; padding-left: 1rem; }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>Strategy Assumption Stress Kit - Market Signal Lab</h1>
+  <p><strong>Research-only: this artifact is for historical market research, not investment advice, not a recommendation, and not evidence of future performance.</strong></p>
+  <nav aria-label="Related artifacts">
+    <h2>Related Artifacts</h2>
+    <ul>
+      <li><a href="strategy-assumption-stress-kit.md">Markdown kit</a></li>
+      <li><a href="strategy-assumption-stress-kit.json">JSON kit</a></li>
+    </ul>
+  </nav>
+  <h1>Strategy Assumption Stress Kit</h1>
+  <p>Use this deterministic static kit to review strategy assumptions, stress checks, beginner risk boundaries, and leveraged ETF-like caveats without treating any item as a prediction, recommendation, trading instruction, order workflow, or investment advice.</p>
+  <h2>What This Artifact Is</h2>
+  <ul>
+    <li>It gives reviewers a static checklist for pressure-testing how a strategy writeup explains assumptions, stress boundaries, and leveraged ETF-like caveats without turning the artifact into a forecast, recommendation, order workflow, or investment advice.</li>
+    <li>It is generated without live market data, broker connections, account access, orders, forecasts, recommendations, or position sizing.</li>
+  </ul>
+  <h2>Assumptions To Stress</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>group</th>
+          <th>assumption</th>
+          <th>stress question</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>data_window</td>
+          <td>A result only describes the static rows included in the artifact.</td>
+          <td>Would the conclusion still be labeled carefully if the date window, symbol mix, or missing rows changed?</td>
+        </tr>
+        <tr>
+          <td>signal_rule</td>
+          <td>A strategy rule is a simplified historical model state, not an action instruction.</td>
+          <td>Does the writeup keep entries, exits, and exposure labels separate from what a reader should do?</td>
+        </tr>
+        <tr>
+          <td>costs_and_frictions</td>
+          <td>Fees, spreads, liquidity, taxes, tracking difference, and market impact can change realized outcomes.</td>
+          <td>Does the artifact avoid treating simplified modeled fees as complete implementation costs?</td>
+        </tr>
+        <tr>
+          <td>benchmark_context</td>
+          <td>Same-window benchmarks are reference points for review, not recommendations.</td>
+          <td>Does the comparison explain underperformance, drawdown, exposure, and fee drag without ranking products for future use?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>Stress Checks</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>check</th>
+          <th>review prompt</th>
+          <th>failure boundary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>window_sensitivity</td>
+          <td>Re-read the artifact as if the start or end date moved. The claim should remain limited to the supplied static rows.</td>
+          <td>The wording implies the same result applies in another period.</td>
+        </tr>
+        <tr>
+          <td>drawdown_tolerance_language</td>
+          <td>Confirm max drawdown is presented as a historical diagnostic and not as a loss limit, guarantee, or comfort label.</td>
+          <td>The wording makes a large drawdown sound acceptable, bounded, or suitable for a reader.</td>
+        </tr>
+        <tr>
+          <td>fee_drag_visibility</td>
+          <td>Confirm fees and friction limits are visible near return and benchmark comparisons.</td>
+          <td>Return comparisons appear without cost, friction, or implementation caveats.</td>
+        </tr>
+        <tr>
+          <td>leverage_path_dependency</td>
+          <td>For leveraged ETF-like examples, confirm daily reset, path dependency, volatility drag, and extreme drawdown caveats are named.</td>
+          <td>The artifact implies multi-day returns can be read as a simple fixed multiple.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2>Hypothetical Stress Review Outcome</h2>
+  <ul>
+    <li>Fixture: `hypothetical_static_review_001`</li>
+    <li>Review scope: Example documentation review of one hypothetical strategy writeup; no market data, portfolio holdings, or account context is used.</li>
+    <li>Overall label: `WARN`</li>
+  </ul>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>label</th>
+          <th>check</th>
+          <th>outcome</th>
+          <th>review note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>PASS</td>
+          <td>window_sensitivity</td>
+          <td>The writeup states that conclusions are limited to the fixed sample rows.</td>
+          <td>PASS means the documentation boundary is visible enough for research review.</td>
+        </tr>
+        <tr>
+          <td>WARN</td>
+          <td>fee_drag_visibility</td>
+          <td>The writeup mentions modeled fees but separates other frictions into a later caveat.</td>
+          <td>WARN means reviewers should inspect whether cost and friction limits are visible near comparison text.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li>This fixture demonstrates PASS/WARN wording for a static review artifact only; it is not a forecast, suitability view, trading instruction, or investment advice.</li>
+  </ul>
+  <h2>Beginner Risk Boundaries</h2>
+  <ul>
+    <li><strong>research_scope</strong>: This kit is a static review aid. It does not say what to buy, sell, hold, size, or trade.</li>
+    <li><strong>historical_results</strong>: Historical sample results are diagnostics from fixed assumptions and rows. They are not predictions of future returns.</li>
+    <li><strong>stress_check_limits</strong>: A passed stress check means a documentation boundary is visible; it does not prove a strategy is safe, robust, or suitable.</li>
+  </ul>
+  <h2>Leveraged ETF-Like Caveats</h2>
+  <ul>
+    <li><strong>path_dependency</strong>: Daily reset and compounding can make multi-day outcomes depend heavily on the order of gains and losses.</li>
+    <li><strong>volatility_drag</strong>: High volatility can reduce compounded results even when the simple average move looks favorable.</li>
+    <li><strong>extreme_drawdown</strong>: Leveraged ETF-like paths can lose value quickly and may experience severe or near-total drawdowns in adverse paths.</li>
+    <li><strong>implementation_gap</strong>: Real products can differ from simplified examples because of expenses, financing, tracking difference, spreads, taxes, liquidity, and market impact.</li>
+  </ul>
+  <h2>Do Not Use This For</h2>
+  <ul>
+    <li>live data workflow</li>
+    <li>broker, account, or order workflow</li>
+    <li>position sizing</li>
+    <li>forecasting future returns</li>
+    <li>trading recommendation</li>
+    <li>investment advice</li>
+  </ul>
+  <h2>Release-Readiness Receipt</h2>
+  <ul>
+    <li>Receipt type: `strategy_assumption_stress_kit_release_readiness`</li>
+  </ul>
+  <p>### Exact Rerun Commands</p>
+  <ul>
+    <li>`python -m market_signal_lab.cli --strategy-assumption-stress-kit`</li>
+  </ul>
+  <p>  - Purpose: Regenerate the Strategy Assumption Stress Kit Markdown, JSON, and browser-openable HTML from deterministic stdlib-only code.</p>
+  <p>  - Generated output paths: `reports/strategy-assumption-stress-kit.html`, `reports/strategy-assumption-stress-kit.md`, `reports/strategy-assumption-stress-kit.json`</p>
+  <ul>
+    <li>`python scripts/selfcheck.py`</li>
+  </ul>
+  <p>  - Purpose: Regenerate checked-in sample artifacts and verify the stress-kit payload, Markdown, HTML, gallery links, and public boundaries.</p>
+  <p>  - Generated output paths: `reports/strategy-assumption-stress-kit.html`, `reports/strategy-assumption-stress-kit.md`, `reports/strategy-assumption-stress-kit.json`, `reports/index.html`</p>
+  <ul>
+    <li>`python -m pytest tests/test_strategy_assumption_stress_kit.py tests/test_selfcheck.py`</li>
+  </ul>
+  <p>  - Purpose: Run the focused tests that cover the stress-kit schema, rendered release-readiness receipt, CLI defaults, and selfcheck contract.</p>
+  <p>  - Generated output paths: `none`</p>
+  <p>### Generated Output Paths</p>
+  <ul>
+    <li>`reports/strategy-assumption-stress-kit.html` (html), from `python -m market_signal_lab.cli --strategy-assumption-stress-kit`</li>
+    <li>`reports/strategy-assumption-stress-kit.md` (markdown), from `python -m market_signal_lab.cli --strategy-assumption-stress-kit`</li>
+    <li>`reports/strategy-assumption-stress-kit.json` (json), from `python -m market_signal_lab.cli --strategy-assumption-stress-kit`</li>
+  </ul>
+  <p>### No-Live-Data / No-Advice Boundaries</p>
+  <ul>
+    <li><strong>PASS no_live_data</strong>: The stress-kit command does not read CSV data, call network APIs, or fetch current market data.</li>
+    <li><strong>PASS no_broker_or_account</strong>: The artifact has no broker connection, account inspection, order routing, or execution workflow.</li>
+    <li><strong>PASS no_orders_or_position_sizing</strong>: The kit records documentation stress checks only and does not size positions or give buy, sell, hold, or trade instructions.</li>
+    <li><strong>PASS no_recommendations_or_forecasts</strong>: PASS/WARN labels are review labels for artifact wording, not forecasts, product rankings, or recommendations.</li>
+    <li><strong>PASS not_investment_advice</strong>: The receipt preserves the research-only, historical-diagnostics-only, non-advice boundary.</li>
+  </ul>
+  <p>### Reviewer Notes</p>
+  <ul>
+    <li>Run commands from the repository root after normal Python setup.</li>
+    <li>A generated output path is release-ready only when the command exits 0 and the checked-in path is present or updated.</li>
+    <li>This receipt records deterministic rerun instructions and static boundaries; it does not prove financial correctness, future performance, robustness, suitability, or trading readiness.</li>
+  </ul>
+  <h2>Boundary Flags</h2>
+  <ul>
+    <li>research_only: `True`</li>
+    <li>static_only: `True`</li>
+    <li>historical_diagnostics_only: `True`</li>
+    <li>no_live_data: `True`</li>
+    <li>no_broker_or_account: `True`</li>
+    <li>no_orders_or_position_sizing: `True`</li>
+    <li>no_recommendations_or_forecasts: `True`</li>
+    <li>not_investment_advice: `True`</li>
+  </ul>
+  <h2>Verification Commands</h2>
+  <ul>
+    <li>`python -m market_signal_lab.cli --strategy-assumption-stress-kit`</li>
+    <li>`python scripts/selfcheck.py`</li>
+    <li>`python -m pytest`</li>
+  </ul>
+</body>
+</html>

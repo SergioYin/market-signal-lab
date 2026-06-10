@@ -46,6 +46,30 @@ from market_signal_lab.reviewer_rerun_receipt import (
     build_reviewer_rerun_receipt,
     render_reviewer_rerun_receipt,
 )
+from market_signal_lab.strategy_assumption_stress_kit import (
+    ASSUMPTION_GROUP_KEYS,
+    BEGINNER_RISK_BOUNDARY_KEYS as STRESS_KIT_BEGINNER_RISK_BOUNDARY_KEYS,
+    BOUNDARY_FLAGS as STRATEGY_ASSUMPTION_STRESS_KIT_BOUNDARY_FLAGS,
+    LEVERAGED_ETF_LIKE_CAVEAT_KEYS,
+    RELEASE_READINESS_BOUNDARY_CLAIM_KEYS,
+    RELEASE_READINESS_OUTPUT_PATH_KEYS,
+    RELEASE_READINESS_RECEIPT_KEYS,
+    RELEASE_READINESS_RERUN_COMMAND_KEYS,
+    STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND,
+    STRATEGY_ASSUMPTION_STRESS_KIT_FOCUSED_TEST_COMMAND,
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_ARTIFACT_LINKS,
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
+    STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH,
+    STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH,
+    STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT_PATHS,
+    STRATEGY_ASSUMPTION_STRESS_KIT_SELF_CHECK_COMMAND,
+    STRATEGY_ASSUMPTION_STRESS_KIT_TOP_LEVEL_KEYS,
+    STRESS_CHECK_KEYS,
+    build_strategy_assumption_stress_kit,
+    render_strategy_assumption_stress_kit,
+)
+from market_signal_lab.html import render_html_report
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
     render_cross_asset_thesis_ledger,
@@ -75,6 +99,7 @@ DOC_LINK_SOURCES = (
     Path("docs/metric-guide.md"),
     Path("docs/methodology-audit.md"),
     Path("docs/methodology-audit-review-schema.md"),
+    Path("docs/strategy-assumption-stress-kit.md"),
     Path("docs/scenario-risk-glossary.md"),
     Path("docs/static-gallery-manifest.md"),
     Path("docs/thesis-ledger-60-second-walkthrough.md"),
@@ -177,6 +202,7 @@ HTML_LINK_SOURCES = (
     Path("reports/index.html"),
     Path("reports/regime-comparison.html"),
     Path("reports/methodology-audit-score.html"),
+    Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
 )
 V131_ROOT_LANDING_LINKS = (
     "reports/index.html",
@@ -288,6 +314,9 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-rerun-receipt.json",
     "reviewer-acceptance-scorecard.md",
     "reviewer-acceptance-scorecard.json",
+    "strategy-assumption-stress-kit.md",
+    "strategy-assumption-stress-kit.json",
+    "strategy-assumption-stress-kit.html",
     "cold-user-review-route.md",
     "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
@@ -355,6 +384,15 @@ PREDICTION_READINESS_AUDIT_JSON = Path("reports/prediction-readiness-audit.json"
 PREDICTION_READINESS_AUDIT_MARKDOWN = Path("reports/prediction-readiness-audit.md")
 REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
+STRATEGY_ASSUMPTION_STRESS_KIT_JSON = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_HTML = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH
+)
 BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
@@ -444,6 +482,9 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-rerun-receipt.json"),
     Path("reports/reviewer-acceptance-scorecard.md"),
     Path("reports/reviewer-acceptance-scorecard.json"),
+    Path(STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH),
+    Path(STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH),
+    Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
     Path("reports/prediction-readiness-audit.md"),
@@ -532,6 +573,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
+          <li><a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>, <a href="strategy-assumption-stress-kit.md">Markdown release-readiness receipt</a>, and <a href="strategy-assumption-stress-kit.json">JSON receipt</a></li>
           <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
@@ -633,6 +675,7 @@ def run_demo_acceptance_check() -> bool:
         *find_reviewer_rerun_receipt_issues(REPO_ROOT),
         *find_beginner_prediction_checklist_issues(REPO_ROOT),
         *find_prediction_readiness_audit_issues(REPO_ROOT),
+        *find_strategy_assumption_stress_kit_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -750,6 +793,23 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(beginner_checklist, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    stress_kit = build_strategy_assumption_stress_kit()
+    (REPORTS_DIR / STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN.name).write_text(
+        render_strategy_assumption_stress_kit(stress_kit),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / STRATEGY_ASSUMPTION_STRESS_KIT_JSON.name).write_text(
+        json.dumps(stress_kit, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / STRATEGY_ASSUMPTION_STRESS_KIT_HTML.name).write_text(
+        render_html_report(
+            render_strategy_assumption_stress_kit(stress_kit),
+            title=STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
+            artifact_links=STRATEGY_ASSUMPTION_STRESS_KIT_HTML_ARTIFACT_LINKS,
+        ),
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
@@ -767,8 +827,8 @@ def run_sample_artifact_generation() -> bool:
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "reviewer rerun receipt, beginner backtest-reading checklist, "
-        "prediction-readiness audit, thesis-ledger acceptance, regime "
-        "comparison, and HTML artifacts."
+        "strategy assumption stress kit, prediction-readiness audit, "
+        "thesis-ledger acceptance, regime comparison, and HTML artifacts."
     )
     return True
 
@@ -1798,6 +1858,395 @@ def find_prediction_readiness_audit_issues(
     return issues
 
 
+def find_strategy_assumption_stress_kit_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / STRATEGY_ASSUMPTION_STRESS_KIT_JSON
+    markdown_path = repo_root / STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN
+    html_path = repo_root / STRATEGY_ASSUMPTION_STRESS_KIT_HTML
+
+    if not json_path.exists():
+        issues.append(f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: kit JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: kit must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != STRATEGY_ASSUMPTION_STRESS_KIT_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: top-level keys must match "
+            "the strategy assumption stress kit schema order"
+        )
+    if payload.get("artifact_type") != "strategy_assumption_stress_kit":
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: artifact_type must be strategy_assumption_stress_kit"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: schema_version must be 1.0"
+        )
+    for key in STRATEGY_ASSUMPTION_STRESS_KIT_BOUNDARY_FLAGS:
+        if payload.get(key) is not True:
+            issues.append(f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: {key} must be true")
+
+    purpose = payload.get("purpose")
+    if not _contains_all_terms(
+        purpose,
+        (
+            "static checklist",
+            "strategy writeup",
+            "leveraged etf-like caveats",
+            "forecast",
+            "recommendation",
+            "order workflow",
+            "investment advice",
+        ),
+    ):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: purpose must preserve stress-kit non-advice wording"
+        )
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: default_outputs.markdown must be {STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN}"
+        )
+    if defaults.get("json") != str(STRATEGY_ASSUMPTION_STRESS_KIT_JSON):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: default_outputs.json must be {STRATEGY_ASSUMPTION_STRESS_KIT_JSON}"
+        )
+
+    assumption_groups = payload.get("assumption_groups")
+    if not isinstance(assumption_groups, list) or len(assumption_groups) != 4:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: assumption_groups must include the four assumption groups"
+        )
+        assumption_groups = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        assumption_groups,
+        ASSUMPTION_GROUP_KEYS,
+        "assumption_groups",
+    )
+
+    stress_checks = payload.get("stress_checks")
+    if not isinstance(stress_checks, list) or len(stress_checks) != 4:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: stress_checks must include the four stress checks"
+        )
+        stress_checks = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        stress_checks,
+        STRESS_CHECK_KEYS,
+        "stress_checks",
+    )
+
+    risk_boundaries = payload.get("beginner_risk_boundaries")
+    if not isinstance(risk_boundaries, list) or len(risk_boundaries) != 3:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: beginner_risk_boundaries must include the three beginner boundaries"
+        )
+        risk_boundaries = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        risk_boundaries,
+        STRESS_KIT_BEGINNER_RISK_BOUNDARY_KEYS,
+        "beginner_risk_boundaries",
+    )
+
+    leveraged_caveats = payload.get("leveraged_etf_like_caveats")
+    if not isinstance(leveraged_caveats, list) or len(leveraged_caveats) != 4:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: leveraged_etf_like_caveats must include the four leveraged ETF-like caveats"
+        )
+        leveraged_caveats = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        leveraged_caveats,
+        LEVERAGED_ETF_LIKE_CAVEAT_KEYS,
+        "leveraged_etf_like_caveats",
+    )
+
+    do_not_use_for = payload.get("do_not_use_for")
+    if not _is_non_empty_string_list(do_not_use_for):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: do_not_use_for must be a non-empty list"
+        )
+    else:
+        for required_phrase in (
+            "live data workflow",
+            "broker, account, or order workflow",
+            "position sizing",
+            "forecasting future returns",
+            "trading recommendation",
+            "investment advice",
+        ):
+            if required_phrase not in do_not_use_for:
+                issues.append(
+                    f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: do_not_use_for must include {required_phrase}"
+                )
+
+    receipt = payload.get("release_readiness_receipt")
+    if not isinstance(receipt, dict):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt must be an object"
+        )
+        receipt = {}
+    elif tuple(receipt) != RELEASE_READINESS_RECEIPT_KEYS:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt keys must match the schema order"
+        )
+    if (
+        receipt.get("receipt_type")
+        != "strategy_assumption_stress_kit_release_readiness"
+    ):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.receipt_type must identify the stress-kit release receipt"
+        )
+
+    receipt_commands = receipt.get("rerun_commands")
+    if not isinstance(receipt_commands, list) or len(receipt_commands) != 3:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands must list the three focused rerun commands"
+        )
+        receipt_commands = []
+    for index, item in enumerate(receipt_commands):
+        if not isinstance(item, dict):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands[{index}] must be an object"
+            )
+            continue
+        if tuple(item) != RELEASE_READINESS_RERUN_COMMAND_KEYS:
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands[{index}] keys must be "
+                f"{', '.join(RELEASE_READINESS_RERUN_COMMAND_KEYS)}"
+            )
+        for key in ("command", "purpose"):
+            if not isinstance(item.get(key), str) or not item[key].strip():
+                issues.append(
+                    f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands[{index}].{key} must be a non-empty string"
+                )
+        if not isinstance(item.get("generated_output_paths"), list):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands[{index}].generated_output_paths must be a list"
+            )
+        elif not all(
+            isinstance(path, str) and path.strip()
+            for path in item["generated_output_paths"]
+        ):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.rerun_commands[{index}].generated_output_paths must contain only non-empty strings"
+            )
+    for required_command in (
+        STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND,
+        STRATEGY_ASSUMPTION_STRESS_KIT_SELF_CHECK_COMMAND,
+        STRATEGY_ASSUMPTION_STRESS_KIT_FOCUSED_TEST_COMMAND,
+    ):
+        if not any(
+            isinstance(item, dict) and item.get("command") == required_command
+            for item in receipt_commands
+        ):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt missing rerun command {required_command}"
+            )
+
+    receipt_outputs = receipt.get("generated_output_paths")
+    if not isinstance(receipt_outputs, list) or len(receipt_outputs) != 3:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.generated_output_paths must list the three stress-kit outputs"
+        )
+        receipt_outputs = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        receipt_outputs,
+        RELEASE_READINESS_OUTPUT_PATH_KEYS,
+        "release_readiness_receipt.generated_output_paths",
+    )
+    for required_path in STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT_PATHS:
+        if not any(
+            isinstance(item, dict) and item.get("path") == required_path
+            for item in receipt_outputs
+        ):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt missing generated output path {required_path}"
+            )
+
+    receipt_boundaries = receipt.get("boundary_claims")
+    if not isinstance(receipt_boundaries, list) or len(receipt_boundaries) != 5:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.boundary_claims must list the five public boundary claims"
+        )
+        receipt_boundaries = []
+    _extend_row_shape_issues(
+        issues,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON,
+        receipt_boundaries,
+        RELEASE_READINESS_BOUNDARY_CLAIM_KEYS,
+        "release_readiness_receipt.boundary_claims",
+    )
+    for required_claim in (
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+        "not_investment_advice",
+    ):
+        if not any(
+            isinstance(item, dict)
+            and item.get("claim") == required_claim
+            and item.get("status") == "PASS"
+            for item in receipt_boundaries
+        ):
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt missing PASS boundary claim {required_claim}"
+            )
+
+    reviewer_notes = receipt.get("reviewer_notes")
+    if not _is_non_empty_string_list(reviewer_notes):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.reviewer_notes must be a non-empty list"
+        )
+    else:
+        for required_phrase in (
+            "repository root",
+            "command exits 0",
+            "does not prove financial correctness",
+        ):
+            if not any(required_phrase in note for note in reviewer_notes):
+                issues.append(
+                    f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: release_readiness_receipt.reviewer_notes must mention {required_phrase}"
+                )
+
+    commands = payload.get("verification_commands")
+    if not _is_non_empty_string_list(commands):
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: verification_commands must be a non-empty list"
+        )
+    else:
+        for required_command in (
+            STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND,
+            STRATEGY_ASSUMPTION_STRESS_KIT_SELF_CHECK_COMMAND,
+            "python -m pytest",
+        ):
+            if required_command not in commands:
+                issues.append(
+                    f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: missing verification command {required_command}"
+                )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN}: kit Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN}: kit Markdown is empty"
+            )
+
+    if not html_path.exists():
+        issues.append(f"{STRATEGY_ASSUMPTION_STRESS_KIT_HTML}: kit HTML is missing")
+        html = ""
+    else:
+        html = html_path.read_text(encoding="utf-8")
+        if not html.strip():
+            issues.append(f"{STRATEGY_ASSUMPTION_STRESS_KIT_HTML}: kit HTML is empty")
+
+    for required_text in (
+        f"<title>{STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE}</title>",
+        f"<h1>{STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE}</h1>",
+        "Related Artifacts",
+        "strategy-assumption-stress-kit.md",
+        "strategy-assumption-stress-kit.json",
+        "not investment advice",
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+        "path_dependency",
+        "volatility_drag",
+        "extreme_drawdown",
+        "Release-Readiness Receipt",
+        "Exact Rerun Commands",
+        "Generated Output Paths",
+        "No-Live-Data / No-Advice Boundaries",
+        *STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT_PATHS,
+    ):
+        if required_text not in html:
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_HTML}: missing kit HTML text {required_text}"
+            )
+
+    for required_text in (
+        "# Strategy Assumption Stress Kit",
+        "## What This Artifact Is",
+        "## Assumptions To Stress",
+        "## Stress Checks",
+        "## Beginner Risk Boundaries",
+        "## Leveraged ETF-Like Caveats",
+        "## Do Not Use This For",
+        "## Release-Readiness Receipt",
+        "### Exact Rerun Commands",
+        "### Generated Output Paths",
+        "### No-Live-Data / No-Advice Boundaries",
+        "## Boundary Flags",
+        "## Verification Commands",
+        "prediction, recommendation, trading instruction, order workflow, or investment advice",
+        "without live market data, broker connections, account access, orders, forecasts, recommendations, or position sizing",
+        "daily reset, path dependency, volatility drag, and extreme drawdown caveats",
+        STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND,
+        STRATEGY_ASSUMPTION_STRESS_KIT_FOCUSED_TEST_COMMAND,
+        STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
+        "**PASS no_live_data**",
+        "does not prove financial correctness",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN}: missing kit text {required_text}"
+            )
+
+    expected_payload = build_strategy_assumption_stress_kit()
+    if payload != expected_payload:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON}: does not match deterministic strategy assumption stress kit output; run {STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND}"
+        )
+    expected_markdown = render_strategy_assumption_stress_kit(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN}: does not match deterministic strategy assumption stress kit output; run {STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND}"
+        )
+    expected_html = render_html_report(
+        expected_markdown,
+        title=STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
+        artifact_links=STRATEGY_ASSUMPTION_STRESS_KIT_HTML_ARTIFACT_LINKS,
+    )
+    if html and html != expected_html:
+        issues.append(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_HTML}: does not match deterministic strategy assumption stress kit output; run {STRATEGY_ASSUMPTION_STRESS_KIT_COMMAND}"
+        )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -1921,6 +2370,29 @@ def _extend_missing_key_issues(
         if key not in value:
             dotted_key = f"{prefix}.{key}" if prefix else key
             issues.append(f"{relative_path}: missing {dotted_key}")
+
+
+def _extend_row_shape_issues(
+    issues: list[str],
+    relative_path: Path,
+    rows: list[object],
+    required_keys: tuple[str, ...],
+    field_name: str,
+) -> None:
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            issues.append(f"{relative_path}: {field_name}[{index}] must be an object")
+            continue
+        if tuple(row) != required_keys:
+            issues.append(
+                f"{relative_path}: {field_name}[{index}] keys must be "
+                f"{', '.join(required_keys)}"
+            )
+        for key in required_keys:
+            if not isinstance(row.get(key), str) or not row[key].strip():
+                issues.append(
+                    f"{relative_path}: {field_name}[{index}].{key} must be a non-empty string"
+                )
 
 
 def _contains_all_terms(value: object, terms: tuple[str, ...]) -> bool:
@@ -2166,6 +2638,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "-m",
             "market_signal_lab.cli",
             "--beginner-prediction-checklist",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--strategy-assumption-stress-kit",
         ],
         [
             sys.executable,

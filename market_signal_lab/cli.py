@@ -76,6 +76,14 @@ from market_signal_lab.reviewer_rerun_receipt import (
 )
 from market_signal_lab.scenario_card import build_scenario_card, render_scenario_card
 from market_signal_lab.split import TrainTestSplit, split_train_test
+from market_signal_lab.strategy_assumption_stress_kit import (
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
+    STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH,
+    STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH,
+    build_strategy_assumption_stress_kit,
+    render_strategy_assumption_stress_kit,
+)
 from market_signal_lab.strategies import moving_average_crossover_strategy
 from market_signal_lab.sweep import (
     SweepResult,
@@ -133,6 +141,16 @@ COLD_USER_REVIEW_ROUTE_FLAG = "--cold-user-review-route"
 COLD_USER_REVIEW_ROUTE_STATIC_RESOURCES = tuple(
     Path(path) for path in INTEGRITY_ARTIFACT_PATHS
 )
+STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_JSON_OUTPUT = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_HTML_OUTPUT = Path(
+    STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH
+)
+STRATEGY_ASSUMPTION_STRESS_KIT_FLAG = "--strategy-assumption-stress-kit"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -143,6 +161,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
+    _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -186,6 +205,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_prediction_readiness_audit(args)
             )
+        elif args.strategy_assumption_stress_kit:
+            args = _resolve_strategy_assumption_stress_kit_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_strategy_assumption_stress_kit()
+            )
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -219,6 +243,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
     )
 
 
@@ -237,6 +262,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
     )
 
 
@@ -255,6 +281,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
     )
 
 
@@ -273,6 +300,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
     )
 
 
@@ -291,6 +319,26 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
+        include_strategy_assumption_stress_kit=True,
+    )
+
+
+def _reject_strategy_assumption_stress_kit_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.strategy_assumption_stress_kit:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        STRATEGY_ASSUMPTION_STRESS_KIT_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
     )
 
 
@@ -304,6 +352,7 @@ def _reject_mode_conflicts(
     include_cold_user_review_route: bool = False,
     include_reviewer_rerun_receipt: bool = False,
     include_reviewer_acceptance_scorecard: bool = False,
+    include_strategy_assumption_stress_kit: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -338,6 +387,11 @@ def _reject_mode_conflicts(
             REVIEWER_ACCEPTANCE_SCORECARD_FLAG,
             include_reviewer_acceptance_scorecard
             and args.reviewer_acceptance_scorecard,
+        ),
+        (
+            STRATEGY_ASSUMPTION_STRESS_KIT_FLAG,
+            include_strategy_assumption_stress_kit
+            and args.strategy_assumption_stress_kit,
         ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
@@ -396,6 +450,8 @@ def _html_report_title(args: Namespace) -> str:
         return "Methodology Audit Score - Market Signal Lab"
     if getattr(args, "regime_comparison", False):
         return "Regime Comparison - Market Signal Lab"
+    if getattr(args, "strategy_assumption_stress_kit", False):
+        return STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE
     return "Market Signal Lab Report"
 
 
@@ -408,6 +464,15 @@ def _html_artifact_links(args: Namespace) -> tuple[tuple[str, str], ...]:
         for label, path in (
             ("Markdown score", args.output),
             ("JSON score", args.json_output),
+        ):
+            if path is not None:
+                links.append((label, _relative_output_link(args.html_output, path)))
+        return tuple(links)
+
+    if getattr(args, "strategy_assumption_stress_kit", False):
+        for label, path in (
+            ("Markdown kit", args.output),
+            ("JSON kit", args.json_output),
         ):
             if path is not None:
                 links.append((label, _relative_output_link(args.html_output, path)))
@@ -646,6 +711,24 @@ def _build_parser() -> ArgumentParser:
             "and reports/prediction-readiness-audit.json when neither is set. "
             "Uses only a static JSON artifact and does not provide forecasts, "
             "recommendations, trading instructions, or investment advice."
+        ),
+    )
+    parser.add_argument(
+        STRATEGY_ASSUMPTION_STRESS_KIT_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic static strategy assumption stress kit "
+            "covering assumptions, stress checks, beginner risk boundaries, "
+            "and leveraged ETF-like path dependency, volatility drag, and "
+            f"extreme drawdown caveats. Defaults to "
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_HTML_OUTPUT}, "
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT}, and "
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_JSON_OUTPUT}; --html-output can "
+            "customize the browser-openable artifact path. Does not read CSV "
+            "data, fetch live data, connect to brokers, create orders, size "
+            "positions, use strategy parameters, forecast, recommend, or "
+            "provide investment advice."
         ),
     )
     parser.add_argument(
@@ -1022,6 +1105,44 @@ def _resolve_prediction_readiness_audit_args(
         resolved.json_output = PREDICTION_READINESS_AUDIT_JSON_OUTPUT
     resolved.html_output = None
     resolved.manifest_output = None
+    return resolved
+
+
+def _resolve_strategy_assumption_stress_kit_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{STRATEGY_ASSUMPTION_STRESS_KIT_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{STRATEGY_ASSUMPTION_STRESS_KIT_FLAG} does not take --config")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{STRATEGY_ASSUMPTION_STRESS_KIT_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    resolved.html_output = args.html_output
+    if (
+        resolved.output is None
+        and resolved.json_output is None
+        and resolved.html_output is None
+    ):
+        resolved.output = STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT
+        resolved.json_output = STRATEGY_ASSUMPTION_STRESS_KIT_JSON_OUTPUT
+        resolved.html_output = STRATEGY_ASSUMPTION_STRESS_KIT_HTML_OUTPUT
+    elif resolved.html_output is not None:
+        resolved.output = resolved.output or STRATEGY_ASSUMPTION_STRESS_KIT_OUTPUT
+        resolved.json_output = (
+            resolved.json_output or STRATEGY_ASSUMPTION_STRESS_KIT_JSON_OUTPUT
+        )
+    resolved.manifest_output = None
+    resolved.strategy_assumption_stress_kit = True
     return resolved
 
 
@@ -1443,6 +1564,14 @@ def _run_prediction_readiness_audit(
         ) from exc
     payload = build_prediction_readiness_audit(ledger, str(input_path))
     report = render_prediction_readiness_audit(payload)
+    return report, payload, {}
+
+
+def _run_strategy_assumption_stress_kit() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_strategy_assumption_stress_kit()
+    report = render_strategy_assumption_stress_kit(payload)
     return report, payload, {}
 
 

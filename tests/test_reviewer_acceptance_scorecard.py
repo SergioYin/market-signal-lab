@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from market_signal_lab.reviewer_acceptance_scorecard import (
+    BOUNDARY_FLAG_KEYS,
     REVIEWER_ACCEPTANCE_METADATA_KEYS,
     REVIEWER_ACCEPTANCE_NEXT_ACTION_KEYS,
     REVIEWER_ACCEPTANCE_SCORECARD_ITEM_KEYS,
@@ -18,11 +19,43 @@ from market_signal_lab.reviewer_acceptance_scorecard import (
 )
 
 
+def assert_scorecard_json_fields_are_structured(payload: dict[str, object]) -> None:
+    for key in BOUNDARY_FLAG_KEYS:
+        assert type(payload[key]) is bool
+        assert payload[key] is True
+
+    default_outputs = payload["default_outputs"]
+    assert isinstance(default_outputs, dict)
+    assert isinstance(default_outputs["markdown"], str)
+    assert default_outputs["markdown"].endswith(".md")
+    assert isinstance(default_outputs["json"], str)
+    assert default_outputs["json"].endswith(".json")
+
+    artifact_paths = payload["artifact_paths"]
+    assert isinstance(artifact_paths, dict)
+    for paths in artifact_paths.values():
+        assert isinstance(paths, list)
+        assert all(isinstance(path, str) for path in paths)
+        assert all(path.startswith(("docs/", "reports/")) for path in paths)
+
+    for item in payload["scorecard"]:
+        assert isinstance(item["evidence_paths"], list)
+        assert all(
+            isinstance(path, str) and path.startswith(("docs/", "reports/"))
+            for path in item["evidence_paths"]
+        )
+
+    for action in payload["next_actions"]:
+        assert isinstance(action["path_or_command"], str)
+        assert action["path_or_command"].startswith(("python ", "reports/"))
+
+
 def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
     payload = build_reviewer_acceptance_scorecard()
     markdown = render_reviewer_acceptance_scorecard(payload)
 
     assert tuple(payload) == REVIEWER_ACCEPTANCE_SCORECARD_TOP_LEVEL_KEYS
+    assert_scorecard_json_fields_are_structured(payload)
     assert payload["artifact_type"] == "reviewer_acceptance_scorecard"
     assert payload["schema_version"] == "1.0"
     assert payload["research_only"] is True
@@ -50,6 +83,7 @@ def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
         "public_review_readiness",
         "reproducibility_evidence",
         "risk_boundaries",
+        "v1_29_stress_kit_quickstart_route",
         "next_actions",
     ]
     assert all(
@@ -63,6 +97,13 @@ def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
     assert "reports/index.html" in payload["artifact_paths"][
         "public_review_readiness"
     ]
+    quickstart_paths = {
+        "reports/stress-kit-quickstart-card.md",
+        "reports/stress-kit-quickstart-card.json",
+    }
+    assert quickstart_paths <= set(
+        payload["artifact_paths"]["public_review_readiness"]
+    )
     assert "reports/cross-asset-thesis-ledger-acceptance.md" in payload[
         "artifact_paths"
     ]["reproducibility_evidence"]
@@ -74,7 +115,18 @@ def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
     scorecard_evidence_paths = {
         path for item in payload["scorecard"] for path in item["evidence_paths"]
     }
+    quickstart_item = next(
+        item
+        for item in payload["scorecard"]
+        if item["category"] == "v1_29_stress_kit_quickstart_route"
+    )
+    assert quickstart_paths == set(quickstart_item["evidence_paths"])
+    assert quickstart_item["label"] == "PASS"
+    assert "Stress Kit Quickstart Card" in quickstart_item["status"]
+    assert "static review only" in quickstart_item["review_note"]
+    assert "not a trading-readiness approval" in quickstart_item["review_note"]
     assert stress_kit_paths <= scorecard_evidence_paths
+    assert quickstart_paths <= scorecard_evidence_paths
     assert stress_kit_paths <= set(payload["artifact_paths"]["risk_boundaries"])
     assert payload["does_not_prove"] == [
         (
@@ -101,9 +153,15 @@ def test_reviewer_acceptance_scorecard_builds_expected_static_payload() -> None:
         "- **Review scope**: static public reviewer acceptance scorecard artifacts"
     ) in markdown
     assert "| public_review_readiness | PASS |" in markdown
+    assert "| v1_29_stress_kit_quickstart_route | PASS |" in markdown
+    assert "reports/stress-kit-quickstart-card.md" in markdown
+    assert "not a trading-readiness approval" in markdown
     assert "reports/reviewer-acceptance-scorecard.md" in markdown
     assert "no live data" in markdown
     assert "investment advice" in markdown
+    assert "daily reset, path dependency, volatility drag" in markdown
+    assert "extreme drawdown" in markdown
+    assert "simplified historical diagnostics, not advice" in markdown
     assert "## What this does not prove" in markdown
     assert (
         "Profitability, future robustness, investment suitability, or "
@@ -203,6 +261,7 @@ def test_cli_writes_reviewer_acceptance_scorecard_defaults(tmp_path: Path) -> No
     json_path = tmp_path / "reports" / "reviewer-acceptance-scorecard.json"
     markdown = markdown_path.read_text(encoding="utf-8")
     payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert_scorecard_json_fields_are_structured(payload)
     assert "# Reviewer Acceptance Scorecard" in markdown
     assert "## What this does not prove" in markdown
     assert "Profitability, future robustness" in markdown
@@ -243,9 +302,12 @@ def test_cli_reviewer_acceptance_scorecard_custom_outputs(
     assert "# Reviewer Acceptance Scorecard" in markdown_path.read_text(
         encoding="utf-8"
     )
-    assert json.loads(json_path.read_text(encoding="utf-8"))[
-        "acceptance_metadata"
-    ]["review_scope"] == "static public reviewer acceptance scorecard artifacts"
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert_scorecard_json_fields_are_structured(payload)
+    assert (
+        payload["acceptance_metadata"]["review_scope"]
+        == "static public reviewer acceptance scorecard artifacts"
+    )
 
 
 @pytest.mark.parametrize(

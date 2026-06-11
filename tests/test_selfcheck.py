@@ -16,6 +16,10 @@ from market_signal_lab.strategy_assumption_stress_kit import (
     build_strategy_assumption_stress_kit,
     render_strategy_assumption_stress_kit,
 )
+from market_signal_lab.stress_kit_quickstart_card import (
+    build_stress_kit_quickstart_card,
+    render_stress_kit_quickstart_card,
+)
 from scripts import selfcheck
 
 
@@ -72,10 +76,14 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/strategy-assumption-stress-kit.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/strategy-assumption-stress-kit.html") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/strategy-assumption-stress-kit.html") in selfcheck.HTML_LINK_SOURCES
+    assert Path("reports/stress-kit-quickstart-card.md") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/stress-kit-quickstart-card.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("docs/strategy-assumption-stress-kit.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.28.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.29.0.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -88,6 +96,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "Regime comparison" in gallery
     assert "Reviewer rerun receipt" in gallery
     assert "Strategy assumption stress kit" in gallery
+    assert "Stress Kit Quickstart Card" in gallery
     assert "Markdown release-readiness receipt" in gallery
     assert "JSON receipt" in gallery
     assert "Secondary Docs And Release Links" in gallery
@@ -113,6 +122,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-v1.29.0.md",
+        "../docs/release-v1.28.0.md",
         "../docs/release-v1.27.0.md",
         "../docs/release-v1.26.0.md",
         "../docs/release-notes-v1.26.0.md",
@@ -135,6 +146,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "strategy-assumption-stress-kit.md",
         "strategy-assumption-stress-kit.json",
         "strategy-assumption-stress-kit.html",
+        "stress-kit-quickstart-card.md",
+        "stress-kit-quickstart-card.json",
         "regime-comparison.html",
         "regime-comparison.md",
         "regime-comparison.json",
@@ -151,6 +164,67 @@ def test_selfcheck_validates_strategy_assumption_stress_kit_contract() -> None:
     assert (
         selfcheck.find_strategy_assumption_stress_kit_issues(selfcheck.REPO_ROOT)
         == []
+    )
+
+
+def test_selfcheck_validates_stress_kit_quickstart_card_contract() -> None:
+    assert selfcheck.find_stress_kit_quickstart_card_issues(selfcheck.REPO_ROOT) == []
+
+
+def test_v129_release_note_links_v128_stress_kit_context() -> None:
+    release_note = Path("docs/release-v1.29.0.md").read_text(encoding="utf-8")
+
+    expected_links = [
+        "(release-v1.28.0.md)",
+        "(strategy-assumption-stress-kit.md)",
+        "(../reports/strategy-assumption-stress-kit.html)",
+        "(../reports/strategy-assumption-stress-kit.md)",
+        "(../reports/strategy-assumption-stress-kit.json)",
+    ]
+    for link in expected_links:
+        assert link in release_note
+    assert "static, research-only review" in release_note
+
+
+def test_v129_stress_kit_quickstart_route_contract_accepts_current_tree() -> None:
+    assert (
+        selfcheck.find_v129_stress_kit_quickstart_route_issues(selfcheck.REPO_ROOT)
+        == []
+    )
+
+
+def test_v129_stress_kit_quickstart_route_rejects_missing_links_and_boundaries(
+    tmp_path: Path,
+) -> None:
+    docs = tmp_path / "docs"
+    reports = tmp_path / "reports"
+    docs.mkdir()
+    reports.mkdir()
+    (reports / "stress-kit-quickstart-card.md").write_text(
+        "# Stress Kit Quickstart Card\n",
+        encoding="utf-8",
+    )
+    (docs / "release-v1.29.0.md").write_text(
+        "# v1.29.0 Release Notes\n\n"
+        "- Added [Stress Kit Quickstart Card Markdown](../reports/stress-kit-quickstart-card.md).\n\n"
+        "The quickstart card is a static reviewer checklist only.\n",
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_v129_stress_kit_quickstart_route_issues(tmp_path)
+
+    assert (
+        "docs/release-v1.29.0.md: missing quickstart link "
+        "../reports/stress-kit-quickstart-card.json"
+    ) in issues
+    assert (
+        "docs/release-v1.29.0.md: quickstart resource is missing "
+        "../reports/stress-kit-quickstart-card.json"
+    ) in issues
+    assert any(
+        "missing no-advice boundary text investment-advice"
+        == issue.split(": ", 1)[1]
+        for issue in issues
     )
 
 
@@ -172,6 +246,28 @@ def test_selfcheck_rejects_stale_strategy_assumption_stress_kit(
     )
 
     issues = selfcheck.find_strategy_assumption_stress_kit_issues(tmp_path)
+
+    assert any("does not match deterministic" in issue for issue in issues)
+
+
+def test_selfcheck_rejects_stale_stress_kit_quickstart_card(
+    tmp_path: Path,
+) -> None:
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    payload = build_stress_kit_quickstart_card()
+    markdown = render_stress_kit_quickstart_card(payload)
+    payload["purpose"] = "stale"
+    (reports / "stress-kit-quickstart-card.json").write_text(
+        json.dumps(payload, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (reports / "stress-kit-quickstart-card.md").write_text(
+        markdown,
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_stress_kit_quickstart_card_issues(tmp_path)
 
     assert any("does not match deterministic" in issue for issue in issues)
 
@@ -208,7 +304,11 @@ def test_v131_root_landing_is_static_and_local() -> None:
     assert "docs/release-notes-v1.22.0.md" in landing
     assert "docs/release-v1.22.0.md" in landing
     assert "reports/reviewer-evidence-bundle.md" in landing
+    assert "reports/stress-kit-quickstart-card.md" in landing
+    assert "reports/stress-kit-quickstart-card.json" in landing
     assert "reports/beginner-prediction-checklist.md" in landing
+    assert "docs/release-v1.29.0.md" in landing
+    assert "docs/release-v1.28.0.md" in landing
     assert "docs/release-notes-v1.18.0.md" in landing
     assert "docs/release-v1.17.0.md" in landing
     assert "docs/release-notes-v1.16.0.md" in landing
@@ -328,7 +428,11 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "reports/reviewer-evidence-bundle.md",
         "reports/reviewer-rerun-receipt.md",
         "reports/reviewer-acceptance-scorecard.md",
+        "reports/stress-kit-quickstart-card.md",
+        "reports/stress-kit-quickstart-card.json",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.29.0.md",
+        "docs/release-v1.28.0.md",
         "docs/release-v1.27.0.md",
         "docs/release-v1.26.0.md",
         "docs/release-notes-v1.26.0.md",
@@ -1943,6 +2047,14 @@ def _write_v131_landing_fixture(
         "# Reviewer Acceptance Scorecard\n",
         encoding="utf-8",
     )
+    (reports_dir / "stress-kit-quickstart-card.md").write_text(
+        "# Stress Kit Quickstart Card\n",
+        encoding="utf-8",
+    )
+    (reports_dir / "stress-kit-quickstart-card.json").write_text(
+        "{}\n",
+        encoding="utf-8",
+    )
     (reports_dir / "beginner-prediction-checklist.md").write_text(
         "# Beginner Backtest Reading Checklist\n",
         encoding="utf-8",
@@ -1966,6 +2078,8 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-v1.29.0.md",
+        "release-v1.28.0.md",
         "release-v1.27.0.md",
         "release-v1.26.0.md",
         "release-notes-v1.26.0.md",

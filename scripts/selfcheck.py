@@ -69,6 +69,19 @@ from market_signal_lab.strategy_assumption_stress_kit import (
     build_strategy_assumption_stress_kit,
     render_strategy_assumption_stress_kit,
 )
+from market_signal_lab.stress_kit_quickstart_card import (
+    QUICKSTART_BOUNDARY_FLAGS,
+    QUICKSTART_COMPLETION_RECEIPT_KEYS,
+    QUICKSTART_OUT_OF_SCOPE_ITEMS,
+    QUICKSTART_REVIEWER_CHECKLIST_ITEM_KEYS,
+    QUICKSTART_STOP_CONDITION_KEYS,
+    STRESS_KIT_QUICKSTART_CARD_COMMAND,
+    STRESS_KIT_QUICKSTART_CARD_JSON_PATH,
+    STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH,
+    STRESS_KIT_QUICKSTART_CARD_TOP_LEVEL_KEYS,
+    build_stress_kit_quickstart_card,
+    render_stress_kit_quickstart_card,
+)
 from market_signal_lab.html import render_html_report
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
@@ -150,6 +163,8 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.26.0.md"),
     Path("docs/release-notes-v1.26.0.md"),
     Path("docs/release-v1.27.0.md"),
+    Path("docs/release-v1.28.0.md"),
+    Path("docs/release-v1.29.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -228,7 +243,11 @@ V131_ROOT_LANDING_LINKS = (
     "reports/reviewer-evidence-bundle.md",
     "reports/reviewer-rerun-receipt.md",
     "reports/reviewer-acceptance-scorecard.md",
+    "reports/stress-kit-quickstart-card.md",
+    "reports/stress-kit-quickstart-card.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.29.0.md",
+    "docs/release-v1.28.0.md",
     "docs/release-v1.26.0.md",
     "docs/release-notes-v1.26.0.md",
     "docs/release-v1.27.0.md",
@@ -317,6 +336,8 @@ V130_STATIC_GALLERY_LINKS = (
     "strategy-assumption-stress-kit.md",
     "strategy-assumption-stress-kit.json",
     "strategy-assumption-stress-kit.html",
+    "stress-kit-quickstart-card.md",
+    "stress-kit-quickstart-card.json",
     "cold-user-review-route.md",
     "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
@@ -372,6 +393,21 @@ REGIME_COMPARISON_HTML_REQUIRED_TEXT = (
     "not investment advice",
     "live-trading signal",
 )
+V129_STRESS_KIT_QUICKSTART_ROUTE = Path("docs/release-v1.29.0.md")
+V129_STRESS_KIT_QUICKSTART_REQUIRED_LINKS = (
+    "../reports/stress-kit-quickstart-card.md",
+    "../reports/stress-kit-quickstart-card.json",
+)
+V129_STRESS_KIT_QUICKSTART_REQUIRED_TEXT = (
+    "static reviewer checklist only",
+    "no live-data",
+    "broker/account",
+    "order",
+    "position-sizing",
+    "forecast",
+    "recommendation",
+    "investment-advice",
+)
 PRETRADE_PACKET_JSON = Path("reports/pretrade-packet.json")
 PRETRADE_PACKET_MARKDOWN = Path("reports/pretrade-packet.md")
 BEGINNER_PREDICTION_CHECKLIST_JSON = Path(
@@ -393,6 +429,8 @@ STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN = Path(
 STRATEGY_ASSUMPTION_STRESS_KIT_HTML = Path(
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH
 )
+STRESS_KIT_QUICKSTART_CARD_JSON = Path(STRESS_KIT_QUICKSTART_CARD_JSON_PATH)
+STRESS_KIT_QUICKSTART_CARD_MARKDOWN = Path(STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH)
 BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
@@ -485,6 +523,8 @@ SAMPLE_ARTIFACTS = (
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
+    Path(STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH),
+    Path(STRESS_KIT_QUICKSTART_CARD_JSON_PATH),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
     Path("reports/prediction-readiness-audit.md"),
@@ -541,6 +581,7 @@ GALLERY_HTML = """<!doctype html>
       <a href="#verify">Run one verification command</a>
     </section>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
+    <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
     <h2 id="verify">Run One Verification Command</h2>
     <p>From the repository root, run this deterministic local check. It checks the checked-in thesis-ledger packet shape and public research boundaries; it does not validate financial correctness, profitability, or future performance.</p>
     <pre><code>python -m market_signal_lab.cli --validate-thesis-ledger</code></pre>
@@ -574,6 +615,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>, <a href="strategy-assumption-stress-kit.md">Markdown release-readiness receipt</a>, and <a href="strategy-assumption-stress-kit.json">JSON receipt</a></li>
+          <li><a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> and <a href="stress-kit-quickstart-card.json">JSON</a> - two-minute static/no-advice route before the full stress kit</li>
           <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
@@ -590,6 +632,8 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.29.0.md">v1.29.0 release notes</a></li>
+          <li><a href="../docs/release-v1.28.0.md">v1.28.0 release notes</a></li>
           <li><a href="../docs/release-v1.27.0.md">v1.27.0 release notes</a></li>
           <li><a href="../docs/release-v1.26.0.md">v1.26.0 release notes</a></li>
           <li><a href="../docs/release-notes-v1.26.0.md">v1.26.0 release docs</a></li>
@@ -670,12 +714,14 @@ def run_demo_acceptance_check() -> bool:
         *find_v130_static_gallery_issues(REPO_ROOT),
         *find_v131_root_landing_issues(REPO_ROOT),
         *find_v160_static_dashboard_issues(REPO_ROOT),
+        *find_v129_stress_kit_quickstart_route_issues(REPO_ROOT),
         *find_regime_comparison_html_issues(REPO_ROOT),
         *find_pretrade_packet_acceptance_issues(REPO_ROOT),
         *find_reviewer_rerun_receipt_issues(REPO_ROOT),
         *find_beginner_prediction_checklist_issues(REPO_ROOT),
         *find_prediction_readiness_audit_issues(REPO_ROOT),
         *find_strategy_assumption_stress_kit_issues(REPO_ROOT),
+        *find_stress_kit_quickstart_card_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -757,15 +803,6 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(prediction_readiness_audit, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
-    reviewer_bundle = build_reviewer_evidence_bundle(REPO_ROOT)
-    (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
-        render_reviewer_evidence_bundle(reviewer_bundle),
-        encoding="utf-8",
-    )
-    (REPORTS_DIR / "reviewer-evidence-bundle.json").write_text(
-        json.dumps(reviewer_bundle, separators=(",", ":")) + "\n",
-        encoding="utf-8",
-    )
     reviewer_receipt = build_reviewer_rerun_receipt()
     (REPORTS_DIR / "reviewer-rerun-receipt.md").write_text(
         render_reviewer_rerun_receipt(reviewer_receipt),
@@ -810,8 +847,27 @@ def run_sample_artifact_generation() -> bool:
         ),
         encoding="utf-8",
     )
+    quickstart_card = build_stress_kit_quickstart_card()
+    (REPORTS_DIR / STRESS_KIT_QUICKSTART_CARD_MARKDOWN.name).write_text(
+        render_stress_kit_quickstart_card(quickstart_card),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / STRESS_KIT_QUICKSTART_CARD_JSON.name).write_text(
+        json.dumps(quickstart_card, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
+
+    reviewer_bundle = build_reviewer_evidence_bundle(REPO_ROOT)
+    (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
+        render_reviewer_evidence_bundle(reviewer_bundle),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "reviewer-evidence-bundle.json").write_text(
+        json.dumps(reviewer_bundle, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     for artifact in SAMPLE_ARTIFACTS:
         path = REPO_ROOT / artifact
@@ -827,7 +883,8 @@ def run_sample_artifact_generation() -> bool:
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "reviewer rerun receipt, beginner backtest-reading checklist, "
-        "strategy assumption stress kit, prediction-readiness audit, "
+        "strategy assumption stress kit, stress kit quickstart card, "
+        "prediction-readiness audit, "
         "thesis-ledger acceptance, regime comparison, and HTML artifacts."
     )
     return True
@@ -1027,6 +1084,39 @@ def find_v131_root_landing_issues(repo_root: Path = REPO_ROOT) -> list[str]:
             issues.append(f"{relative_source}: broken v1.3.1 landing link to {target}")
         elif link_path.stat().st_size == 0:
             issues.append(f"{relative_source}: v1.3.1 landing link target is empty: {target}")
+
+    return issues
+
+
+def find_v129_stress_kit_quickstart_route_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    source = repo_root / V129_STRESS_KIT_QUICKSTART_ROUTE
+    if not source.exists():
+        return [f"{V129_STRESS_KIT_QUICKSTART_ROUTE}: route document is missing"]
+
+    text = source.read_text(encoding="utf-8")
+    issues: list[str] = []
+    for target in V129_STRESS_KIT_QUICKSTART_REQUIRED_LINKS:
+        if f"]({target})" not in text:
+            issues.append(
+                f"{V129_STRESS_KIT_QUICKSTART_ROUTE}: missing quickstart link {target}"
+            )
+        link_path = _local_markdown_link_path(repo_root, source, target)
+        if not link_path.exists():
+            issues.append(
+                f"{V129_STRESS_KIT_QUICKSTART_ROUTE}: quickstart resource is missing {target}"
+            )
+        elif link_path.stat().st_size == 0:
+            issues.append(
+                f"{V129_STRESS_KIT_QUICKSTART_ROUTE}: quickstart resource is empty {target}"
+            )
+
+    for required_text in V129_STRESS_KIT_QUICKSTART_REQUIRED_TEXT:
+        if required_text not in text:
+            issues.append(
+                f"{V129_STRESS_KIT_QUICKSTART_ROUTE}: missing no-advice boundary text {required_text}"
+            )
 
     return issues
 
@@ -2247,6 +2337,215 @@ def find_strategy_assumption_stress_kit_issues(
     return issues
 
 
+def find_stress_kit_quickstart_card_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / STRESS_KIT_QUICKSTART_CARD_JSON
+    markdown_path = repo_root / STRESS_KIT_QUICKSTART_CARD_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(f"{STRESS_KIT_QUICKSTART_CARD_JSON}: card JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{STRESS_KIT_QUICKSTART_CARD_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: card must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != STRESS_KIT_QUICKSTART_CARD_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: top-level keys must match "
+            "the stress kit quickstart card schema order"
+        )
+    if payload.get("artifact_type") != "stress_kit_quickstart_card":
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: artifact_type must be stress_kit_quickstart_card"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: schema_version must be 1.0"
+        )
+    for key in QUICKSTART_BOUNDARY_FLAGS:
+        if payload.get(key) is not True:
+            issues.append(f"{STRESS_KIT_QUICKSTART_CARD_JSON}: {key} must be true")
+    if payload.get("estimated_review_time_minutes") != 2:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: estimated_review_time_minutes must be 2"
+        )
+
+    purpose = payload.get("purpose")
+    if not _contains_all_terms(
+        purpose,
+        (
+            "strategy assumption stress kit",
+            "two-minute",
+            "static artifact boundary review",
+        ),
+    ):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: purpose must preserve quickstart boundary-review wording"
+        )
+
+    source_artifact = _dict_value(payload.get("source_artifact"))
+    if source_artifact.get("markdown_path") != STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: source_artifact.markdown_path must be {STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH}"
+        )
+    if source_artifact.get("json_path") != STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: source_artifact.json_path must be {STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH}"
+        )
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(STRESS_KIT_QUICKSTART_CARD_MARKDOWN):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: default_outputs.markdown must be {STRESS_KIT_QUICKSTART_CARD_MARKDOWN}"
+        )
+    if defaults.get("json") != str(STRESS_KIT_QUICKSTART_CARD_JSON):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: default_outputs.json must be {STRESS_KIT_QUICKSTART_CARD_JSON}"
+        )
+
+    checklist = payload.get("reviewer_checklist")
+    if not isinstance(checklist, list) or len(checklist) != 5:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: reviewer_checklist must include the five quickstart checks"
+        )
+        checklist = []
+    _extend_row_shape_issues(
+        issues,
+        STRESS_KIT_QUICKSTART_CARD_JSON,
+        checklist,
+        QUICKSTART_REVIEWER_CHECKLIST_ITEM_KEYS,
+        "reviewer_checklist",
+    )
+    for required_step in (
+        "scope",
+        "assumptions",
+        "stress_language",
+        "leveraged_etf_like_caveats",
+        "boundaries",
+    ):
+        if not any(
+            isinstance(item, dict) and item.get("step") == required_step
+            for item in checklist
+        ):
+            issues.append(
+                f"{STRESS_KIT_QUICKSTART_CARD_JSON}: missing reviewer checklist step {required_step}"
+            )
+
+    stop_conditions = payload.get("stop_conditions")
+    if not isinstance(stop_conditions, list) or len(stop_conditions) != 2:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: stop_conditions must include the two stop conditions"
+        )
+        stop_conditions = []
+    _extend_row_shape_issues(
+        issues,
+        STRESS_KIT_QUICKSTART_CARD_JSON,
+        stop_conditions,
+        QUICKSTART_STOP_CONDITION_KEYS,
+        "stop_conditions",
+    )
+
+    receipt = _dict_value(payload.get("completion_receipt"))
+    if tuple(receipt) != QUICKSTART_COMPLETION_RECEIPT_KEYS:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: completion_receipt keys must match the schema order"
+        )
+    if receipt.get("source_command") != STRESS_KIT_QUICKSTART_CARD_COMMAND:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: completion_receipt.source_command must be {STRESS_KIT_QUICKSTART_CARD_COMMAND}"
+        )
+    if receipt.get("generated_output_paths") != [
+        str(STRESS_KIT_QUICKSTART_CARD_MARKDOWN),
+        str(STRESS_KIT_QUICKSTART_CARD_JSON),
+    ]:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: completion_receipt.generated_output_paths must list the quickstart Markdown and JSON outputs"
+        )
+    if not _contains_all_terms(
+        receipt.get("review_boundary"),
+        (
+            "static documentation boundaries",
+            "does not validate financial correctness",
+            "robustness",
+            "suitability",
+            "future performance",
+        ),
+    ):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: completion_receipt.review_boundary must preserve review-only wording"
+        )
+
+    do_not_use_for = payload.get("do_not_use_for")
+    if not _is_non_empty_string_list(do_not_use_for):
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: do_not_use_for must be a non-empty list"
+        )
+    else:
+        for required_phrase in QUICKSTART_OUT_OF_SCOPE_ITEMS:
+            if required_phrase not in do_not_use_for:
+                issues.append(
+                    f"{STRESS_KIT_QUICKSTART_CARD_JSON}: do_not_use_for must include {required_phrase}"
+                )
+
+    if not markdown_path.exists():
+        issues.append(f"{STRESS_KIT_QUICKSTART_CARD_MARKDOWN}: card Markdown is missing")
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(f"{STRESS_KIT_QUICKSTART_CARD_MARKDOWN}: card Markdown is empty")
+
+    for required_text in (
+        "# Stress Kit Quickstart Card",
+        "## Source",
+        "## Two-Minute Reviewer Checklist",
+        "## Stop Conditions",
+        "## Completion Receipt",
+        "## Boundaries",
+        "## Do Not Use This For",
+        STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH,
+        STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH,
+        STRESS_KIT_QUICKSTART_CARD_COMMAND,
+        STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH,
+        STRESS_KIT_QUICKSTART_CARD_JSON_PATH,
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "not validate financial correctness",
+        "daily reset, path dependency, volatility drag",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{STRESS_KIT_QUICKSTART_CARD_MARKDOWN}: missing card text {required_text}"
+            )
+
+    expected_payload = build_stress_kit_quickstart_card()
+    if payload != expected_payload:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON}: does not match deterministic stress kit quickstart card output; run {STRESS_KIT_QUICKSTART_CARD_COMMAND}"
+        )
+    expected_markdown = render_stress_kit_quickstart_card(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{STRESS_KIT_QUICKSTART_CARD_MARKDOWN}: does not match deterministic stress kit quickstart card output; run {STRESS_KIT_QUICKSTART_CARD_COMMAND}"
+        )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -2644,6 +2943,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "-m",
             "market_signal_lab.cli",
             "--strategy-assumption-stress-kit",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--stress-kit-quickstart-card",
         ],
         [
             sys.executable,

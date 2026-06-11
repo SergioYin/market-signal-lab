@@ -40,6 +40,6 @@ git diff --check
 
 ## Finance-Risk Boundaries
 
-The Strategy Assumption Stress Kit uses deterministic static artifact generation only. It does not read live market data, call network APIs, connect to brokers, inspect accounts, route orders, size positions, forecast returns, rank products for future use, recommend buying, selling, holding, or trading, or provide investment advice.
+The Strategy Assumption Stress Kit uses deterministic static artifact generation only. It does not read live market data, call network APIs, connect to brokers, inspect accounts, route orders, size positions, forecast returns, rank products for future use, recommend buy/sell/hold/trade actions, or provide investment advice.
 
 PASS/WARN labels in the kit are documentation-review labels for boundary visibility. They do not prove profitability, robustness, financial correctness, implementation cost completeness, suitability, or future performance.

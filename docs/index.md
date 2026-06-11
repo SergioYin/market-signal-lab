@@ -2,10 +2,19 @@
 
 This is the canonical map for Market Signal Lab documentation. The project is a research-only backtesting sandbox; these documents do not provide investment advice, trading recommendations, forecasts, or live execution signals.
 
+## Cold User Route
+
+Use these first if you are opening the project cold:
+
+- [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
+- [Static Sample Gallery](../reports/index.html) - browser-openable dashboard for the checked-in artifacts.
+- [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts.
+
+All three routes are static research-review surfaces only. They do not provide investment advice, trading recommendations, forecasts, broker workflows, live data, account access, order routing, or execution signals.
+
 ## Start Here
 
 - [README](../README.md) - project overview, quickstart commands, and scope boundaries.
-- [Public static demo](https://sergioyin.github.io/market-signal-lab/) - GitHub Pages entry point for the checked-in local gallery.
 - [Quick-Tour Preview](quick-tour-preview.md) - visual three-minute route from static gallery to evidence card to thesis-ledger acceptance.
 - [Three-Minute Review Route](three-minute-review.md) - cold-review route for the static demo, methodology caveats, and one reproducible acceptance command.
 - [Local Audit Commands](local-audit-commands.md) - concise local commands for artifact acceptance, selfcheck, release hygiene, and command limits.
@@ -26,7 +35,6 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Quick-Tour Preview SVG](quick-tour-preview.svg) - static public-safe preview diagram for the cold-review route.
 - [Root Landing](../index.html) - GitHub Pages entry point for the local static demo and key docs.
 - [Single backtest sample](../reports/sample-report.md) - fastest way to inspect `## Scenario/Risk Interpretation` and the modeled exposure review in the checked-in single backtest report.
-- [Static Sample Gallery](../reports/index.html) - no-JavaScript dashboard first screen for the checked-in demo artifacts, including visible paths for the single report, pre-trade packet, scenario card, strategy assumption stress kit, cross-asset thesis ledger, regime comparison, fee sensitivity, split sweep, and manifest.
 - [Static Gallery Walkthrough](static-gallery-walkthrough.svg) - visual public-safe reading path for the static gallery, scenario card, JSON fields, and research-only boundaries.
 - [Static Demo Manifest](static-gallery-manifest.md) - Pages-safe gallery contract and local artifact inventory.
 - [Single backtest JSON](../reports/sample-report.json) - machine-readable `scenario_risk_interpretation` and `exposure_trade_review` samples for the same research-only run.
@@ -50,7 +58,8 @@ This is the canonical map for Market Signal Lab documentation. The project is a 
 - [Strategy assumption stress kit guide](strategy-assumption-stress-kit.md) - concise public guide for reviewer workflow, what stress checks do and do not prove, and beginner leveraged ETF-like caveats.
 - [Strategy assumption stress kit Markdown](../reports/strategy-assumption-stress-kit.md) - Markdown version of the same deterministic stress kit, including the release-readiness receipt.
 - [Strategy assumption stress kit JSON](../reports/strategy-assumption-stress-kit.json) - structured version of the same deterministic stress kit, including exact rerun commands, generated output paths, and no-live-data/no-advice boundary claims.
-- [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts, regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
+- [Stress Kit Quickstart Card](../reports/stress-kit-quickstart-card.md) - deterministic two-minute reviewer checklist distilled from the Strategy Assumption Stress Kit.
+- [Stress Kit Quickstart Card JSON](../reports/stress-kit-quickstart-card.json) - structured version of the same quickstart card.
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
 - [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json) - structured version of the same review-only audit.
@@ -88,6 +97,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.29.0 Release Notes](release-v1.29.0.md)
 - [v1.28.0 Release Notes](release-v1.28.0.md)
 - [v1.27.0 Release Notes](release-v1.27.0.md)
 - [v1.26.0 Release Notes](release-v1.26.0.md)

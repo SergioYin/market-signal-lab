@@ -22,6 +22,7 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 | public_review_readiness | PASS | Public review starts from checked-in static Markdown, JSON, and HTML artifacts with first-time-reader route guidance. |
 | reproducibility_evidence | PASS | Deterministic CLI commands and checked-in JSON/Markdown artifacts support local reruns and byte-level review handoffs. |
 | risk_boundaries | PASS | Research-only, static-only, no-live-data, no-broker, no-order, no-recommendation, and no-advice boundaries are explicit. |
+| v1_29_stress_kit_quickstart_route | PASS | v1.29 adds the Stress Kit Quickstart Card as a concise reviewer route for inspecting assumption stress checks before deeper review. |
 | next_actions | WARN | Before public citation, reviewers should rerun focused generation commands and inspect the generated diffs. |
 
 ## Evidence Paths
@@ -35,6 +36,8 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - `reports/reviewer-evidence-bundle.md`
 - `reports/beginner-prediction-checklist.md`
 - `reports/strategy-assumption-stress-kit.html`
+- `reports/stress-kit-quickstart-card.md`
+- `reports/stress-kit-quickstart-card.json`
 
 ### reproducibility_evidence
 
@@ -59,6 +62,13 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - `reports/strategy-assumption-stress-kit.json`
 - `reports/strategy-assumption-stress-kit.html`
 
+### v1_29_stress_kit_quickstart_route
+
+- **Label**: PASS
+- **Review note**: This route is an acceptance aid for static review only; it is not a trading-readiness approval, forecast, recommendation, or investment advice.
+- `reports/stress-kit-quickstart-card.md`
+- `reports/stress-kit-quickstart-card.json`
+
 ### next_actions
 
 - **Label**: WARN
@@ -71,7 +81,7 @@ Static research-only scorecard for public-review readiness, reproducibility evid
 - All referenced outputs are static historical research diagnostics.
 - No scorecard item uses live market data, broker/account access, orders, or position sizing.
 - No scorecard item is a forecast, recommendation, trading instruction, suitability review, or investment advice.
-- Leveraged ETF-like examples are simplified fixtures and do not model real product costs, liquidity, taxes, financing, tracking differences, or market impact.
+- Leveraged ETF-like examples are simplified historical diagnostics, not advice; caveats should name daily reset, path dependency, volatility drag, and extreme drawdown while noting they do not model real product costs, liquidity, taxes, financing, tracking differences, or market impact.
 
 ## What this does not prove
 

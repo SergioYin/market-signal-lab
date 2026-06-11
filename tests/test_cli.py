@@ -53,7 +53,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.28.0"
+    assert result.stdout.strip() == "market-signal-lab 1.29.0"
     assert result.stderr == ""
 
 
@@ -94,14 +94,17 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     assert payload["no_orders_or_position_sizing"] is True
     assert payload["no_recommendations_or_forecasts"] is True
     assert payload["inspection_steps"][0]["path"] == "reports/index.html"
+    assert payload["inspection_steps"][1]["path"] == (
+        "reports/stress-kit-quickstart-card.md"
+    )
     integrity = payload["artifact_integrity_summary"]
     assert integrity["algorithm"] == "sha256"
     assert integrity["integrity_status"] == "WARN"
     assert integrity["interpretation"].startswith("WARN:")
-    assert "file-byte integrity check only" in integrity["caveat"]
-    assert integrity["artifact_count"] == 5
+    assert "artifact-integrity evidence only" in integrity["caveat"]
+    assert integrity["artifact_count"] == 7
     assert integrity["present_count"] == 0
-    assert integrity["missing_count"] == 5
+    assert integrity["missing_count"] == 7
     assert integrity["artifacts"][0] == {
         "path": "reports/index.html",
         "status": "missing",
@@ -110,7 +113,8 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     }
     assert "## Artifact hash summary" in markdown
     assert "- Integrity status: `WARN`" in markdown
-    assert "not financial correctness" in markdown
+    assert "not financial validation" in markdown
+    assert "reports/stress-kit-quickstart-card.md" in markdown
     assert "| reports/index.html | missing | 0 | missing |" in markdown
 
 

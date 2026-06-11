@@ -5,9 +5,10 @@ This bundle is a compact cold-review handoff for Market Signal Lab. It points a 
 ## First-screen route
 
 1. Open `reports/index.html` to inspect checked-in sample artifacts before installing anything.
-2. Read `reports/cross-asset-thesis-ledger-acceptance.md` for the current cross-asset thesis-ledger acceptance summary.
-3. Rerun `python -m market_signal_lab.cli --validate-thesis-ledger` to regenerate the acceptance artifacts from the checked-in JSON packet.
-4. Review `docs/methodology-audit.md` before citing any historical diagnostic as review context.
+2. Read `reports/stress-kit-quickstart-card.md` as the two-minute static/no-advice route into stress-kit review.
+3. Read `reports/cross-asset-thesis-ledger-acceptance.md` for the current cross-asset thesis-ledger acceptance summary.
+4. Rerun `python -m market_signal_lab.cli --validate-thesis-ledger` to regenerate the acceptance artifacts from the checked-in JSON packet.
+5. Review `docs/methodology-audit.md` before citing any historical diagnostic as review context.
 
 ## Verification commands
 
@@ -20,17 +21,19 @@ This bundle is a compact cold-review handoff for Market Signal Lab. It points a 
 
 - Integrity status: `PASS`
 - Interpretation: PASS: All expected static reviewer artifacts were present and hashed at generation time.
-- Caveat: This is a local file-byte integrity check only; it does not validate financial correctness, future performance, recommendations, or investment suitability.
+- Caveat: This is artifact-integrity evidence only; it confirms local file bytes at generation time and does not validate financial correctness, future performance, recommendations, or investment suitability.
 - Algorithm: `sha256`
-- Scope: local static reviewer evidence artifacts only; hashes confirm file bytes at generation time, not financial correctness
-- Present artifacts: `5` of `5`
+- Scope: local static reviewer evidence artifacts only; hashes are artifact-integrity provenance at generation time, not financial validation
+- Present artifacts: `7` of `7`
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/index.html | present | 8289 | 3c166b02e08582b6958e4705ba37d1386821dcc9ba87579f1e61259b4c36d12e |
+| reports/index.html | present | 8918 | a00e35fc1a737f0145743250267ade6f5e6904b993597835f73e1dc2cf07069a |
 | reports/cross-asset-thesis-ledger.json | present | 37420 | ce5efe33b26e3e800f61978594513fb12baa922ab51e1fc01b41ea0d27b7f495 |
 | reports/cross-asset-thesis-ledger-acceptance.md | present | 4965 | 351100a40f6e76c9fb28b40234cd6e7a824c11a022235223e5501a86d49b2a14 |
 | reports/cross-asset-thesis-ledger-acceptance.json | present | 6008 | 8ac3de4bc1bc71a96f77feeb86796ae0bd103a92a2523b11b5c58f165a5057dc |
+| reports/stress-kit-quickstart-card.md | present | 3289 | 544db47023abac78f5e2818fc97cc082f25d178b8ff1656755148e8ea5cef7c1 |
+| reports/stress-kit-quickstart-card.json | present | 3739 | c175156ecefb3bad14f9954170e22d87f4f28ad20e233b37e6c0271ce06e3815 |
 | docs/methodology-audit.md | present | 4970 | 8913048eb92849915d844090f56d908e744aa84c9d0248c37adade3e13189e3a |
 
 ## Beginner risk boundaries

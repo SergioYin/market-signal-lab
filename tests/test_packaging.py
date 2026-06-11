@@ -28,8 +28,11 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/index.html",
     "reports/reviewer-acceptance-scorecard.json",
     "reports/reviewer-acceptance-scorecard.md",
+    "reports/reviewer-evidence-bundle.json",
     "reports/reviewer-evidence-bundle.md",
     "reports/reviewer-rerun-receipt.md",
+    "reports/stress-kit-quickstart-card.md",
+    "reports/stress-kit-quickstart-card.json",
     "reports/strategy-assumption-stress-kit.md",
     "reports/strategy-assumption-stress-kit.json",
     "reports/strategy-assumption-stress-kit.html",
@@ -39,6 +42,10 @@ STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES = (
     "reports/strategy-assumption-stress-kit.html",
     "reports/strategy-assumption-stress-kit.md",
     "reports/strategy-assumption-stress-kit.json",
+)
+STRESS_KIT_QUICKSTART_CARD_RESOURCES = (
+    "reports/stress-kit-quickstart-card.md",
+    "reports/stress-kit-quickstart-card.json",
 )
 
 
@@ -88,6 +95,16 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     ]
     for resource in INSTALLED_DEFAULT_COMMAND_RESOURCES:
         assert (PROJECT_ROOT / "market_signal_lab" / "_resources" / resource).is_file()
+    resource_gallery = (
+        PROJECT_ROOT / "market_signal_lab" / "_resources" / "reports" / "index.html"
+    ).read_text(encoding="utf-8")
+    assert 'href="stress-kit-quickstart-card.md"' in resource_gallery
+    assert 'href="stress-kit-quickstart-card.json"' in resource_gallery
+    for resource in STRESS_KIT_QUICKSTART_CARD_RESOURCES:
+        packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
+        checked_in_report = PROJECT_ROOT / resource
+
+        assert packaged_resource.read_bytes() == checked_in_report.read_bytes()
 
 
 @pytest.mark.wheel_smoke
@@ -125,7 +142,8 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert len(wheels) == 1
     _assert_wheel_includes_resources(
         wheels[0],
-        STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES,
+        STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES
+        + STRESS_KIT_QUICKSTART_CARD_RESOURCES,
     )
 
     install_venv = tmp_path / "install-venv"
@@ -170,6 +188,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--prediction-readiness-audit",
         "--reviewer-acceptance-scorecard",
         "--strategy-assumption-stress-kit",
+        "--stress-kit-quickstart-card",
         "--validate-thesis-ledger",
         "--regime-comparison",
     ):
@@ -196,6 +215,14 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert stress_kit_payload["artifact_type"] == "strategy_assumption_stress_kit"
     assert stress_kit_payload["no_live_data"] is True
     assert (empty_cwd / "reports" / "strategy-assumption-stress-kit.md").is_file()
+    quickstart_payload = json.loads(
+        (empty_cwd / "reports" / "stress-kit-quickstart-card.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert quickstart_payload["artifact_type"] == "stress_kit_quickstart_card"
+    assert quickstart_payload["estimated_review_time_minutes"] == 2
+    assert (empty_cwd / "reports" / "stress-kit-quickstart-card.md").is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -222,7 +249,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.28.0"
+    assert __version__ == "1.29.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

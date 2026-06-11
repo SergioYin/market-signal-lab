@@ -16,24 +16,15 @@ For public-safe sharing and review context, use the [Public Share Summary](publi
 
 For methodology review, use the [Methodology Audit](methodology-audit.md), generated [methodology audit template](../reports/methodology-audit-template.md), blank [methodology audit review JSON skeleton](../reports/methodology-audit-review-template.json), example [methodology audit score](../reports/methodology-audit-score.md), or [HTML methodology audit score](../reports/methodology-audit-score.html) to check whether the sample backtest surfaces common beginner risks: look-ahead bias, survivorship bias, overfitting, fees and slippage, daily reset leveraged ETF-like risk, and no-advice/no-live-trading boundaries.
 
-[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. Its first screen is a compact dashboard with visible artifact paths for `reports/sample-report.html`, `reports/pretrade-packet.md`, `reports/scenario-card.md`, `reports/methodology-audit-score.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/cross-asset-thesis-ledger.md`, `reports/reviewer-evidence-bundle.md`, `reports/reviewer-rerun-receipt.md`, `reports/reviewer-acceptance-scorecard.md`, `reports/strategy-assumption-stress-kit.html`, `reports/prediction-readiness-audit.md`, `reports/beginner-prediction-checklist.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`. The pre-trade packet, scenario card, reviewer evidence bundle, reviewer rerun receipt, reviewer acceptance scorecard, strategy assumption stress kit, prediction-readiness audit, and beginner backtest-reading checklist also link to matching machine-readable JSON files. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
+[`reports/index.html`](../reports/index.html) is a static no-JavaScript gallery that links reviewers to the checked-in sample HTML reports and their related Markdown, JSON, and manifest artifacts. Its first screen is a compact dashboard with visible artifact paths for `reports/sample-report.html`, `reports/pretrade-packet.md`, `reports/scenario-card.md`, `reports/methodology-audit-score.html`, `reports/regime-comparison.html`, `reports/fee-sensitivity.md`, `reports/cross-asset-thesis-ledger.md`, `reports/reviewer-evidence-bundle.md`, `reports/reviewer-rerun-receipt.md`, `reports/reviewer-acceptance-scorecard.md`, `reports/strategy-assumption-stress-kit.html`, `reports/stress-kit-quickstart-card.md`, `reports/prediction-readiness-audit.md`, `reports/beginner-prediction-checklist.md`, `reports/sample-sweep-split.html`, and `reports/sample-manifest.md`. The pre-trade packet, scenario card, reviewer evidence bundle, reviewer rerun receipt, reviewer acceptance scorecard, strategy assumption stress kit, stress kit quickstart card, prediction-readiness audit, and beginner backtest-reading checklist also link to matching machine-readable JSON files. It uses only relative links and no external assets, so it can be opened directly from a local checkout or served as a public static page. The [Static Demo Manifest](static-gallery-manifest.md) records the first-screen link set and Pages-safe asset contract.
 
 Start there if you want the fastest review path:
 
-1. Open the [Cold User Evidence Card](cold-user-evidence-card.md) for the concise checked-artifact handoff and research-only boundaries.
-2. Read the [Public Share Summary](public-share-summary.md), [Reviewer FAQ](reviewer-faq.md), and [Promotion Checklist](promotion-checklist.md) for the public-safe context around the artifact trail.
-3. Open the [reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md) for a PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary.
-4. Open the [strategy assumption stress kit HTML](../reports/strategy-assumption-stress-kit.html) for browser-readable assumption stress checks, beginner boundaries, and leveraged ETF-like caveats.
-5. Use the [Methodology Audit](methodology-audit.md), [generated methodology audit template](../reports/methodology-audit-template.md), [blank methodology audit review JSON skeleton](../reports/methodology-audit-review-template.json), [example methodology audit score](../reports/methodology-audit-score.md), or [HTML methodology audit score](../reports/methodology-audit-score.html) as a PASS/WARN/FAIL checklist for common sample-backtest pitfalls.
-6. Open the [single backtest Markdown sample](../reports/sample-report.md) to find `## Scenario/Risk Interpretation` and the modeled exposure review.
-7. Compare the [single backtest JSON sample](../reports/sample-report.json) to inspect the same `scenario_risk_interpretation` and `exposure_trade_review` fields as structured research metadata.
-8. Open the [pre-trade research packet](../reports/pretrade-packet.md) for assumptions, historical diagnostics, beginner checklist, and risk boundaries generated from the same single-backtest path.
-9. Open the [scenario card](../reports/scenario-card.md) for a compact assumptions, key metrics, diagnostics, risk-labels, and next-review checklist view.
-10. Open the [regime comparison Markdown sample](../reports/regime-comparison.md) to compare the synthetic bull, choppy, and drawdown-recovery fixtures side by side. Regenerate it with `market-signal-lab --regime-comparison`; the same run also writes `reports/regime-comparison.json` and `reports/regime-comparison.html`.
-11. Open the [fee sensitivity Markdown sample](../reports/fee-sensitivity.md) to compare several historical `fee_bps` assumptions for the existing single-backtest settings.
-12. Open the [split-sweep HTML sample](../reports/sample-sweep-split.html) to see the human-facing robustness table.
-13. Read the [sample manifest](../reports/sample-manifest.md) to confirm the inputs and outputs behind the sample.
-14. Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
+1. Open the [Static Sample Gallery](../reports/index.html) for the browser-readable artifact dashboard.
+2. Open the [Cold User Evidence Card](cold-user-evidence-card.md) for the concise checked-artifact handoff and research-only boundaries.
+3. Open the [Stress Kit Quickstart Card](../reports/stress-kit-quickstart-card.md) as the two-minute static/no-advice route before the full stress kit.
+
+For deeper review, continue into the [reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md), [strategy assumption stress kit HTML](../reports/strategy-assumption-stress-kit.html), [Methodology Audit](methodology-audit.md), [single backtest Markdown sample](../reports/sample-report.md), [scenario card](../reports/scenario-card.md), [regime comparison Markdown sample](../reports/regime-comparison.md), [fee sensitivity Markdown sample](../reports/fee-sensitivity.md), [split-sweep HTML sample](../reports/sample-sweep-split.html), and [sample manifest](../reports/sample-manifest.md). Run `python scripts/selfcheck.py` to regenerate the gallery from the repository.
 
 ## Report Artifacts
 
@@ -70,6 +61,8 @@ Start there if you want the fastest review path:
 `reports/strategy-assumption-stress-kit.html` is generated by `market-signal-lab --strategy-assumption-stress-kit`. It is a browser-openable static reviewer aid for assumption stress checks, beginner risk boundaries, and leveraged ETF-like caveats.
 
 `reports/strategy-assumption-stress-kit.md` and `reports/strategy-assumption-stress-kit.json` include the same deterministic kit plus a focused release-readiness receipt. The receipt records exact rerun commands, generated output paths, and no-live-data/no-advice boundary claims for release review. It is a reproducibility handoff only, not financial validation, future-performance evidence, strategy approval, a recommendation, or investment advice.
+
+`reports/stress-kit-quickstart-card.md` and `reports/stress-kit-quickstart-card.json` condense the Strategy Assumption Stress Kit into the deterministic two-minute route to read before the full stress kit. The card is static and research-only, with no live-data, broker/account, order, position-sizing, forecast, recommendation, or investment-advice surface.
 
 `reports/scenario-card.md` is generated by `market-signal-lab --scenario-card` from the existing single-backtest path. It is a compact research-only card with source metadata, assumptions, key metrics, exposure/fee/drawdown diagnostics, scenario/risk summaries, non-advice and leveraged ETF-like risk labels, and a next-review checklist.
 
@@ -141,7 +134,7 @@ The selfcheck performs seven checks:
 
 1. Compiles the package and tests to catch syntax issues.
 2. Runs the test suite with `pytest`.
-3. Regenerates the sample report, pre-trade packet, scenario card, reviewer rerun receipt, beginner backtest-reading checklist, prediction-readiness audit, manifest, sweep, split-sweep, fee sensitivity, cross-asset thesis ledger, thesis-ledger acceptance, regime comparison, JSON, and HTML artifacts under `reports/`.
+3. Regenerates the sample report, pre-trade packet, scenario card, reviewer rerun receipt, beginner backtest-reading checklist, prediction-readiness audit, strategy assumption stress kit, stress kit quickstart card, manifest, sweep, split-sweep, fee sensitivity, cross-asset thesis ledger, thesis-ledger acceptance, regime comparison, JSON, and HTML artifacts under `reports/`.
 4. Validates local Markdown, documentation, and gallery links.
 5. Checks the v0.9.0 static demo acceptance links and the static dashboard contract.
 6. Checks public no-advice claim boundaries.
@@ -162,6 +155,15 @@ After it finishes, the expected generated files are:
 - `reports/prediction-readiness-audit.json`
 - `reports/reviewer-rerun-receipt.md`
 - `reports/reviewer-rerun-receipt.json`
+- `reports/reviewer-acceptance-scorecard.md`
+- `reports/reviewer-acceptance-scorecard.json`
+- `reports/reviewer-evidence-bundle.md`
+- `reports/reviewer-evidence-bundle.json`
+- `reports/strategy-assumption-stress-kit.html`
+- `reports/strategy-assumption-stress-kit.md`
+- `reports/strategy-assumption-stress-kit.json`
+- `reports/stress-kit-quickstart-card.md`
+- `reports/stress-kit-quickstart-card.json`
 - `reports/regime-comparison.md`
 - `reports/regime-comparison.json`
 - `reports/regime-comparison.html`

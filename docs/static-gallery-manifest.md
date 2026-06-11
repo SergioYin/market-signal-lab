@@ -57,6 +57,7 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Reviewer evidence bundle integrity summary: [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary), [Markdown](../reports/reviewer-evidence-bundle.md), and [JSON](../reports/reviewer-evidence-bundle.json).
 - Reviewer rerun receipt: [Markdown](../reports/reviewer-rerun-receipt.md) and [JSON](../reports/reviewer-rerun-receipt.json).
 - Strategy assumption stress kit: [HTML](../reports/strategy-assumption-stress-kit.html), [Markdown release-readiness receipt](../reports/strategy-assumption-stress-kit.md#release-readiness-receipt), and [JSON receipt](../reports/strategy-assumption-stress-kit.json).
+- Stress Kit Quickstart Card: [Markdown](../reports/stress-kit-quickstart-card.md) and [JSON](../reports/stress-kit-quickstart-card.json) as the two-minute static/no-advice route to read before the full strategy assumption stress kit.
 - Cold-user review route: [Markdown](../reports/cold-user-review-route.md) and [JSON](../reports/cold-user-review-route.json).
 - Prediction-readiness audit: [Markdown](../reports/prediction-readiness-audit.md) and [JSON](../reports/prediction-readiness-audit.json).
 - Beginner backtest-reading checklist: [Markdown](../reports/beginner-prediction-checklist.md) and [JSON](../reports/beginner-prediction-checklist.json).
@@ -82,6 +83,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Strategy assumption stress kit HTML](../reports/strategy-assumption-stress-kit.html)
 - [Strategy assumption stress kit Markdown](../reports/strategy-assumption-stress-kit.md)
 - [Strategy assumption stress kit JSON](../reports/strategy-assumption-stress-kit.json)
+- [Stress Kit Quickstart Card Markdown](../reports/stress-kit-quickstart-card.md) - two-minute static/no-advice route before the full stress kit
+- [Stress Kit Quickstart Card JSON](../reports/stress-kit-quickstart-card.json)
 - [Example methodology audit score Markdown](../reports/methodology-audit-score.md)
 - [Example methodology audit score JSON](../reports/methodology-audit-score.json)
 - [Example methodology audit score HTML](../reports/methodology-audit-score.html)

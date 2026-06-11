@@ -26,16 +26,15 @@ If you are reading this on GitHub, open that hosted demo first. The relative
 artifact links below point to checked-in files for review, not to a live trading
 or prediction app.
 
-Then skim these in order. They are static review artifacts only, not advice,
-forecasts, recommendations, or trading instructions:
+Then use one of these static review routes:
 
-- [Static Sample Gallery](reports/index.html) - browser-openable index for the checked-in artifacts.
-- [Cold-User Review Route](reports/cold-user-review-route.md) - compact first-time public-review path regenerated with `python -m market_signal_lab.cli --cold-user-review-route`.
-- [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md) - exact public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
-- [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md) - compact PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary with a matching [JSON artifact](reports/reviewer-acceptance-scorecard.json).
-- [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html) - browser-openable deterministic static checks for assumptions, beginner risk boundaries, and leveraged ETF-like path dependency, volatility drag, and extreme drawdown caveats.
-- [Beginner Backtest Reading Checklist](reports/beginner-prediction-checklist.md) - plain-language checks for reading historical backtests without turning them into predictions, recommendations, or advice.
-- [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md) - deterministic QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE comparison with a matching [PASS/WARN/FAIL acceptance summary](reports/cross-asset-thesis-ledger-acceptance.md).
+- [Static Sample Gallery](reports/index.html) - open the browser-readable artifact dashboard.
+- [Cold-User Review Route](reports/cold-user-review-route.md) - follow the compact first-time review path.
+- [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md) - read the two-minute static/no-advice checklist before the full stress kit.
+
+These artifacts are review aids only, not advice, forecasts, recommendations,
+or trading instructions. Deeper reviewer links are grouped under
+[Core artifacts](#core-artifacts).
 
 ## 60-second local verification
 
@@ -48,6 +47,7 @@ python -m market_signal_lab.cli --validate-thesis-ledger
 For the first-time public-review route, run `python -m market_signal_lab.cli --cold-user-review-route`.
 For the reviewer acceptance scorecard, run `python -m market_signal_lab.cli --reviewer-acceptance-scorecard`.
 For the strategy assumption stress kit, run `python -m market_signal_lab.cli --strategy-assumption-stress-kit`.
+For the two-minute stress-kit quickstart card, run `python -m market_signal_lab.cli --stress-kit-quickstart-card`.
 
 For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
@@ -111,6 +111,19 @@ rerun commands, generated output paths, and no-live-data/no-advice boundary
 claims. It does not use live data, brokers, orders, forecasts,
 recommendations, position sizing, or advice.
 
+Generate the focused two-minute static/no-advice reviewer route before opening the full stress kit:
+
+```bash
+python -m market_signal_lab.cli --stress-kit-quickstart-card
+```
+
+By default this writes `reports/stress-kit-quickstart-card.md` and
+`reports/stress-kit-quickstart-card.json`. The card is the short route into the
+full stress kit and condenses scope, assumptions, stress-language, leveraged
+ETF-like caveat, and boundary checks. It is a static reviewer checklist only,
+with no live-data, broker/account, order, position-sizing, forecast,
+recommendation, or advice surface.
+
 ## Reviewer evidence bundle integrity
 
 Cold reviewers can open `reports/reviewer-evidence-bundle.md` and use its artifact hash summary to confirm the listed static review files were present with recorded SHA-256 bytes at generation time. The hashes are artifact-integrity evidence only; they do not validate financial correctness, future performance, recommendations, or investment suitability. Regenerate the bundle and refresh that summary with:
@@ -155,9 +168,9 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 - Start here: [Static Sample Gallery](reports/index.html), [Cold-User Review Route](reports/cold-user-review-route.md), and [Static Gallery Manifest](docs/static-gallery-manifest.md).
 - Main report path: [Single Backtest Report](reports/sample-report.md), [JSON](reports/sample-report.json), [Scenario Card](reports/scenario-card.md), and [Research Packet](reports/pretrade-packet.md).
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
-- Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
+- Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
 - Review guides: [Methodology Audit](docs/methodology-audit.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
-- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
+- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
 
 For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 
@@ -339,7 +352,7 @@ market-signal-lab examples/data/sample_tqqq_qld_like.csv \
 
 Market Signal Lab is for research and learning. It has no broker connection, account workflow, order workflow, or live instruction surface. Treat every result as a historical experiment, not a production cue.
 
-Leveraged ETF examples such as TQQQ/QLD need extra caution, especially for beginners. Many of these products reset exposure every day, so a multi-day result depends on the order of daily moves and cannot be estimated by simply multiplying the underlying index's start-to-end return. Leverage can magnify losses quickly, and choppy markets can erode longer-period returns even when the underlying index ends near flat. The bundled leveraged ETF-like sample data is synthetic and simplified; it is useful for checking artifact shape, not for estimating real fund behavior. It is not a full model of real fund fees, tracking differences, financing costs, taxes, liquidity, or market impact.
+Leveraged ETF examples such as TQQQ/QLD need extra caution, especially for beginners. Many of these products reset exposure every day, so a multi-day result depends on the order of daily moves and cannot be estimated by simply multiplying the underlying index's start-to-end return. Leverage can magnify losses quickly, choppy markets can create volatility drag, and extreme drawdowns can arrive faster than in unlevered examples. The bundled leveraged ETF-like sample data is synthetic and simplified; it is useful for checking historical diagnostic artifact shape, not for estimating real fund behavior or providing advice. It is not a full model of real fund fees, tracking differences, financing costs, taxes, liquidity, or market impact.
 
 ## Purpose
 

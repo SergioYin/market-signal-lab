@@ -73,6 +73,8 @@ ARTIFACT_PATHS = {
         "reports/reviewer-evidence-bundle.md",
         "reports/beginner-prediction-checklist.md",
         "reports/strategy-assumption-stress-kit.html",
+        "reports/stress-kit-quickstart-card.md",
+        "reports/stress-kit-quickstart-card.json",
     ],
     "reproducibility_evidence": [
         "reports/cross-asset-thesis-ledger.json",
@@ -134,6 +136,23 @@ SCORECARD_ITEMS = (
         ),
     },
     {
+        "category": "v1_29_stress_kit_quickstart_route",
+        "label": PASS,
+        "status": (
+            "v1.29 adds the Stress Kit Quickstart Card as a concise reviewer "
+            "route for inspecting assumption stress checks before deeper review."
+        ),
+        "evidence_paths": [
+            "reports/stress-kit-quickstart-card.md",
+            "reports/stress-kit-quickstart-card.json",
+        ],
+        "review_note": (
+            "This route is an acceptance aid for static review only; it is not "
+            "a trading-readiness approval, forecast, recommendation, or "
+            "investment advice."
+        ),
+    },
+    {
         "category": "next_actions",
         "label": WARN,
         "status": (
@@ -162,7 +181,9 @@ RISK_BOUNDARIES = (
         "instruction, suitability review, or investment advice."
     ),
     (
-        "Leveraged ETF-like examples are simplified fixtures and do not model "
+        "Leveraged ETF-like examples are simplified historical diagnostics, "
+        "not advice; caveats should name daily reset, path dependency, "
+        "volatility drag, and extreme drawdown while noting they do not model "
         "real product costs, liquidity, taxes, financing, tracking "
         "differences, or market impact."
     ),

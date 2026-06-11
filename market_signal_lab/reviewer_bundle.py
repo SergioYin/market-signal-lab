@@ -15,6 +15,12 @@ INSPECTION_STEPS = (
         "purpose": "Review checked-in Markdown/JSON/HTML artifacts before installing anything.",
     },
     {
+        "step": "read_stress_kit_quickstart_card",
+        "label": "Read the stress-kit quickstart card",
+        "path": "reports/stress-kit-quickstart-card.md",
+        "purpose": "Use the two-minute static/no-advice route before the full stress kit.",
+    },
+    {
         "step": "read_thesis_ledger_acceptance",
         "label": "Read the thesis-ledger acceptance summary",
         "path": "reports/cross-asset-thesis-ledger-acceptance.md",
@@ -49,6 +55,8 @@ INTEGRITY_ARTIFACT_PATHS = (
     "reports/cross-asset-thesis-ledger.json",
     "reports/cross-asset-thesis-ledger-acceptance.md",
     "reports/cross-asset-thesis-ledger-acceptance.json",
+    "reports/stress-kit-quickstart-card.md",
+    "reports/stress-kit-quickstart-card.json",
     "docs/methodology-audit.md",
 )
 
@@ -62,7 +70,7 @@ def build_reviewer_evidence_bundle(
         "bundle_type": "reviewer_evidence_bundle",
         "schema_version": "1.0",
         **BOUNDARY_FLAGS,
-        "primary_route": "reports/index.html -> reports/cross-asset-thesis-ledger-acceptance.md -> python -m market_signal_lab.cli --validate-thesis-ledger",
+        "primary_route": "reports/index.html -> reports/stress-kit-quickstart-card.md -> reports/cross-asset-thesis-ledger-acceptance.md -> python -m market_signal_lab.cli --validate-thesis-ledger",
         "inspection_steps": list(INSPECTION_STEPS),
         "risk_boundaries": [
             "All metrics are historical diagnostics from bundled static/synthetic sample data.",
@@ -98,14 +106,14 @@ def build_artifact_integrity_summary(
     return {
         "summary_type": "artifact_integrity_summary",
         "algorithm": "sha256",
-        "scope": "local static reviewer evidence artifacts only; hashes confirm file bytes at generation time, not financial correctness",
+        "scope": "local static reviewer evidence artifacts only; hashes are artifact-integrity provenance at generation time, not financial validation",
         "integrity_status": integrity_status,
         "interpretation": _artifact_integrity_interpretation(
             integrity_status,
             status_counts,
             len(artifacts),
         ),
-        "caveat": "This is a local file-byte integrity check only; it does not validate financial correctness, future performance, recommendations, or investment suitability.",
+        "caveat": "This is artifact-integrity evidence only; it confirms local file bytes at generation time and does not validate financial correctness, future performance, recommendations, or investment suitability.",
         "artifact_count": len(artifacts),
         "present_count": status_counts["present"],
         "missing_count": status_counts["missing"],
@@ -193,9 +201,10 @@ def render_reviewer_evidence_bundle(payload: dict[str, Any]) -> str:
         "## First-screen route",
         "",
         f"1. Open `{payload['inspection_steps'][0]['path']}` to inspect checked-in sample artifacts before installing anything.",
-        f"2. Read `{payload['inspection_steps'][1]['path']}` for the current cross-asset thesis-ledger acceptance summary.",
-        f"3. Rerun `{payload['inspection_steps'][2]['command']}` to regenerate the acceptance artifacts from the checked-in JSON packet.",
-        f"4. Review `{payload['inspection_steps'][3]['path']}` before citing any historical diagnostic as review context.",
+        f"2. Read `{payload['inspection_steps'][1]['path']}` as the two-minute static/no-advice route into stress-kit review.",
+        f"3. Read `{payload['inspection_steps'][2]['path']}` for the current cross-asset thesis-ledger acceptance summary.",
+        f"4. Rerun `{payload['inspection_steps'][3]['command']}` to regenerate the acceptance artifacts from the checked-in JSON packet.",
+        f"5. Review `{payload['inspection_steps'][4]['path']}` before citing any historical diagnostic as review context.",
         "",
         "## Verification commands",
         "",

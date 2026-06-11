@@ -84,6 +84,13 @@ from market_signal_lab.strategy_assumption_stress_kit import (
     build_strategy_assumption_stress_kit,
     render_strategy_assumption_stress_kit,
 )
+from market_signal_lab.stress_kit_quickstart_card import (
+    STRESS_KIT_QUICKSTART_CARD_FLAG,
+    STRESS_KIT_QUICKSTART_CARD_JSON_PATH,
+    STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH,
+    build_stress_kit_quickstart_card,
+    render_stress_kit_quickstart_card,
+)
 from market_signal_lab.strategies import moving_average_crossover_strategy
 from market_signal_lab.sweep import (
     SweepResult,
@@ -151,6 +158,12 @@ STRATEGY_ASSUMPTION_STRESS_KIT_HTML_OUTPUT = Path(
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH
 )
 STRATEGY_ASSUMPTION_STRESS_KIT_FLAG = "--strategy-assumption-stress-kit"
+STRESS_KIT_QUICKSTART_CARD_OUTPUT = Path(
+    STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH
+)
+STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT = Path(
+    STRESS_KIT_QUICKSTART_CARD_JSON_PATH
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -162,6 +175,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
+    _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -210,6 +224,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_strategy_assumption_stress_kit()
             )
+        elif args.stress_kit_quickstart_card:
+            args = _resolve_stress_kit_quickstart_card_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_stress_kit_quickstart_card()
+            )
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -244,6 +263,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -263,6 +283,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -282,6 +303,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -301,6 +323,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -320,6 +343,7 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -339,6 +363,27 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_stress_kit_quickstart_card=True,
+    )
+
+
+def _reject_stress_kit_quickstart_card_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.stress_kit_quickstart_card:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        STRESS_KIT_QUICKSTART_CARD_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
     )
 
 
@@ -353,6 +398,7 @@ def _reject_mode_conflicts(
     include_reviewer_rerun_receipt: bool = False,
     include_reviewer_acceptance_scorecard: bool = False,
     include_strategy_assumption_stress_kit: bool = False,
+    include_stress_kit_quickstart_card: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -392,6 +438,11 @@ def _reject_mode_conflicts(
             STRATEGY_ASSUMPTION_STRESS_KIT_FLAG,
             include_strategy_assumption_stress_kit
             and args.strategy_assumption_stress_kit,
+        ),
+        (
+            STRESS_KIT_QUICKSTART_CARD_FLAG,
+            include_stress_kit_quickstart_card
+            and args.stress_kit_quickstart_card,
         ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
@@ -729,6 +780,20 @@ def _build_parser() -> ArgumentParser:
             "data, fetch live data, connect to brokers, create orders, size "
             "positions, use strategy parameters, forecast, recommend, or "
             "provide investment advice."
+        ),
+    )
+    parser.add_argument(
+        STRESS_KIT_QUICKSTART_CARD_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic two-minute quickstart card that condenses "
+            "the Strategy Assumption Stress Kit into the shortest reviewer "
+            "entry point; open the Markdown output first. "
+            f"Defaults to {STRESS_KIT_QUICKSTART_CARD_OUTPUT} and "
+            f"{STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT}. Does not read CSV "
+            "data, fetch live data, connect to brokers, create orders, size "
+            "positions, forecast, recommend, or provide investment advice."
         ),
     )
     parser.add_argument(
@@ -1143,6 +1208,33 @@ def _resolve_strategy_assumption_stress_kit_args(
         )
     resolved.manifest_output = None
     resolved.strategy_assumption_stress_kit = True
+    return resolved
+
+
+def _resolve_stress_kit_quickstart_card_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{STRESS_KIT_QUICKSTART_CARD_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{STRESS_KIT_QUICKSTART_CARD_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(f"{STRESS_KIT_QUICKSTART_CARD_FLAG} writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{STRESS_KIT_QUICKSTART_CARD_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or STRESS_KIT_QUICKSTART_CARD_OUTPUT
+    resolved.json_output = args.json_output or STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.stress_kit_quickstart_card = True
     return resolved
 
 
@@ -1572,6 +1664,14 @@ def _run_strategy_assumption_stress_kit() -> tuple[
 ]:
     payload = build_strategy_assumption_stress_kit()
     report = render_strategy_assumption_stress_kit(payload)
+    return report, payload, {}
+
+
+def _run_stress_kit_quickstart_card() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_stress_kit_quickstart_card()
+    report = render_stress_kit_quickstart_card(payload)
     return report, payload, {}
 
 

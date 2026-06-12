@@ -116,6 +116,7 @@ DOC_LINK_SOURCES = (
     Path("docs/three-minute-review.md"),
     Path("docs/local-audit-commands.md"),
     Path("docs/public-share-copy.md"),
+    Path("docs/reviewer-faq.md"),
     Path("docs/reviewer-decision-tree.md"),
     Path("docs/artifact-gallery.md"),
     Path("docs/cold-review-checklist.md"),
@@ -179,6 +180,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.2.md"),
     Path("docs/release-v1.30.1.md"),
     Path("docs/release-v1.30.0.md"),
     Path("docs/release-v0.3.0.md"),
@@ -265,6 +267,7 @@ V131_ROOT_LANDING_LINKS = (
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.2.md",
     "docs/release-v1.30.1.md",
     "docs/release-v1.30.0.md",
     "docs/release-v1.29.0.md",
@@ -661,6 +664,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.2.md">v1.30.2 release notes</a></li>
           <li><a href="../docs/release-v1.30.1.md">v1.30.1 release notes</a></li>
           <li><a href="../docs/release-v1.30.0.md">v1.30.0 release notes</a></li>
           <li><a href="../docs/release-v1.29.0.md">v1.29.0 release notes</a></li>

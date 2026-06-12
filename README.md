@@ -497,6 +497,7 @@ Before using any findings, read:
 - [Public Share Copy](docs/public-share-copy.md)
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
 - [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md)
+- [v1.30.2 Release Notes](docs/release-v1.30.2.md)
 - [v1.30.1 Release Notes](docs/release-v1.30.1.md)
 - [v1.30.0 Release Notes](docs/release-v1.30.0.md)
 - [v1.23.0 Release Notes](docs/release-notes-v1.23.0.md)

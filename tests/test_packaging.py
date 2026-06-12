@@ -23,6 +23,8 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv",
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
+    "reports/assumption-ledger-summary.md",
+    "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
     "reports/cross-asset-thesis-ledger.json",
     "reports/index.html",
@@ -46,6 +48,10 @@ STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES = (
 STRESS_KIT_QUICKSTART_CARD_RESOURCES = (
     "reports/stress-kit-quickstart-card.md",
     "reports/stress-kit-quickstart-card.json",
+)
+ASSUMPTION_LEDGER_SUMMARY_RESOURCES = (
+    "reports/assumption-ledger-summary.md",
+    "reports/assumption-ledger-summary.json",
 )
 
 
@@ -100,7 +106,10 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     ).read_text(encoding="utf-8")
     assert 'href="stress-kit-quickstart-card.md"' in resource_gallery
     assert 'href="stress-kit-quickstart-card.json"' in resource_gallery
-    for resource in STRESS_KIT_QUICKSTART_CARD_RESOURCES:
+    for resource in (
+        STRESS_KIT_QUICKSTART_CARD_RESOURCES
+        + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
+    ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
 
@@ -143,7 +152,8 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     _assert_wheel_includes_resources(
         wheels[0],
         STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES
-        + STRESS_KIT_QUICKSTART_CARD_RESOURCES,
+        + STRESS_KIT_QUICKSTART_CARD_RESOURCES
+        + ASSUMPTION_LEDGER_SUMMARY_RESOURCES,
     )
 
     install_venv = tmp_path / "install-venv"
@@ -189,6 +199,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--reviewer-acceptance-scorecard",
         "--strategy-assumption-stress-kit",
         "--stress-kit-quickstart-card",
+        "--assumption-ledger-summary",
         "--validate-thesis-ledger",
         "--regime-comparison",
     ):
@@ -223,6 +234,15 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert quickstart_payload["artifact_type"] == "stress_kit_quickstart_card"
     assert quickstart_payload["estimated_review_time_minutes"] == 2
     assert (empty_cwd / "reports" / "stress-kit-quickstart-card.md").is_file()
+    ledger_summary_payload = json.loads(
+        (empty_cwd / "reports" / "assumption-ledger-summary.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert ledger_summary_payload["artifact_type"] == "assumption_ledger_summary"
+    assert ledger_summary_payload["no_live_data"] is True
+    assert ledger_summary_payload["not_investment_advice"] is True
+    assert (empty_cwd / "reports" / "assumption-ledger-summary.md").is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -249,7 +269,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.29.0"
+    assert __version__ == "1.30.0"
 
 
 def _venv_python(venv_path: Path) -> Path:

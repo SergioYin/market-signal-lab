@@ -15,6 +15,12 @@ import tempfile
 from typing import Any
 
 from market_signal_lab import __version__
+from market_signal_lab.assumption_ledger_summary import (
+    ASSUMPTION_LEDGER_SUMMARY_JSON_PATH,
+    ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH,
+    build_assumption_ledger_summary,
+    render_assumption_ledger_summary,
+)
 from market_signal_lab.backtest import backtest_long_cash
 from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
@@ -164,6 +170,9 @@ STRESS_KIT_QUICKSTART_CARD_OUTPUT = Path(
 STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT = Path(
     STRESS_KIT_QUICKSTART_CARD_JSON_PATH
 )
+ASSUMPTION_LEDGER_SUMMARY_OUTPUT = Path(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH)
+ASSUMPTION_LEDGER_SUMMARY_JSON_OUTPUT = Path(ASSUMPTION_LEDGER_SUMMARY_JSON_PATH)
+ASSUMPTION_LEDGER_SUMMARY_FLAG = "--assumption-ledger-summary"
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -176,6 +185,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
     _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
+    _reject_assumption_ledger_summary_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -229,6 +239,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_stress_kit_quickstart_card()
             )
+        elif args.assumption_ledger_summary:
+            args = _resolve_assumption_ledger_summary_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_assumption_ledger_summary()
+            )
         else:
             args = _resolve_args(args, parser)
             if args.scenario_card:
@@ -264,6 +279,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -284,6 +300,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -304,6 +321,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -324,6 +342,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -344,6 +363,7 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -364,6 +384,7 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
     )
 
 
@@ -384,6 +405,28 @@ def _reject_stress_kit_quickstart_card_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
+        include_assumption_ledger_summary=True,
+    )
+
+
+def _reject_assumption_ledger_summary_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.assumption_ledger_summary:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        ASSUMPTION_LEDGER_SUMMARY_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
     )
 
 
@@ -399,6 +442,7 @@ def _reject_mode_conflicts(
     include_reviewer_acceptance_scorecard: bool = False,
     include_strategy_assumption_stress_kit: bool = False,
     include_stress_kit_quickstart_card: bool = False,
+    include_assumption_ledger_summary: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -443,6 +487,10 @@ def _reject_mode_conflicts(
             STRESS_KIT_QUICKSTART_CARD_FLAG,
             include_stress_kit_quickstart_card
             and args.stress_kit_quickstart_card,
+        ),
+        (
+            ASSUMPTION_LEDGER_SUMMARY_FLAG,
+            include_assumption_ledger_summary and args.assumption_ledger_summary,
         ),
         ("--regime-comparison", args.regime_comparison),
         ("--sweep", args.sweep),
@@ -792,6 +840,20 @@ def _build_parser() -> ArgumentParser:
             "entry point; open the Markdown output first. "
             f"Defaults to {STRESS_KIT_QUICKSTART_CARD_OUTPUT} and "
             f"{STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT}. Does not read CSV "
+            "data, fetch live data, connect to brokers, create orders, size "
+            "positions, forecast, recommend, or provide investment advice."
+        ),
+    )
+    parser.add_argument(
+        ASSUMPTION_LEDGER_SUMMARY_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic static assumption ledger summary for cold "
+            "reviewers, covering strategy assumptions, risk boundaries, "
+            "generated evidence paths, and explicit non-claims. Defaults to "
+            f"{ASSUMPTION_LEDGER_SUMMARY_OUTPUT} and "
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON_OUTPUT}. Does not read CSV "
             "data, fetch live data, connect to brokers, create orders, size "
             "positions, forecast, recommend, or provide investment advice."
         ),
@@ -1238,6 +1300,33 @@ def _resolve_stress_kit_quickstart_card_args(
     return resolved
 
 
+def _resolve_assumption_ledger_summary_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{ASSUMPTION_LEDGER_SUMMARY_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{ASSUMPTION_LEDGER_SUMMARY_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(f"{ASSUMPTION_LEDGER_SUMMARY_FLAG} writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{ASSUMPTION_LEDGER_SUMMARY_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or ASSUMPTION_LEDGER_SUMMARY_OUTPUT
+    resolved.json_output = args.json_output or ASSUMPTION_LEDGER_SUMMARY_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.assumption_ledger_summary = True
+    return resolved
+
+
 def _resolve_methodology_audit_template_args(
     args: Namespace,
     parser: ArgumentParser,
@@ -1672,6 +1761,12 @@ def _run_stress_kit_quickstart_card() -> tuple[
 ]:
     payload = build_stress_kit_quickstart_card()
     report = render_stress_kit_quickstart_card(payload)
+    return report, payload, {}
+
+
+def _run_assumption_ledger_summary() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_assumption_ledger_summary()
+    report = render_assumption_ledger_summary(payload)
     return report, payload, {}
 
 

@@ -21,6 +21,19 @@ from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
 )
+from market_signal_lab.assumption_ledger_summary import (
+    ASSUMPTION_ITEM_KEYS,
+    ASSUMPTION_LEDGER_SUMMARY_COMMAND,
+    ASSUMPTION_LEDGER_SUMMARY_JSON_PATH,
+    ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH,
+    ASSUMPTION_LEDGER_SUMMARY_TOP_LEVEL_KEYS,
+    BOUNDARY_FLAGS as ASSUMPTION_LEDGER_SUMMARY_BOUNDARY_FLAGS,
+    EVIDENCE_PATH_KEYS,
+    NOT_CLAIMED_KEYS,
+    RISK_BOUNDARY_KEYS,
+    build_assumption_ledger_summary,
+    render_assumption_ledger_summary,
+)
 from market_signal_lab.prediction_readiness_audit import (
     PREDICTION_READINESS_AUDIT_TOP_LEVEL_KEYS,
     PREDICTION_READINESS_CRITERION_KEYS,
@@ -165,6 +178,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
     Path("docs/release-v0.5.0.md"),
@@ -245,7 +259,10 @@ V131_ROOT_LANDING_LINKS = (
     "reports/reviewer-acceptance-scorecard.md",
     "reports/stress-kit-quickstart-card.md",
     "reports/stress-kit-quickstart-card.json",
+    "reports/assumption-ledger-summary.md",
+    "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.0.md",
     "docs/release-v1.29.0.md",
     "docs/release-v1.28.0.md",
     "docs/release-v1.26.0.md",
@@ -338,6 +355,8 @@ V130_STATIC_GALLERY_LINKS = (
     "strategy-assumption-stress-kit.html",
     "stress-kit-quickstart-card.md",
     "stress-kit-quickstart-card.json",
+    "assumption-ledger-summary.md",
+    "assumption-ledger-summary.json",
     "cold-user-review-route.md",
     "cold-user-review-route.json",
     "beginner-prediction-checklist.md",
@@ -431,6 +450,8 @@ STRATEGY_ASSUMPTION_STRESS_KIT_HTML = Path(
 )
 STRESS_KIT_QUICKSTART_CARD_JSON = Path(STRESS_KIT_QUICKSTART_CARD_JSON_PATH)
 STRESS_KIT_QUICKSTART_CARD_MARKDOWN = Path(STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH)
+ASSUMPTION_LEDGER_SUMMARY_JSON = Path(ASSUMPTION_LEDGER_SUMMARY_JSON_PATH)
+ASSUMPTION_LEDGER_SUMMARY_MARKDOWN = Path(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH)
 BEGINNER_PREDICTION_CHECKLIST_REQUIRED_SOURCES = (
     Path("reports/sample-report.md"),
     Path("reports/sample-report.json"),
@@ -525,6 +546,8 @@ SAMPLE_ARTIFACTS = (
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
     Path(STRESS_KIT_QUICKSTART_CARD_MARKDOWN_PATH),
     Path(STRESS_KIT_QUICKSTART_CARD_JSON_PATH),
+    Path(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH),
+    Path(ASSUMPTION_LEDGER_SUMMARY_JSON_PATH),
     Path("reports/beginner-prediction-checklist.md"),
     Path("reports/beginner-prediction-checklist.json"),
     Path("reports/prediction-readiness-audit.md"),
@@ -582,6 +605,7 @@ GALLERY_HTML = """<!doctype html>
     </section>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
+    <p>Cold reviewers can also open the <a href="assumption-ledger-summary.md">Assumption Ledger Summary</a> for one compact list of strategy assumptions, risk boundaries, generated evidence paths, and explicit non-claims.</p>
     <h2 id="verify">Run One Verification Command</h2>
     <p>From the repository root, run this deterministic local check. It checks the checked-in thesis-ledger packet shape and public research boundaries; it does not validate financial correctness, profitability, or future performance.</p>
     <pre><code>python -m market_signal_lab.cli --validate-thesis-ledger</code></pre>
@@ -616,6 +640,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>, <a href="strategy-assumption-stress-kit.md">Markdown release-readiness receipt</a>, and <a href="strategy-assumption-stress-kit.json">JSON receipt</a></li>
           <li><a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> and <a href="stress-kit-quickstart-card.json">JSON</a> - two-minute static/no-advice route before the full stress kit</li>
+          <li><a href="assumption-ledger-summary.md">Assumption ledger summary</a> and <a href="assumption-ledger-summary.json">JSON</a> - compact assumptions, risk boundaries, evidence paths, and non-claims</li>
           <li><a href="cold-user-review-route.md">Cold-user review route</a> and <a href="cold-user-review-route.json">JSON</a></li>
           <li><a href="prediction-readiness-audit.md">Prediction-readiness audit</a> and <a href="prediction-readiness-audit.json">JSON</a></li>
           <li><a href="beginner-prediction-checklist.json">Beginner checklist JSON</a></li>
@@ -632,6 +657,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.0.md">v1.30.0 release notes</a></li>
           <li><a href="../docs/release-v1.29.0.md">v1.29.0 release notes</a></li>
           <li><a href="../docs/release-v1.28.0.md">v1.28.0 release notes</a></li>
           <li><a href="../docs/release-v1.27.0.md">v1.27.0 release notes</a></li>
@@ -722,6 +748,7 @@ def run_demo_acceptance_check() -> bool:
         *find_prediction_readiness_audit_issues(REPO_ROOT),
         *find_strategy_assumption_stress_kit_issues(REPO_ROOT),
         *find_stress_kit_quickstart_card_issues(REPO_ROOT),
+        *find_assumption_ledger_summary_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -856,6 +883,15 @@ def run_sample_artifact_generation() -> bool:
         json.dumps(quickstart_card, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    assumption_ledger_summary = build_assumption_ledger_summary()
+    (REPORTS_DIR / ASSUMPTION_LEDGER_SUMMARY_MARKDOWN.name).write_text(
+        render_assumption_ledger_summary(assumption_ledger_summary),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / ASSUMPTION_LEDGER_SUMMARY_JSON.name).write_text(
+        json.dumps(assumption_ledger_summary, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
@@ -884,7 +920,7 @@ def run_sample_artifact_generation() -> bool:
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "reviewer rerun receipt, beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
-        "prediction-readiness audit, "
+        "assumption ledger summary, prediction-readiness audit, "
         "thesis-ledger acceptance, regime comparison, and HTML artifacts."
     )
     return True
@@ -2546,6 +2582,186 @@ def find_stress_kit_quickstart_card_issues(
     return issues
 
 
+def find_assumption_ledger_summary_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / ASSUMPTION_LEDGER_SUMMARY_JSON
+    markdown_path = repo_root / ASSUMPTION_LEDGER_SUMMARY_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: summary JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: summary must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != ASSUMPTION_LEDGER_SUMMARY_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: top-level keys must match "
+            "the assumption ledger summary schema order"
+        )
+    if payload.get("artifact_type") != "assumption_ledger_summary":
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: artifact_type must be assumption_ledger_summary"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: schema_version must be 1.0"
+        )
+    for key in ASSUMPTION_LEDGER_SUMMARY_BOUNDARY_FLAGS:
+        if payload.get(key) is not True:
+            issues.append(f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: {key} must be true")
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN):
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: default_outputs.markdown must be {ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}"
+        )
+    if defaults.get("json") != str(ASSUMPTION_LEDGER_SUMMARY_JSON):
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: default_outputs.json must be {ASSUMPTION_LEDGER_SUMMARY_JSON}"
+        )
+
+    strategy_assumptions = payload.get("strategy_assumptions")
+    if not isinstance(strategy_assumptions, list) or len(strategy_assumptions) != 4:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: strategy_assumptions must include the four assumption rows"
+        )
+        strategy_assumptions = []
+    _extend_row_shape_issues(
+        issues,
+        ASSUMPTION_LEDGER_SUMMARY_JSON,
+        strategy_assumptions,
+        ASSUMPTION_ITEM_KEYS,
+        "strategy_assumptions",
+    )
+
+    risk_boundaries = payload.get("risk_boundaries")
+    if not isinstance(risk_boundaries, list) or len(risk_boundaries) != 4:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: risk_boundaries must include the four boundary rows"
+        )
+        risk_boundaries = []
+    _extend_row_shape_issues(
+        issues,
+        ASSUMPTION_LEDGER_SUMMARY_JSON,
+        risk_boundaries,
+        RISK_BOUNDARY_KEYS,
+        "risk_boundaries",
+    )
+
+    evidence_paths = payload.get("generated_evidence_paths")
+    if not isinstance(evidence_paths, list) or len(evidence_paths) != 6:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: generated_evidence_paths must include the six evidence rows"
+        )
+        evidence_paths = []
+    _extend_row_shape_issues(
+        issues,
+        ASSUMPTION_LEDGER_SUMMARY_JSON,
+        evidence_paths,
+        EVIDENCE_PATH_KEYS,
+        "generated_evidence_paths",
+    )
+    for required_path in (
+        str(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN),
+        str(ASSUMPTION_LEDGER_SUMMARY_JSON),
+    ):
+        if not any(
+            isinstance(item, dict) and item.get("path") == required_path
+            for item in evidence_paths
+        ):
+            issues.append(
+                f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: generated_evidence_paths missing {required_path}"
+            )
+
+    not_claimed = payload.get("not_claimed")
+    if not isinstance(not_claimed, list) or len(not_claimed) != 4:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: not_claimed must include the four non-claim rows"
+        )
+        not_claimed = []
+    _extend_row_shape_issues(
+        issues,
+        ASSUMPTION_LEDGER_SUMMARY_JSON,
+        not_claimed,
+        NOT_CLAIMED_KEYS,
+        "not_claimed",
+    )
+
+    commands = payload.get("verification_commands")
+    if not _is_non_empty_string_list(commands):
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: verification_commands must be a non-empty list"
+        )
+    else:
+        for required_command in (
+            ASSUMPTION_LEDGER_SUMMARY_COMMAND,
+            "python scripts/selfcheck.py",
+            "python -m pytest",
+        ):
+            if required_command not in commands:
+                issues.append(
+                    f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: missing verification command {required_command}"
+                )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}: summary Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}: summary Markdown is empty"
+            )
+
+    for required_text in (
+        "# Assumption Ledger Summary",
+        "## Strategy Assumptions",
+        "## Risk Boundaries",
+        "## Generated Evidence Paths",
+        "## What Is Not Being Claimed",
+        "## Boundary Flags",
+        "## Verification Commands",
+        "not as a verdict on strategy quality or suitability",
+        "does not read live data, connect to brokers or accounts, route orders, size positions, forecast, recommend, or provide investment advice",
+        ASSUMPTION_LEDGER_SUMMARY_COMMAND,
+        str(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN),
+        str(ASSUMPTION_LEDGER_SUMMARY_JSON),
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}: missing summary text {required_text}"
+            )
+
+    expected_payload = build_assumption_ledger_summary()
+    if payload != expected_payload:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_JSON}: does not match deterministic assumption ledger summary output; run {ASSUMPTION_LEDGER_SUMMARY_COMMAND}"
+        )
+    expected_markdown = render_assumption_ledger_summary(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}: does not match deterministic assumption ledger summary output; run {ASSUMPTION_LEDGER_SUMMARY_COMMAND}"
+        )
+
+    return issues
+
+
 def find_public_claim_issues(
     repo_root: Path = REPO_ROOT,
     public_files: tuple[Path, ...] = PUBLIC_CLAIM_SOURCES,
@@ -2949,6 +3165,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "-m",
             "market_signal_lab.cli",
             "--stress-kit-quickstart-card",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--assumption-ledger-summary",
         ],
         [
             sys.executable,

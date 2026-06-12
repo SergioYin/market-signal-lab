@@ -269,7 +269,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.0"
+    assert __version__ == "1.30.1"
 
 
 def _venv_python(venv_path: Path) -> Path:

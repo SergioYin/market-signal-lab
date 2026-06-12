@@ -90,7 +90,9 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.28.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.29.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.30.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/assumption-ledger-summary.md") in selfcheck.DOC_LINK_SOURCES
 
     gallery = selfcheck.GALLERY_HTML
     assert "<script" not in gallery.lower()
@@ -130,6 +132,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-v1.30.1.md",
         "../docs/release-v1.30.0.md",
         "../docs/release-v1.29.0.md",
         "../docs/release-v1.28.0.md",
@@ -455,6 +458,7 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
     required_links = {
         "docs/cold-user-evidence-card.md",
         "docs/methodology-audit-review-schema.md",
+        "docs/assumption-ledger-summary.md",
         "docs/architecture.md",
         "docs/adr/0001-static-research-artifacts.md",
         "docs/three-minute-review.md",
@@ -469,6 +473,7 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "reports/stress-kit-quickstart-card.md",
         "reports/stress-kit-quickstart-card.json",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.30.1.md",
         "docs/release-v1.30.0.md",
         "docs/release-v1.29.0.md",
         "docs/release-v1.28.0.md",
@@ -2124,6 +2129,7 @@ def _write_v131_landing_fixture(
         "risk-boundaries.md",
         "data-provenance.md",
         "methodology-audit-review-schema.md",
+        "assumption-ledger-summary.md",
         "architecture.md",
         "adr/0001-static-research-artifacts.md",
         "three-minute-review.md",
@@ -2132,6 +2138,7 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-v1.30.1.md",
         "release-v1.30.0.md",
         "release-v1.29.0.md",
         "release-v1.28.0.md",

@@ -125,6 +125,7 @@ DOC_LINK_SOURCES = (
     Path("docs/metric-guide.md"),
     Path("docs/methodology-audit.md"),
     Path("docs/methodology-audit-review-schema.md"),
+    Path("docs/assumption-ledger-summary.md"),
     Path("docs/strategy-assumption-stress-kit.md"),
     Path("docs/scenario-risk-glossary.md"),
     Path("docs/static-gallery-manifest.md"),
@@ -178,6 +179,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.1.md"),
     Path("docs/release-v1.30.0.md"),
     Path("docs/release-v0.3.0.md"),
     Path("docs/release-v0.4.0.md"),
@@ -248,6 +250,7 @@ V131_ROOT_LANDING_LINKS = (
     "docs/risk-boundaries.md",
     "docs/data-provenance.md",
     "docs/methodology-audit-review-schema.md",
+    "docs/assumption-ledger-summary.md",
     "docs/architecture.md",
     "docs/adr/0001-static-research-artifacts.md",
     "docs/three-minute-review.md",
@@ -262,6 +265,7 @@ V131_ROOT_LANDING_LINKS = (
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.1.md",
     "docs/release-v1.30.0.md",
     "docs/release-v1.29.0.md",
     "docs/release-v1.28.0.md",
@@ -657,6 +661,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.1.md">v1.30.1 release notes</a></li>
           <li><a href="../docs/release-v1.30.0.md">v1.30.0 release notes</a></li>
           <li><a href="../docs/release-v1.29.0.md">v1.29.0 release notes</a></li>
           <li><a href="../docs/release-v1.28.0.md">v1.28.0 release notes</a></li>

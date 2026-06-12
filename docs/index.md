@@ -25,6 +25,7 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
 - [Cold User Evidence Card](cold-user-evidence-card.md) - concise reviewer handoff for the checked-in public artifacts, PASS/WARN/FAIL language, and research-only boundaries.
 - [Reviewer Acceptance Scorecard Guide](reviewer-acceptance-scorecard.md) - public-safe guide to the scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
+- [Assumption Ledger Summary Guide](assumption-ledger-summary.md) - concise cold-review workflow for reading the generated assumption summary, evidence paths, risk boundaries, and non-claims.
 - [Public Share Summary](public-share-summary.md) - compact public-safe summary of target users, the 60-second demo route, and research-only boundaries.
 - [Reviewer FAQ](reviewer-faq.md) - concise answers for cold reviewers about bot scope, live data, validation, leveraged ETF-like examples, and first-open artifacts.
 - [Promotion Checklist](promotion-checklist.md) - public-safe gates, evidence items, runnable checks, and copy boundaries before sharing or reusing the repo.
@@ -60,6 +61,9 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Strategy assumption stress kit JSON](../reports/strategy-assumption-stress-kit.json) - structured version of the same deterministic stress kit, including exact rerun commands, generated output paths, and no-live-data/no-advice boundary claims.
 - [Stress Kit Quickstart Card](../reports/stress-kit-quickstart-card.md) - deterministic two-minute reviewer checklist distilled from the Strategy Assumption Stress Kit.
 - [Stress Kit Quickstart Card JSON](../reports/stress-kit-quickstart-card.json) - structured version of the same quickstart card.
+- [Assumption Ledger Summary Guide](assumption-ledger-summary.md) - explains how cold reviewers should use the generated assumption-ledger summary without treating it as advice, forecast, recommendation, or trading-readiness approval.
+- [Assumption Ledger Summary](../reports/assumption-ledger-summary.md) - compact static handoff for strategy assumptions, risk boundaries, evidence paths, and explicit non-claims.
+- [Assumption Ledger Summary JSON](../reports/assumption-ledger-summary.json) - structured version of the same assumption-ledger summary.
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
 - [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json) - structured version of the same review-only audit.
@@ -97,6 +101,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.30.1 Release Notes](release-v1.30.1.md)
 - [v1.30.0 Release Notes](release-v1.30.0.md)
 - [v1.29.0 Release Notes](release-v1.29.0.md)
 - [v1.28.0 Release Notes](release-v1.28.0.md)

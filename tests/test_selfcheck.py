@@ -88,6 +88,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.28.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.29.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.2.md") in selfcheck.DOC_LINK_SOURCES
@@ -158,6 +159,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "reviewer-rerun-receipt.json",
         "reviewer-acceptance-scorecard.md",
         "reviewer-acceptance-scorecard.json",
+        "reviewer-decision-matrix.md",
+        "reviewer-decision-matrix.json",
         "strategy-assumption-stress-kit.md",
         "strategy-assumption-stress-kit.json",
         "strategy-assumption-stress-kit.html",
@@ -982,6 +985,28 @@ def test_selfcheck_regenerates_reviewer_rerun_receipt_via_cli() -> None:
     )
 
 
+def test_reviewer_decision_matrix_artifacts_are_public_sample_artifacts() -> None:
+    expected_artifacts = {
+        Path("reports/reviewer-decision-matrix.md"),
+        Path("reports/reviewer-decision-matrix.json"),
+    }
+
+    assert expected_artifacts.issubset(set(selfcheck.SAMPLE_ARTIFACTS))
+    assert expected_artifacts.issubset(set(selfcheck.PUBLIC_CLAIM_SOURCES))
+    assert "reviewer-decision-matrix.md" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert "reviewer-decision-matrix.json" in selfcheck.V130_STATIC_GALLERY_LINKS
+    assert 'href="reviewer-decision-matrix.md"' in selfcheck.GALLERY_HTML
+    assert 'href="reviewer-decision-matrix.json"' in selfcheck.GALLERY_HTML
+    assert "Reviewer decision matrix" in selfcheck.GALLERY_HTML
+
+
+def test_selfcheck_regenerates_reviewer_decision_matrix_via_cli() -> None:
+    assert any(
+        "--reviewer-decision-matrix" in command
+        for command in selfcheck._sample_artifact_commands()
+    )
+
+
 def test_reviewer_rerun_receipt_contract_reports_boundary_regressions(
     tmp_path: Path,
 ) -> None:
@@ -1333,6 +1358,8 @@ def test_doc_sources_include_latest_release_docs() -> None:
     assert Path("docs/release-v1.19.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.18.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.17.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-notes-v1.27.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-notes-v1.18.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
     assert Path("docs/release-v1.17.0.md") in selfcheck.PUBLIC_CLAIM_SOURCES
 

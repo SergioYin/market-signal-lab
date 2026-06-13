@@ -20,6 +20,7 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Local Audit Commands](local-audit-commands.md) - concise local commands for artifact acceptance, selfcheck, release hygiene, and command limits.
 - [Public Share Copy](public-share-copy.md) - public-safe one-liners and claim boundaries for sharing the project.
 - [Reviewer Decision Tree](reviewer-decision-tree.md) - route reviewers through understanding, reproducibility, methodology-risk, sharing, and promotion-readiness decisions.
+- [Reviewer Decision Matrix](reviewer-decision-matrix.md) - explains release vs promotion gates and PASS/WARN/FAIL interpretation for the generated review artifact.
 - [Architecture](architecture.md) - static-first architecture, CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and out-of-scope boundaries.
 - [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
@@ -107,6 +108,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 - [v1.29.0 Release Notes](release-v1.29.0.md)
 - [v1.28.0 Release Notes](release-v1.28.0.md)
 - [v1.27.0 Release Notes](release-v1.27.0.md)
+- [v1.27.0 Release Notes](release-notes-v1.27.0.md)
 - [v1.26.0 Release Notes](release-v1.26.0.md)
 - [v1.26.0 Release Docs](release-notes-v1.26.0.md)
 - [v1.25.0 Release Notes](release-v1.25.0.md)

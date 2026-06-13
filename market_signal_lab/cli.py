@@ -62,6 +62,10 @@ from market_signal_lab.prediction_readiness_audit import (
     build_prediction_readiness_audit,
     render_prediction_readiness_audit,
 )
+from market_signal_lab.reviewer_decision_matrix import (
+    build_reviewer_decision_matrix,
+    render_reviewer_decision_matrix,
+)
 from market_signal_lab.report import (
     build_exposure_trade_review,
     build_scenario_risk_interpretation,
@@ -137,6 +141,10 @@ REVIEWER_ACCEPTANCE_SCORECARD_JSON_OUTPUT = Path(
     "reports/reviewer-acceptance-scorecard.json"
 )
 REVIEWER_ACCEPTANCE_SCORECARD_FLAG = "--reviewer-acceptance-scorecard"
+REVIEWER_DECISION_MATRIX_OUTPUT = Path("reports/reviewer-decision-matrix.md")
+REVIEWER_DECISION_MATRIX_JSON_OUTPUT = Path(
+    "reports/reviewer-decision-matrix.json"
+)
 BEGINNER_PREDICTION_CHECKLIST_OUTPUT = Path(
     "reports/beginner-prediction-checklist.md"
 )
@@ -147,6 +155,7 @@ PREDICTION_READINESS_AUDIT_OUTPUT = Path("reports/prediction-readiness-audit.md"
 PREDICTION_READINESS_AUDIT_JSON_OUTPUT = Path(
     "reports/prediction-readiness-audit.json"
 )
+REVIEWER_DECISION_MATRIX_FLAG = "--reviewer-decision-matrix"
 PREDICTION_READINESS_AUDIT_FLAG = "--prediction-readiness-audit"
 COLD_USER_REVIEW_ROUTE_OUTPUT = Path("reports/cold-user-review-route.md")
 COLD_USER_REVIEW_ROUTE_JSON_OUTPUT = Path("reports/cold-user-review-route.json")
@@ -183,6 +192,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
+    _reject_reviewer_decision_matrix_mode_conflicts(args, parser)
     _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
     _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
     _reject_assumption_ledger_summary_mode_conflicts(args, parser)
@@ -229,6 +239,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_prediction_readiness_audit(args)
             )
+        elif args.reviewer_decision_matrix:
+            args = _resolve_reviewer_decision_matrix_args(args, parser)
+            report, json_payload, manifest_payload = _run_reviewer_decision_matrix()
         elif args.strategy_assumption_stress_kit:
             args = _resolve_strategy_assumption_stress_kit_args(args, parser)
             report, json_payload, manifest_payload = (
@@ -277,6 +290,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -298,6 +312,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -319,6 +334,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -340,6 +356,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -361,6 +378,29 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
+        include_reviewer_decision_matrix=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+    )
+
+
+def _reject_reviewer_decision_matrix_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.reviewer_decision_matrix:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        REVIEWER_DECISION_MATRIX_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -383,6 +423,7 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
     )
@@ -404,6 +445,7 @@ def _reject_stress_kit_quickstart_card_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_assumption_ledger_summary=True,
     )
@@ -425,6 +467,7 @@ def _reject_assumption_ledger_summary_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
     )
@@ -440,6 +483,7 @@ def _reject_mode_conflicts(
     include_cold_user_review_route: bool = False,
     include_reviewer_rerun_receipt: bool = False,
     include_reviewer_acceptance_scorecard: bool = False,
+    include_reviewer_decision_matrix: bool = False,
     include_strategy_assumption_stress_kit: bool = False,
     include_stress_kit_quickstart_card: bool = False,
     include_assumption_ledger_summary: bool = False,
@@ -458,6 +502,11 @@ def _reject_mode_conflicts(
         (
             "--reviewer-rerun-receipt",
             include_reviewer_rerun_receipt and args.reviewer_rerun_receipt,
+        ),
+        (
+            REVIEWER_DECISION_MATRIX_FLAG,
+            include_reviewer_decision_matrix
+            and args.reviewer_decision_matrix,
         ),
         (
             "--beginner-prediction-checklist",
@@ -793,6 +842,20 @@ def _build_parser() -> ArgumentParser:
             "--json-output customize its files; defaults to "
             "reports/beginner-prediction-checklist.md and "
             "reports/beginner-prediction-checklist.json."
+        ),
+    )
+    parser.add_argument(
+        REVIEWER_DECISION_MATRIX_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a static reviewer decision matrix for deciding whether a "
+            "static backtest artifact is safe to release and safe to promote. "
+            "Does not read CSV data, fetch live data, connect to brokers, "
+            "create orders, size positions, forecast, recommend, or provide "
+            "investment advice. Only --output and --json-output customize files; "
+            "defaults to reports/reviewer-decision-matrix.md and "
+            "reports/reviewer-decision-matrix.json."
         ),
     )
     parser.add_argument(
@@ -1193,6 +1256,33 @@ def _resolve_beginner_prediction_checklist_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.beginner_prediction_checklist = True
+    return resolved
+
+
+def _resolve_reviewer_decision_matrix_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error("--reviewer-decision-matrix does not take csv_path")
+    if args.config is not None:
+        parser.error("--reviewer-decision-matrix does not take --config")
+    if args.html_output is not None:
+        parser.error("--reviewer-decision-matrix writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            "--reviewer-decision-matrix does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or REVIEWER_DECISION_MATRIX_OUTPUT
+    resolved.json_output = args.json_output or REVIEWER_DECISION_MATRIX_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.reviewer_decision_matrix = True
     return resolved
 
 
@@ -1730,6 +1820,14 @@ def _run_beginner_prediction_checklist() -> tuple[
 ]:
     payload = build_beginner_prediction_checklist()
     report = render_beginner_prediction_checklist(payload)
+    return report, payload, {}
+
+
+def _run_reviewer_decision_matrix() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    payload = build_reviewer_decision_matrix()
+    report = render_reviewer_decision_matrix(payload)
     return report, payload, {}
 
 

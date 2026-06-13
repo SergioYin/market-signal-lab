@@ -205,6 +205,15 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     ):
         _run_wheel_smoke_command(console_script, flag, empty_cwd, env)
 
+    reviewer_decision_matrix_result = _run_wheel_smoke_module_command(
+        install_python,
+        "--reviewer-decision-matrix",
+        empty_cwd,
+        env,
+    )
+    assert reviewer_decision_matrix_result.stdout == ""
+    assert reviewer_decision_matrix_result.stderr == ""
+
     assert (empty_cwd / "reports" / "reviewer-evidence-bundle.md").is_file()
     assert (empty_cwd / "reports" / "reviewer-rerun-receipt.md").is_file()
     assert (empty_cwd / "reports" / "beginner-prediction-checklist.md").is_file()
@@ -256,6 +265,20 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         cold_user_route["artifact_integrity_summary"]["present_count"]
         == cold_user_route["artifact_integrity_summary"]["artifact_count"]
     )
+    reviewer_decision_matrix_markdown = (
+        empty_cwd / "reports" / "reviewer-decision-matrix.md"
+    ).read_text(encoding="utf-8")
+    reviewer_decision_matrix_payload = json.loads(
+        (empty_cwd / "reports" / "reviewer-decision-matrix.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert "# Reviewer Decision Matrix" in reviewer_decision_matrix_markdown
+    assert reviewer_decision_matrix_payload["artifact_type"] == "reviewer_decision_matrix"
+    assert reviewer_decision_matrix_payload["default_outputs"] == {
+        "markdown": "reports/reviewer-decision-matrix.md",
+        "json": "reports/reviewer-decision-matrix.json",
+    }
     assert (empty_cwd / "reports" / "prediction-readiness-audit.json").is_file()
     assert (empty_cwd / "reports" / "regime-comparison.html").is_file()
 
@@ -353,6 +376,24 @@ def _run_wheel_smoke_command(
 ) -> subprocess.CompletedProcess[str]:
     result = subprocess.run(
         [str(console_script), flag],
+        cwd=cwd,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    return result
+
+
+def _run_wheel_smoke_module_command(
+    python: Path,
+    flag: str,
+    cwd: Path,
+    env: dict[str, str],
+) -> subprocess.CompletedProcess[str]:
+    result = subprocess.run(
+        [str(python), "-I", "-m", "market_signal_lab.cli", flag],
         cwd=cwd,
         env=env,
         capture_output=True,

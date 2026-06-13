@@ -50,6 +50,7 @@ For the reviewer acceptance scorecard, run `python -m market_signal_lab.cli --re
 For the strategy assumption stress kit, run `python -m market_signal_lab.cli --strategy-assumption-stress-kit`.
 For the two-minute stress-kit quickstart card, run `python -m market_signal_lab.cli --stress-kit-quickstart-card`.
 For the compact assumption ledger summary, run `python -m market_signal_lab.cli --assumption-ledger-summary`.
+For the reviewer decision matrix, run `python -m market_signal_lab.cli --reviewer-decision-matrix`.
 
 For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
@@ -93,6 +94,18 @@ By default this reads `reports/cross-asset-thesis-ledger.json` and writes
 non-advice boundaries, benchmark fields, fee/drawdown/exposure diagnostics,
 train/test diagnostics, and leveraged ETF-like caveats for review only.
 It is a research-boundary audit, not a readiness score for trading or forecasting.
+
+## Reviewer decision matrix quickstart
+
+Generate a deterministic public-review matrix for deciding whether a static backtest
+artifact is safe to release and promote:
+
+```bash
+python -m market_signal_lab.cli --reviewer-decision-matrix
+```
+
+This writes `reports/reviewer-decision-matrix.md` and
+`reports/reviewer-decision-matrix.json` with Release Gate and Promotion Gate labels.
 
 ## Strategy assumption stress kit
 
@@ -184,9 +197,9 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 - Start here: [Static Sample Gallery](reports/index.html), [Cold-User Review Route](reports/cold-user-review-route.md), and [Static Gallery Manifest](docs/static-gallery-manifest.md).
 - Main report path: [Single Backtest Report](reports/sample-report.md), [JSON](reports/sample-report.json), [Scenario Card](reports/scenario-card.md), and [Research Packet](reports/pretrade-packet.md).
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
-- Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
-- Review guides: [Methodology Audit](docs/methodology-audit.md), [Assumption Ledger Summary Guide](docs/assumption-ledger-summary.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
-- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
+- Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
+- Review guides: [Methodology Audit](docs/methodology-audit.md), [Assumption Ledger Summary Guide](docs/assumption-ledger-summary.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix Guide](docs/reviewer-decision-matrix.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
+- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
 
 For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 

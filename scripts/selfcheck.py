@@ -118,6 +118,7 @@ DOC_LINK_SOURCES = (
     Path("docs/public-share-copy.md"),
     Path("docs/reviewer-faq.md"),
     Path("docs/reviewer-decision-tree.md"),
+    Path("docs/reviewer-decision-matrix.md"),
     Path("docs/artifact-gallery.md"),
     Path("docs/cold-review-checklist.md"),
     Path("docs/config-files.md"),
@@ -175,6 +176,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-notes-v1.22.0.md"),
     Path("docs/release-notes-v1.22.1.md"),
     Path("docs/release-notes-v1.23.0.md"),
+    Path("docs/release-notes-v1.27.0.md"),
     Path("docs/release-v1.26.0.md"),
     Path("docs/release-notes-v1.26.0.md"),
     Path("docs/release-v1.27.0.md"),
@@ -357,6 +359,8 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-rerun-receipt.json",
     "reviewer-acceptance-scorecard.md",
     "reviewer-acceptance-scorecard.json",
+    "reviewer-decision-matrix.md",
+    "reviewer-decision-matrix.json",
     "strategy-assumption-stress-kit.md",
     "strategy-assumption-stress-kit.json",
     "strategy-assumption-stress-kit.html",
@@ -548,6 +552,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-rerun-receipt.json"),
     Path("reports/reviewer-acceptance-scorecard.md"),
     Path("reports/reviewer-acceptance-scorecard.json"),
+    Path("reports/reviewer-decision-matrix.md"),
+    Path("reports/reviewer-decision-matrix.json"),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
@@ -645,6 +651,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
+          <li><a href="reviewer-decision-matrix.md">Reviewer decision matrix</a> and <a href="reviewer-decision-matrix.json">JSON</a></li>
           <li><a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>, <a href="strategy-assumption-stress-kit.md">Markdown release-readiness receipt</a>, and <a href="strategy-assumption-stress-kit.json">JSON receipt</a></li>
           <li><a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> and <a href="stress-kit-quickstart-card.json">JSON</a> - two-minute static/no-advice route before the full stress kit</li>
           <li><a href="assumption-ledger-summary.md">Assumption ledger summary</a> and <a href="assumption-ledger-summary.json">JSON</a> - compact assumptions, risk boundaries, evidence paths, and non-claims</li>
@@ -927,7 +934,8 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "reviewer rerun receipt, beginner backtest-reading checklist, "
+        "reviewer rerun receipt, reviewer decision matrix, beginner "
+        "backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "
         "thesis-ledger acceptance, regime comparison, and HTML artifacts."
@@ -3156,6 +3164,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "-m",
             "market_signal_lab.cli",
             "--reviewer-rerun-receipt",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--reviewer-decision-matrix",
         ],
         [
             sys.executable,

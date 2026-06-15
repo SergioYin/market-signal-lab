@@ -8,6 +8,7 @@ from importlib.resources import files
 from io import StringIO
 from pathlib import Path
 import csv
+import hashlib
 import json
 import os
 import sys
@@ -61,6 +62,10 @@ from market_signal_lab.packet import (
 from market_signal_lab.prediction_readiness_audit import (
     build_prediction_readiness_audit,
     render_prediction_readiness_audit,
+)
+from market_signal_lab.promotion_readiness_check import (
+    build_promotion_readiness_check,
+    render_promotion_readiness_check,
 )
 from market_signal_lab.reviewer_decision_matrix import (
     build_reviewer_decision_matrix,
@@ -155,8 +160,14 @@ PREDICTION_READINESS_AUDIT_OUTPUT = Path("reports/prediction-readiness-audit.md"
 PREDICTION_READINESS_AUDIT_JSON_OUTPUT = Path(
     "reports/prediction-readiness-audit.json"
 )
+PROMOTION_READINESS_CHECK_OUTPUT = Path("reports/promotion-readiness-check.md")
+PROMOTION_READINESS_CHECK_JSON_OUTPUT = Path(
+    "reports/promotion-readiness-check.json"
+)
+PROMOTION_READINESS_CHECK_DEFAULT_INPUT = object()
 REVIEWER_DECISION_MATRIX_FLAG = "--reviewer-decision-matrix"
 PREDICTION_READINESS_AUDIT_FLAG = "--prediction-readiness-audit"
+PROMOTION_READINESS_CHECK_FLAG = "--promotion-readiness-check"
 COLD_USER_REVIEW_ROUTE_OUTPUT = Path("reports/cold-user-review-route.md")
 COLD_USER_REVIEW_ROUTE_JSON_OUTPUT = Path("reports/cold-user-review-route.json")
 COLD_USER_REVIEW_ROUTE_FLAG = "--cold-user-review-route"
@@ -193,6 +204,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_reviewer_decision_matrix_mode_conflicts(args, parser)
+    _reject_promotion_readiness_check_mode_conflicts(args, parser)
     _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
     _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
     _reject_assumption_ledger_summary_mode_conflicts(args, parser)
@@ -238,6 +250,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             args = _resolve_prediction_readiness_audit_args(args, parser)
             report, json_payload, manifest_payload = (
                 _run_prediction_readiness_audit(args)
+            )
+        elif args.promotion_readiness_check is not None:
+            args = _resolve_promotion_readiness_check_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_promotion_readiness_check(args)
             )
         elif args.reviewer_decision_matrix:
             args = _resolve_reviewer_decision_matrix_args(args, parser)
@@ -291,6 +308,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -313,6 +331,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -335,6 +354,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -357,6 +377,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -379,6 +400,7 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -401,6 +423,30 @@ def _reject_reviewer_decision_matrix_mode_conflicts(
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+    )
+
+
+def _reject_promotion_readiness_check_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if args.promotion_readiness_check is None:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        PROMOTION_READINESS_CHECK_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
@@ -424,6 +470,7 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
     )
@@ -446,6 +493,7 @@ def _reject_stress_kit_quickstart_card_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_assumption_ledger_summary=True,
     )
@@ -468,6 +516,7 @@ def _reject_assumption_ledger_summary_mode_conflicts(
         include_reviewer_rerun_receipt=True,
         include_reviewer_acceptance_scorecard=True,
         include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
     )
@@ -484,6 +533,7 @@ def _reject_mode_conflicts(
     include_reviewer_rerun_receipt: bool = False,
     include_reviewer_acceptance_scorecard: bool = False,
     include_reviewer_decision_matrix: bool = False,
+    include_promotion_readiness_check: bool = False,
     include_strategy_assumption_stress_kit: bool = False,
     include_stress_kit_quickstart_card: bool = False,
     include_assumption_ledger_summary: bool = False,
@@ -517,6 +567,11 @@ def _reject_mode_conflicts(
             PREDICTION_READINESS_AUDIT_FLAG,
             include_prediction_readiness_audit
             and args.prediction_readiness_audit is not None,
+        ),
+        (
+            PROMOTION_READINESS_CHECK_FLAG,
+            include_promotion_readiness_check
+            and args.promotion_readiness_check is not None,
         ),
         (
             COLD_USER_REVIEW_ROUTE_FLAG,
@@ -873,6 +928,26 @@ def _build_parser() -> ArgumentParser:
             "and reports/prediction-readiness-audit.json when neither is set. "
             "Uses only a static JSON artifact and does not provide forecasts, "
             "recommendations, trading instructions, or investment advice."
+        ),
+    )
+    parser.add_argument(
+        PROMOTION_READINESS_CHECK_FLAG,
+        nargs="?",
+        const=PROMOTION_READINESS_CHECK_DEFAULT_INPUT,
+        type=Path,
+        metavar="PATH",
+        help=(
+            "Run a focused public-promotion readiness check on a static "
+            "cross-asset thesis-ledger JSON artifact. When PATH is omitted, "
+            "reads reports/cross-asset-thesis-ledger.json if it exists, "
+            "otherwise uses the bundled demo ledger. Only --output and "
+            "--json-output customize files; defaults to "
+            "reports/promotion-readiness-check.md and "
+            "reports/promotion-readiness-check.json when neither is set. "
+            "Reports release/promotion gates, no-live-data/no-advice "
+            "boundaries, benchmark/fee/drawdown/train-test/leveraged caveat "
+            "evidence, and next fixes without forecasts, recommendations, "
+            "trading instructions, or investment advice."
         ),
     )
     parser.add_argument(
@@ -1320,6 +1395,46 @@ def _resolve_prediction_readiness_audit_args(
     if resolved.output is None and resolved.json_output is None:
         resolved.output = PREDICTION_READINESS_AUDIT_OUTPUT
         resolved.json_output = PREDICTION_READINESS_AUDIT_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    return resolved
+
+
+def _resolve_promotion_readiness_check_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.config is not None:
+        parser.error(f"{PROMOTION_READINESS_CHECK_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{PROMOTION_READINESS_CHECK_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{PROMOTION_READINESS_CHECK_FLAG} does not write experiment manifests"
+        )
+
+    input_path = args.promotion_readiness_check
+    if args.csv_path is not None:
+        if input_path is not PROMOTION_READINESS_CHECK_DEFAULT_INPUT:
+            parser.error(
+                f"{PROMOTION_READINESS_CHECK_FLAG} accepts only one ledger JSON path"
+            )
+        input_path = args.csv_path
+    elif input_path is PROMOTION_READINESS_CHECK_DEFAULT_INPUT:
+        input_path = THESIS_LEDGER_DEFAULT_JSON
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.promotion_readiness_check = input_path
+    resolved.output = args.output
+    resolved.json_output = args.json_output
+    if resolved.output is None and resolved.json_output is None:
+        resolved.output = PROMOTION_READINESS_CHECK_OUTPUT
+        resolved.json_output = PROMOTION_READINESS_CHECK_JSON_OUTPUT
     resolved.html_output = None
     resolved.manifest_output = None
     return resolved
@@ -1846,6 +1961,28 @@ def _run_prediction_readiness_audit(
     return report, payload, {}
 
 
+def _run_promotion_readiness_check(
+    args: Namespace,
+) -> tuple[str, dict[str, Any], dict[str, Any]]:
+    input_path = Path(args.promotion_readiness_check)
+    try:
+        ledger, source_bytes = _load_defaultable_json_with_bytes(
+            input_path,
+            THESIS_LEDGER_DEFAULT_JSON,
+        )
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Invalid promotion-readiness check JSON {input_path}: {exc.msg}"
+        ) from exc
+    payload = build_promotion_readiness_check(
+        ledger,
+        _public_source_artifact_path(input_path),
+        hashlib.sha256(source_bytes).hexdigest(),
+    )
+    report = render_promotion_readiness_check(payload)
+    return report, payload, {}
+
+
 def _run_strategy_assumption_stress_kit() -> tuple[
     str, dict[str, Any], dict[str, Any]
 ]:
@@ -2196,16 +2333,42 @@ def _load_provenance_payload(csv_path: Path) -> dict[str, Any] | None:
 
 
 def _load_defaultable_json(path: Path, bundled_default: Path) -> Any:
-    if path.exists() or path != bundled_default:
-        return json.loads(
-            path.read_text(encoding="utf-8"),
-            parse_constant=_reject_json_constant,
-        )
-
+    source_bytes = _load_defaultable_json_bytes(path, bundled_default)
     return json.loads(
-        _bundled_resource(bundled_default).read_text(encoding="utf-8"),
+        source_bytes.decode("utf-8"),
         parse_constant=_reject_json_constant,
     )
+
+
+def _load_defaultable_json_with_bytes(
+    path: Path,
+    bundled_default: Path,
+) -> tuple[Any, bytes]:
+    source_bytes = _load_defaultable_json_bytes(path, bundled_default)
+    return (
+        json.loads(
+            source_bytes.decode("utf-8"),
+            parse_constant=_reject_json_constant,
+        ),
+        source_bytes,
+    )
+
+
+def _load_defaultable_json_bytes(path: Path, bundled_default: Path) -> bytes:
+    if path.exists() or path != bundled_default:
+        return path.read_bytes()
+
+    return _bundled_resource(bundled_default).read_bytes()
+
+
+def _public_source_artifact_path(path: Path) -> str:
+    if not path.is_absolute() and ".." not in path.parts:
+        return path.as_posix()
+
+    try:
+        return path.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        return path.name or "ledger.json"
 
 
 def _bundled_resource_worktree(

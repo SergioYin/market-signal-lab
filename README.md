@@ -4,6 +4,12 @@ Market Signal Lab packages bundled static backtest samples as reproducible, rese
 
 Use it to inspect how a historical backtest artifact explains its data, assumptions, metrics, caveats, and reproducibility while keeping the output limited to review evidence.
 
+**First-time CTA:** Open the [Promotion-Readiness Check](reports/promotion-readiness-check.md)
+before sharing the sample publicly. It matters because it shows Release Gate and
+Promotion Gate labels plus evidence gaps for a static, no-advice artifact.
+Boundary: it is only a public-sharing review aid, not a forecast,
+recommendation, suitability review, trading approval, or investment advice.
+
 ## Who it is for
 
 - Beginners learning how to read backtest outputs without treating them as predictions.
@@ -51,6 +57,7 @@ For the strategy assumption stress kit, run `python -m market_signal_lab.cli --s
 For the two-minute stress-kit quickstart card, run `python -m market_signal_lab.cli --stress-kit-quickstart-card`.
 For the compact assumption ledger summary, run `python -m market_signal_lab.cli --assumption-ledger-summary`.
 For the reviewer decision matrix, run `python -m market_signal_lab.cli --reviewer-decision-matrix`.
+For the public-promotion readiness check, run `python -m market_signal_lab.cli --promotion-readiness-check`.
 
 For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
@@ -94,6 +101,27 @@ By default this reads `reports/cross-asset-thesis-ledger.json` and writes
 non-advice boundaries, benchmark fields, fee/drawdown/exposure diagnostics,
 train/test diagnostics, and leveraged ETF-like caveats for review only.
 It is a research-boundary audit, not a readiness score for trading or forecasting.
+
+## Public-promotion readiness check
+
+Generate a focused promotion-readiness check from the checked-in thesis ledger:
+
+```bash
+python -m market_signal_lab.cli --promotion-readiness-check
+```
+
+By default this reads `reports/cross-asset-thesis-ledger.json` and writes
+`reports/promotion-readiness-check.md` plus
+`reports/promotion-readiness-check.json`. The check reports Release Gate and
+Promotion Gate labels, no-live-data/no-advice boundary checks,
+benchmark/fee/drawdown/train-test/leveraged-caveat evidence checks, and
+PASS review notes plus actionable WARN/FAIL next fixes. Custom ledger inputs
+also record a stable non-sensitive `source_content_sha256` so two different
+`ledger.json` inputs can be distinguished without leaking absolute paths. See the
+[Promotion-Readiness Check Guide](docs/promotion-readiness-check.md) for the
+public-safe reading workflow. It is a static public-sharing review aid only,
+not a trading-readiness approval, forecast, recommendation, suitability review,
+or investment advice.
 
 ## Reviewer decision matrix quickstart
 
@@ -198,8 +226,8 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 - Main report path: [Single Backtest Report](reports/sample-report.md), [JSON](reports/sample-report.json), [Scenario Card](reports/scenario-card.md), and [Research Packet](reports/pretrade-packet.md).
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
 - Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
-- Review guides: [Methodology Audit](docs/methodology-audit.md), [Assumption Ledger Summary Guide](docs/assumption-ledger-summary.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix Guide](docs/reviewer-decision-matrix.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
-- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
+- Review guides: [Methodology Audit](docs/methodology-audit.md), [Assumption Ledger Summary Guide](docs/assumption-ledger-summary.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix Guide](docs/reviewer-decision-matrix.md), [Promotion-Readiness Check Guide](docs/promotion-readiness-check.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
+- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Promotion-Readiness Check](reports/promotion-readiness-check.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
 
 For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 
@@ -510,6 +538,8 @@ Before using any findings, read:
 - [Public Share Copy](docs/public-share-copy.md)
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
 - [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md)
+- [Promotion-Readiness Check Guide](docs/promotion-readiness-check.md)
+- [v1.30.3 Release Notes](docs/release-v1.30.3.md)
 - [v1.30.2 Release Notes](docs/release-v1.30.2.md)
 - [v1.30.1 Release Notes](docs/release-v1.30.1.md)
 - [v1.30.0 Release Notes](docs/release-v1.30.0.md)

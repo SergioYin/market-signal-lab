@@ -21,6 +21,8 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Public Share Copy](public-share-copy.md) - public-safe one-liners and claim boundaries for sharing the project.
 - [Reviewer Decision Tree](reviewer-decision-tree.md) - route reviewers through understanding, reproducibility, methodology-risk, sharing, and promotion-readiness decisions.
 - [Reviewer Decision Matrix](reviewer-decision-matrix.md) - explains release vs promotion gates and PASS/WARN/FAIL interpretation for the generated review artifact.
+- [Promotion-Readiness Check Guide](promotion-readiness-check.md) - public-safe guide to the generated release/promotion readiness check, evidence labels, boundaries, PASS review notes, and WARN/FAIL next fixes.
+- [Promotion-readiness check](../reports/promotion-readiness-check.md) - generated release/promotion gate labels, no-live-data/no-advice boundaries, evidence checks, PASS review notes, and WARN/FAIL next fixes for public sharing review.
 - [Architecture](architecture.md) - static-first architecture, CLI artifact pipeline, methodology audit modules, sample reports, test/selfcheck gates, and out-of-scope boundaries.
 - [ADR 0001: Static Research Artifacts](adr/0001-static-research-artifacts.md) - maintainer decision record for keeping the project as static research artifacts.
 - [Cold Review Checklist](cold-review-checklist.md) - 2-5 minute research-only review path for first-time visitors.
@@ -56,6 +58,7 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Reviewer acceptance scorecard guide](reviewer-acceptance-scorecard.md) - explains the generated scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
 - [Reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md) - deterministic PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary.
 - [Reviewer acceptance scorecard JSON](../reports/reviewer-acceptance-scorecard.json) - structured version of the same scorecard.
+- [Promotion-readiness check guide](promotion-readiness-check.md) - explains the generated promotion-readiness purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
 - [Strategy assumption stress kit HTML](../reports/strategy-assumption-stress-kit.html) - browser-openable static stress kit for checking strategy assumptions, beginner boundaries, and leveraged ETF-like caveats without live data, broker workflows, forecasts, recommendations, or advice.
 - [Strategy assumption stress kit guide](strategy-assumption-stress-kit.md) - concise public guide for reviewer workflow, what stress checks do and do not prove, and beginner leveraged ETF-like caveats.
 - [Strategy assumption stress kit Markdown](../reports/strategy-assumption-stress-kit.md) - Markdown version of the same deterministic stress kit, including the release-readiness receipt.
@@ -68,6 +71,7 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Cold-user review route JSON](../reports/cold-user-review-route.json) - structured route, checklist status labels, boundary flags, verification commands, and static artifact integrity summary.
 - [Prediction-readiness audit](../reports/prediction-readiness-audit.md) - static documentation-boundary audit with PASS/WARN/FAIL labels for reviewing whether the thesis-ledger artifact keeps historical diagnostics, boundaries, benchmark fields, and caveats visible.
 - [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json) - structured version of the same review-only audit.
+- [Promotion-readiness check JSON](../reports/promotion-readiness-check.json) - structured release/promotion gate labels and actionable WARN/FAIL next fixes for public promotion review.
 - [Beginner backtest-reading checklist](../reports/beginner-prediction-checklist.md) - static beginner-readable checklist for reading historical backtest and related checklist artifacts without treating them as predictions of future returns, recommendations, or advice.
 - [Beginner backtest-reading checklist JSON](../reports/beginner-prediction-checklist.json) - structured version of the same public-safe checklist.
 - [Regime comparison sample](../reports/regime-comparison.md) - first artifact to open for the side-by-side synthetic bull/choppy/drawdown-recovery comparison; regenerate it with `market-signal-lab --regime-comparison`.
@@ -102,6 +106,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.30.3 Release Notes](release-v1.30.3.md)
 - [v1.30.2 Release Notes](release-v1.30.2.md)
 - [v1.30.1 Release Notes](release-v1.30.1.md)
 - [v1.30.0 Release Notes](release-v1.30.0.md)

@@ -10,6 +10,14 @@ python -m market_signal_lab.cli --validate-thesis-ledger
 
 This validates `reports/cross-asset-thesis-ledger.json` and writes Markdown/JSON acceptance artifacts. PASS/WARN/FAIL labels describe research-boundary and artifact-shape checks only; they do not certify a strategy.
 
+## Public promotion readiness
+
+```bash
+python -m market_signal_lab.cli --promotion-readiness-check
+```
+
+This reads the static cross-asset thesis ledger and writes `reports/promotion-readiness-check.md` plus `reports/promotion-readiness-check.json`. The JSON records a non-sensitive `source_content_sha256` for the loaded ledger content while preserving repo-relative default source paths. The Release Gate and Promotion Gate labels check public-sharing boundaries and evidence visibility only; they are not trading readiness, forecasts, recommendations, suitability review, or investment advice.
+
 ## Full project selfcheck
 
 ```bash

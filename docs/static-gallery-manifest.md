@@ -28,6 +28,8 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json)
 - [Reviewer decision matrix Markdown](../reports/reviewer-decision-matrix.md)
 - [Reviewer decision matrix JSON](../reports/reviewer-decision-matrix.json)
+- [Promotion-readiness check Markdown](../reports/promotion-readiness-check.md)
+- [Promotion-readiness check JSON](../reports/promotion-readiness-check.json)
 - [Cold-user review route Markdown](../reports/cold-user-review-route.md)
 - [Cold-user review route JSON](../reports/cold-user-review-route.json)
 - [Static gallery walkthrough](static-gallery-walkthrough.svg)
@@ -59,6 +61,7 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Reviewer evidence bundle integrity summary: [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary), [Markdown](../reports/reviewer-evidence-bundle.md), and [JSON](../reports/reviewer-evidence-bundle.json).
 - Reviewer rerun receipt: [Markdown](../reports/reviewer-rerun-receipt.md) and [JSON](../reports/reviewer-rerun-receipt.json).
 - Reviewer decision matrix: [Markdown](../reports/reviewer-decision-matrix.md) and [JSON](../reports/reviewer-decision-matrix.json).
+- Promotion-readiness check: [Markdown](../reports/promotion-readiness-check.md) and [JSON](../reports/promotion-readiness-check.json) with release/promotion gate labels, PASS review notes, WARN/FAIL next fixes, and non-sensitive source-content SHA-256 provenance for public sharing review.
 - Strategy assumption stress kit: [HTML](../reports/strategy-assumption-stress-kit.html), [Markdown release-readiness receipt](../reports/strategy-assumption-stress-kit.md#release-readiness-receipt), and [JSON receipt](../reports/strategy-assumption-stress-kit.json).
 - Stress Kit Quickstart Card: [Markdown](../reports/stress-kit-quickstart-card.md) and [JSON](../reports/stress-kit-quickstart-card.json) as the two-minute static/no-advice route to read before the full strategy assumption stress kit.
 - Cold-user review route: [Markdown](../reports/cold-user-review-route.md) and [JSON](../reports/cold-user-review-route.json).
@@ -101,6 +104,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json)
 - [Reviewer decision matrix Markdown](../reports/reviewer-decision-matrix.md)
 - [Reviewer decision matrix JSON](../reports/reviewer-decision-matrix.json)
+- [Promotion-readiness check Markdown](../reports/promotion-readiness-check.md)
+- [Promotion-readiness check JSON](../reports/promotion-readiness-check.json)
 - [Cold-user review route Markdown](../reports/cold-user-review-route.md)
 - [Cold-user review route JSON](../reports/cold-user-review-route.json)
 - [Prediction-readiness audit Markdown](../reports/prediction-readiness-audit.md)

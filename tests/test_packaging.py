@@ -23,11 +23,15 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv",
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
+    "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.3.md",
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
     "reports/cross-asset-thesis-ledger.json",
     "reports/index.html",
+    "reports/promotion-readiness-check.md",
+    "reports/promotion-readiness-check.json",
     "reports/reviewer-acceptance-scorecard.json",
     "reports/reviewer-acceptance-scorecard.md",
     "reports/reviewer-evidence-bundle.json",
@@ -52,6 +56,12 @@ STRESS_KIT_QUICKSTART_CARD_RESOURCES = (
 ASSUMPTION_LEDGER_SUMMARY_RESOURCES = (
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
+)
+PROMOTION_READINESS_CHECK_RESOURCES = (
+    "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.3.md",
+    "reports/promotion-readiness-check.md",
+    "reports/promotion-readiness-check.json",
 )
 
 
@@ -106,14 +116,30 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     ).read_text(encoding="utf-8")
     assert 'href="stress-kit-quickstart-card.md"' in resource_gallery
     assert 'href="stress-kit-quickstart-card.json"' in resource_gallery
+    assert 'href="promotion-readiness-check.md"' in resource_gallery
+    assert 'href="promotion-readiness-check.json"' in resource_gallery
     for resource in (
         STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
+        + PROMOTION_READINESS_CHECK_RESOURCES
     ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
 
         assert packaged_resource.read_bytes() == checked_in_report.read_bytes()
+
+
+def test_promotion_readiness_guide_packaged_copy_matches_source() -> None:
+    source_doc = PROJECT_ROOT / "docs" / "promotion-readiness-check.md"
+    packaged_doc = (
+        PROJECT_ROOT
+        / "market_signal_lab"
+        / "_resources"
+        / "docs"
+        / "promotion-readiness-check.md"
+    )
+
+    assert packaged_doc.read_bytes() == source_doc.read_bytes()
 
 
 @pytest.mark.wheel_smoke
@@ -153,7 +179,8 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         wheels[0],
         STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES
         + STRESS_KIT_QUICKSTART_CARD_RESOURCES
-        + ASSUMPTION_LEDGER_SUMMARY_RESOURCES,
+        + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
+        + PROMOTION_READINESS_CHECK_RESOURCES,
     )
 
     install_venv = tmp_path / "install-venv"
@@ -196,6 +223,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--beginner-prediction-checklist",
         "--cold-user-review-route",
         "--prediction-readiness-audit",
+        "--promotion-readiness-check",
         "--reviewer-acceptance-scorecard",
         "--strategy-assumption-stress-kit",
         "--stress-kit-quickstart-card",
@@ -280,6 +308,14 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "json": "reports/reviewer-decision-matrix.json",
     }
     assert (empty_cwd / "reports" / "prediction-readiness-audit.json").is_file()
+    promotion_payload = json.loads(
+        (empty_cwd / "reports" / "promotion-readiness-check.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert promotion_payload["artifact_type"] == "promotion_readiness_check"
+    assert promotion_payload["summary"]["promotion_gate"] == "WARN"
+    assert (empty_cwd / "reports" / "promotion-readiness-check.md").is_file()
     assert (empty_cwd / "reports" / "regime-comparison.html").is_file()
 
 
@@ -292,7 +328,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.2"
+    assert __version__ == "1.30.3"
 
 
 def _venv_python(venv_path: Path) -> Path:

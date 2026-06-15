@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import compileall
+import hashlib
 import json
 import re
 import subprocess
@@ -39,6 +40,12 @@ from market_signal_lab.prediction_readiness_audit import (
     PREDICTION_READINESS_CRITERION_KEYS,
     build_prediction_readiness_audit,
     render_prediction_readiness_audit,
+)
+from market_signal_lab.promotion_readiness_check import (
+    PROMOTION_READINESS_CHECK_ITEM_KEYS,
+    PROMOTION_READINESS_CHECK_TOP_LEVEL_KEYS,
+    build_promotion_readiness_check,
+    render_promotion_readiness_check,
 )
 from market_signal_lab.reviewer_acceptance_scorecard import (
     build_reviewer_acceptance_scorecard,
@@ -119,6 +126,7 @@ DOC_LINK_SOURCES = (
     Path("docs/reviewer-faq.md"),
     Path("docs/reviewer-decision-tree.md"),
     Path("docs/reviewer-decision-matrix.md"),
+    Path("docs/promotion-readiness-check.md"),
     Path("docs/artifact-gallery.md"),
     Path("docs/cold-review-checklist.md"),
     Path("docs/config-files.md"),
@@ -182,6 +190,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.3.md"),
     Path("docs/release-v1.30.2.md"),
     Path("docs/release-v1.30.1.md"),
     Path("docs/release-v1.30.0.md"),
@@ -269,6 +278,7 @@ V131_ROOT_LANDING_LINKS = (
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.3.md",
     "docs/release-v1.30.2.md",
     "docs/release-v1.30.1.md",
     "docs/release-v1.30.0.md",
@@ -361,6 +371,8 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-acceptance-scorecard.json",
     "reviewer-decision-matrix.md",
     "reviewer-decision-matrix.json",
+    "promotion-readiness-check.md",
+    "promotion-readiness-check.json",
     "strategy-assumption-stress-kit.md",
     "strategy-assumption-stress-kit.json",
     "strategy-assumption-stress-kit.html",
@@ -448,6 +460,8 @@ BEGINNER_PREDICTION_CHECKLIST_MARKDOWN = Path(
 )
 PREDICTION_READINESS_AUDIT_JSON = Path("reports/prediction-readiness-audit.json")
 PREDICTION_READINESS_AUDIT_MARKDOWN = Path("reports/prediction-readiness-audit.md")
+PROMOTION_READINESS_CHECK_JSON = Path("reports/promotion-readiness-check.json")
+PROMOTION_READINESS_CHECK_MARKDOWN = Path("reports/promotion-readiness-check.md")
 REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
 STRATEGY_ASSUMPTION_STRESS_KIT_JSON = Path(
@@ -554,6 +568,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-acceptance-scorecard.json"),
     Path("reports/reviewer-decision-matrix.md"),
     Path("reports/reviewer-decision-matrix.json"),
+    Path("reports/promotion-readiness-check.md"),
+    Path("reports/promotion-readiness-check.json"),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_MARKDOWN_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH),
     Path(STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH),
@@ -652,6 +668,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="reviewer-decision-matrix.md">Reviewer decision matrix</a> and <a href="reviewer-decision-matrix.json">JSON</a></li>
+          <li><a href="promotion-readiness-check.md">Promotion-readiness check</a> and <a href="promotion-readiness-check.json">JSON</a> - release/promotion gate labels, evidence checks, PASS review notes, and WARN/FAIL next fixes</li>
           <li><a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>, <a href="strategy-assumption-stress-kit.md">Markdown release-readiness receipt</a>, and <a href="strategy-assumption-stress-kit.json">JSON receipt</a></li>
           <li><a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> and <a href="stress-kit-quickstart-card.json">JSON</a> - two-minute static/no-advice route before the full stress kit</li>
           <li><a href="assumption-ledger-summary.md">Assumption ledger summary</a> and <a href="assumption-ledger-summary.json">JSON</a> - compact assumptions, risk boundaries, evidence paths, and non-claims</li>
@@ -671,6 +688,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.3.md">v1.30.3 release notes</a></li>
           <li><a href="../docs/release-v1.30.2.md">v1.30.2 release notes</a></li>
           <li><a href="../docs/release-v1.30.1.md">v1.30.1 release notes</a></li>
           <li><a href="../docs/release-v1.30.0.md">v1.30.0 release notes</a></li>
@@ -762,6 +780,7 @@ def run_demo_acceptance_check() -> bool:
         *find_reviewer_rerun_receipt_issues(REPO_ROOT),
         *find_beginner_prediction_checklist_issues(REPO_ROOT),
         *find_prediction_readiness_audit_issues(REPO_ROOT),
+        *find_promotion_readiness_check_issues(REPO_ROOT),
         *find_strategy_assumption_stress_kit_issues(REPO_ROOT),
         *find_stress_kit_quickstart_card_issues(REPO_ROOT),
         *find_assumption_ledger_summary_issues(REPO_ROOT),
@@ -821,8 +840,9 @@ def run_sample_artifact_generation() -> bool:
         render_cross_asset_thesis_ledger(ledger),
         encoding="utf-8",
     )
+    ledger_json = json.dumps(ledger, separators=(",", ":")) + "\n"
     (REPORTS_DIR / "cross-asset-thesis-ledger.json").write_text(
-        json.dumps(ledger, separators=(",", ":")) + "\n",
+        ledger_json,
         encoding="utf-8",
     )
     ledger_acceptance = validate_cross_asset_thesis_ledger_packet(ledger)
@@ -844,6 +864,19 @@ def run_sample_artifact_generation() -> bool:
     )
     (REPORTS_DIR / "prediction-readiness-audit.json").write_text(
         json.dumps(prediction_readiness_audit, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    promotion_readiness_check = build_promotion_readiness_check(
+        ledger,
+        "reports/cross-asset-thesis-ledger.json",
+        hashlib.sha256(ledger_json.encode("utf-8")).hexdigest(),
+    )
+    (REPORTS_DIR / "promotion-readiness-check.md").write_text(
+        render_promotion_readiness_check(promotion_readiness_check),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "promotion-readiness-check.json").write_text(
+        json.dumps(promotion_readiness_check, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
     reviewer_receipt = build_reviewer_rerun_receipt()
@@ -1997,6 +2030,304 @@ def find_prediction_readiness_audit_issues(
             issues.append(
                 f"{PREDICTION_READINESS_AUDIT_MARKDOWN}: missing audit text {required_text}"
             )
+
+    return issues
+
+
+def find_promotion_readiness_check_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / PROMOTION_READINESS_CHECK_JSON
+    markdown_path = repo_root / PROMOTION_READINESS_CHECK_MARKDOWN
+    ledger_path = repo_root / Path("reports/cross-asset-thesis-ledger.json")
+
+    if not json_path.exists():
+        issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: check JSON is missing")
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: check must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != PROMOTION_READINESS_CHECK_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: top-level keys must match "
+            "the promotion-readiness check schema order"
+        )
+    if payload.get("artifact_type") != "promotion_readiness_check":
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: artifact_type must be promotion_readiness_check"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: schema_version must be 1.0")
+    for key in (
+        "research_only",
+        "static_only",
+        "historical_diagnostics_only",
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+        "not_investment_advice",
+    ):
+        if payload.get(key) is not True:
+            issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: {key} must be true")
+    if payload.get("source_artifact") != "reports/cross-asset-thesis-ledger.json":
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: source_artifact must point to reports/cross-asset-thesis-ledger.json"
+        )
+    source_content_sha256 = payload.get("source_content_sha256")
+    if not isinstance(source_content_sha256, str) or not re.fullmatch(
+        r"[0-9a-f]{64}",
+        source_content_sha256,
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: source_content_sha256 must be a lowercase sha256 hex digest"
+        )
+    if payload.get("source_artifact_role") != (
+        "Repo-relative static thesis-ledger JSON path read by this check."
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: source_artifact_role must describe the static input path"
+        )
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(PROMOTION_READINESS_CHECK_MARKDOWN):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: default_outputs.markdown must be {PROMOTION_READINESS_CHECK_MARKDOWN}"
+        )
+    if defaults.get("json") != str(PROMOTION_READINESS_CHECK_JSON):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: default_outputs.json must be {PROMOTION_READINESS_CHECK_JSON}"
+        )
+    if payload.get("default_outputs_role") != (
+        "Repo-relative paths written by --promotion-readiness-check when "
+        "output overrides are not supplied."
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: default_outputs_role must describe CLI default output paths"
+        )
+
+    summary = _dict_value(payload.get("summary"))
+    for key in ("release_gate", "promotion_gate"):
+        if summary.get(key) not in {"PASS", "WARN", "FAIL"}:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: summary.{key} must be PASS, WARN, or FAIL"
+            )
+    label_meanings = _dict_value(summary.get("label_meanings"))
+    for label in ("PASS", "WARN", "FAIL"):
+        if not isinstance(label_meanings.get(label), str) or not label_meanings[
+            label
+        ].strip():
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: summary.label_meanings.{label} must be a non-empty string"
+            )
+    if summary.get("count_scope") != (
+        "Counts cover the checks array and are ordered PASS/WARN/FAIL."
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: summary.count_scope must define count order and scope"
+        )
+    if not _contains_all_terms(
+        summary.get("interpretation"),
+        (
+            "release gate",
+            "promotion gate",
+            "neither gate",
+            "trading readiness",
+            "forecast",
+            "recommendation",
+            "investment advice",
+        ),
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: summary.interpretation must preserve gate boundary wording"
+        )
+
+    checks = payload.get("checks")
+    if not isinstance(checks, list) or len(checks) != 7:
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: checks must include the seven promotion-readiness checks"
+        )
+        checks = []
+    labels: list[str] = []
+    check_names: set[str] = set()
+    for index, check in enumerate(checks, start=1):
+        if not isinstance(check, dict):
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: checks[{index}] must be an object"
+            )
+            continue
+        if tuple(check) != PROMOTION_READINESS_CHECK_ITEM_KEYS:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: checks[{index}] keys must be "
+                f"{', '.join(PROMOTION_READINESS_CHECK_ITEM_KEYS)}"
+            )
+        check_names.add(str(check.get("check")))
+        labels.append(str(check.get("label")))
+        if check.get("label") not in {"PASS", "WARN", "FAIL"}:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: checks[{index}].label must be PASS, WARN, or FAIL"
+            )
+        for key in PROMOTION_READINESS_CHECK_ITEM_KEYS:
+            if not isinstance(check.get(key), str) or not check[key].strip():
+                issues.append(
+                    f"{PROMOTION_READINESS_CHECK_JSON}: checks[{index}].{key} must be a non-empty string"
+                )
+
+    for required_check in (
+        "no_live_data_boundary",
+        "no_advice_boundary",
+        "benchmark_evidence",
+        "fee_evidence",
+        "drawdown_evidence",
+        "train_test_evidence",
+        "leveraged_caveat_evidence",
+    ):
+        if required_check not in check_names:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: missing check {required_check}"
+            )
+    if summary.get("pass_count") != labels.count("PASS"):
+        issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: summary.pass_count is stale")
+    if summary.get("warn_count") != labels.count("WARN"):
+        issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: summary.warn_count is stale")
+    if summary.get("fail_count") != labels.count("FAIL"):
+        issues.append(f"{PROMOTION_READINESS_CHECK_JSON}: summary.fail_count is stale")
+
+    next_fixes = payload.get("actionable_next_fixes")
+    if not isinstance(next_fixes, list) or not all(
+        isinstance(fix, str) and fix.strip() for fix in next_fixes
+    ):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: actionable_next_fixes must be a list of strings"
+        )
+
+    public_boundaries = payload.get("public_boundaries")
+    if not _is_non_empty_string_list(public_boundaries):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: public_boundaries must be a non-empty list"
+        )
+    else:
+        boundary_text = " ".join(public_boundaries)
+        if not _contains_all_terms(
+            boundary_text,
+            (
+                "static thesis-ledger json artifact only",
+                "does not fetch live market data",
+                "connect to brokers",
+                "route orders",
+                "position",
+                "not market outlooks",
+                "forecasts",
+                "recommendations",
+                "investment advice",
+            ),
+        ):
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_JSON}: public_boundaries must preserve no-live-data and no-advice claims"
+            )
+
+    commands = payload.get("verification_commands")
+    if not _is_non_empty_string_list(commands):
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_JSON}: verification_commands must be a non-empty list"
+        )
+    else:
+        for required_command in (
+            "python -m market_signal_lab.cli --promotion-readiness-check",
+            "python -m market_signal_lab.cli --prediction-readiness-audit",
+            "python -m market_signal_lab.cli --validate-thesis-ledger",
+            "python -m pytest",
+        ):
+            if required_command not in commands:
+                issues.append(
+                    f"{PROMOTION_READINESS_CHECK_JSON}: missing verification command {required_command}"
+                )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{PROMOTION_READINESS_CHECK_MARKDOWN}: check Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_MARKDOWN}: check Markdown is empty"
+            )
+
+    for required_text in (
+        "# Public-Promotion Readiness Check",
+        "## Gate Labels",
+        "## Checks",
+        "## Evidence and Follow-Up",
+        "## Actionable Next Fixes",
+        "## Public Boundaries",
+        "## Verification Commands",
+        "**Release Gate**",
+        "**Promotion Gate**",
+        "**PASS/WARN/FAIL counts (checks array)**",
+        "**Count scope**",
+        "**Label meanings**",
+        "**Source content SHA-256**",
+        "**Default outputs**",
+        "not trading readiness, a forecast, a recommendation, or investment advice",
+        "No fix is listed for this PASS check; keep the evidence visible",
+        "Public review/release can continue",
+        "Broader promotion/citation stays on hold until resolved or explicitly disclosed",
+        "does not fetch live market data",
+        "PASS/WARN/FAIL labels are documentation readiness labels only",
+        "python -m market_signal_lab.cli --promotion-readiness-check",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{PROMOTION_READINESS_CHECK_MARKDOWN}: missing check text {required_text}"
+            )
+
+    if not ledger_path.exists():
+        issues.append("reports/cross-asset-thesis-ledger.json: source ledger is missing")
+    else:
+        ledger_bytes = ledger_path.read_bytes()
+        try:
+            ledger = json.loads(ledger_bytes.decode("utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"reports/cross-asset-thesis-ledger.json: invalid JSON: {exc.msg}"
+            )
+        else:
+            expected_source_content_sha256 = hashlib.sha256(
+                ledger_bytes
+            ).hexdigest()
+            if payload.get("source_content_sha256") != expected_source_content_sha256:
+                issues.append(
+                    f"{PROMOTION_READINESS_CHECK_JSON}: source_content_sha256 must match reports/cross-asset-thesis-ledger.json bytes"
+                )
+            expected_payload = build_promotion_readiness_check(
+                ledger,
+                "reports/cross-asset-thesis-ledger.json",
+                expected_source_content_sha256,
+            )
+            if payload != expected_payload:
+                issues.append(
+                    f"{PROMOTION_READINESS_CHECK_JSON}: does not match deterministic promotion-readiness check output; run python -m market_signal_lab.cli --promotion-readiness-check"
+                )
+            expected_markdown = render_promotion_readiness_check(expected_payload)
+            if markdown and markdown != expected_markdown:
+                issues.append(
+                    f"{PROMOTION_READINESS_CHECK_MARKDOWN}: does not match deterministic promotion-readiness check output; run python -m market_signal_lab.cli --promotion-readiness-check"
+                )
 
     return issues
 

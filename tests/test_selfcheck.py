@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 from pathlib import Path
@@ -11,6 +12,10 @@ from market_signal_lab.assumption_ledger_summary import (
 from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
+)
+from market_signal_lab.promotion_readiness_check import (
+    build_promotion_readiness_check,
+    render_promotion_readiness_check,
 )
 from market_signal_lab.reviewer_rerun_receipt import (
     build_reviewer_rerun_receipt,
@@ -91,6 +96,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-notes-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.28.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.29.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.30.3.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.2.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.1.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.0.md") in selfcheck.DOC_LINK_SOURCES
@@ -135,6 +141,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-v1.30.3.md",
         "../docs/release-v1.30.2.md",
         "../docs/release-v1.30.1.md",
         "../docs/release-v1.30.0.md",
@@ -189,6 +196,10 @@ def test_selfcheck_validates_strategy_assumption_stress_kit_contract() -> None:
 
 def test_selfcheck_validates_stress_kit_quickstart_card_contract() -> None:
     assert selfcheck.find_stress_kit_quickstart_card_issues(selfcheck.REPO_ROOT) == []
+
+
+def test_selfcheck_validates_promotion_readiness_check_contract() -> None:
+    assert selfcheck.find_promotion_readiness_check_issues(selfcheck.REPO_ROOT) == []
 
 
 def test_selfcheck_validates_assumption_ledger_summary_contract() -> None:
@@ -317,6 +328,42 @@ def test_selfcheck_rejects_stale_assumption_ledger_summary(
 
     assert any("does not match deterministic" in issue for issue in issues)
     assert any("missing summary text not as a verdict" in issue for issue in issues)
+
+
+def test_selfcheck_rejects_stale_promotion_readiness_check(
+    tmp_path: Path,
+) -> None:
+    reports = tmp_path / "reports"
+    reports.mkdir()
+    ledger = json.loads(Path("reports/cross-asset-thesis-ledger.json").read_text())
+    ledger_json = json.dumps(ledger, separators=(",", ":")) + "\n"
+    (reports / "cross-asset-thesis-ledger.json").write_text(
+        ledger_json,
+        encoding="utf-8",
+    )
+    payload = build_promotion_readiness_check(
+        ledger,
+        "reports/cross-asset-thesis-ledger.json",
+        hashlib.sha256(ledger_json.encode("utf-8")).hexdigest(),
+    )
+    markdown = render_promotion_readiness_check(payload)
+    payload["summary"]["promotion_gate"] = "PASS"
+    (reports / "promotion-readiness-check.json").write_text(
+        json.dumps(payload, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+    (reports / "promotion-readiness-check.md").write_text(
+        markdown.replace("does not fetch live market data", "may fetch live data"),
+        encoding="utf-8",
+    )
+
+    issues = selfcheck.find_promotion_readiness_check_issues(tmp_path)
+
+    assert any("does not match deterministic" in issue for issue in issues)
+    assert any(
+        "missing check text does not fetch live market data" in issue
+        for issue in issues
+    )
 
 
 def test_v131_root_landing_contract_accepts_current_tree() -> None:
@@ -479,6 +526,7 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "reports/stress-kit-quickstart-card.md",
         "reports/stress-kit-quickstart-card.json",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.30.3.md",
         "docs/release-v1.30.2.md",
         "docs/release-v1.30.1.md",
         "docs/release-v1.30.0.md",
@@ -2170,6 +2218,7 @@ def _write_v131_landing_fixture(
         "reviewer-decision-tree.md",
         "quick-tour-preview.md",
         "quick-tour-preview.svg",
+        "release-v1.30.3.md",
         "release-v1.30.2.md",
         "release-v1.30.1.md",
         "release-v1.30.0.md",

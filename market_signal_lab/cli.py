@@ -16,6 +16,12 @@ import tempfile
 from typing import Any
 
 from market_signal_lab import __version__
+from market_signal_lab.acceptance_receipt_index import (
+    ACCEPTANCE_RECEIPT_INDEX_JSON_PATH,
+    ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH,
+    build_acceptance_receipt_index,
+    render_acceptance_receipt_index,
+)
 from market_signal_lab.assumption_ledger_summary import (
     ASSUMPTION_LEDGER_SUMMARY_JSON_PATH,
     ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH,
@@ -152,6 +158,9 @@ PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_OUTPUT = Path(
 PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG = "--public-demo-evidence-receipt"
 REVIEWER_RERUN_RECEIPT_OUTPUT = Path("reports/reviewer-rerun-receipt.md")
 REVIEWER_RERUN_RECEIPT_JSON_OUTPUT = Path("reports/reviewer-rerun-receipt.json")
+ACCEPTANCE_RECEIPT_INDEX_OUTPUT = Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH)
+ACCEPTANCE_RECEIPT_INDEX_JSON_OUTPUT = Path(ACCEPTANCE_RECEIPT_INDEX_JSON_PATH)
+ACCEPTANCE_RECEIPT_INDEX_FLAG = "--acceptance-receipt-index"
 REVIEWER_ACCEPTANCE_SCORECARD_OUTPUT = Path(
     "reports/reviewer-acceptance-scorecard.md"
 )
@@ -216,6 +225,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
     _reject_public_demo_evidence_receipt_mode_conflicts(args, parser)
+    _reject_acceptance_receipt_index_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_reviewer_decision_matrix_mode_conflicts(args, parser)
     _reject_promotion_readiness_check_mode_conflicts(args, parser)
@@ -260,6 +270,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_public_demo_evidence_receipt()
             )
+        elif args.acceptance_receipt_index:
+            args = _resolve_acceptance_receipt_index_args(args, parser)
+            report, json_payload, manifest_payload = _run_acceptance_receipt_index()
         elif args.beginner_prediction_checklist:
             args = _resolve_beginner_prediction_checklist_args(args, parser)
             report, json_payload, manifest_payload = (
@@ -331,6 +344,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -345,6 +359,31 @@ def _reject_public_demo_evidence_receipt_mode_conflicts(
         args,
         parser,
         PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
+    )
+
+
+def _reject_acceptance_receipt_index_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.acceptance_receipt_index:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        ACCEPTANCE_RECEIPT_INDEX_FLAG,
         include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
@@ -378,6 +417,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -401,6 +441,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -424,6 +465,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -447,6 +489,7 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -470,6 +513,7 @@ def _reject_reviewer_decision_matrix_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -493,6 +537,7 @@ def _reject_promotion_readiness_check_mode_conflicts(
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -516,6 +561,7 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_promotion_readiness_check=True,
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -539,6 +585,7 @@ def _reject_stress_kit_quickstart_card_mode_conflicts(
         include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -562,6 +609,7 @@ def _reject_assumption_ledger_summary_mode_conflicts(
         include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_acceptance_receipt_index=True,
     )
 
 
@@ -580,6 +628,7 @@ def _reject_mode_conflicts(
     include_strategy_assumption_stress_kit: bool = False,
     include_stress_kit_quickstart_card: bool = False,
     include_assumption_ledger_summary: bool = False,
+    include_acceptance_receipt_index: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -605,6 +654,10 @@ def _reject_mode_conflicts(
             "--beginner-prediction-checklist",
             include_beginner_prediction_checklist
             and args.beginner_prediction_checklist,
+        ),
+        (
+            ACCEPTANCE_RECEIPT_INDEX_FLAG,
+            include_acceptance_receipt_index and args.acceptance_receipt_index,
         ),
         (
             PREDICTION_READINESS_AUDIT_FLAG,
@@ -909,6 +962,22 @@ def _build_parser() -> ArgumentParser:
             "reports/reviewer-rerun-receipt.json. Does not read CSV data, fetch "
             "live data, connect to brokers, inspect accounts, route orders, size "
             "positions, forecast, recommend, or provide investment advice."
+        ),
+    )
+    parser.add_argument(
+        ACCEPTANCE_RECEIPT_INDEX_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic acceptance receipt index linking the "
+            "public demo evidence receipt, reviewer rerun receipt, reviewer "
+            "evidence bundle, fixture provenance, artifact hashes, and "
+            "no-live-data/no-advice boundaries. Defaults to "
+            f"{ACCEPTANCE_RECEIPT_INDEX_OUTPUT} and "
+            f"{ACCEPTANCE_RECEIPT_INDEX_JSON_OUTPUT}. Does not read CSV data, "
+            "fetch live data, connect to brokers, inspect accounts, route "
+            "orders, size positions, forecast, recommend, or provide "
+            "investment advice."
         ),
     )
     parser.add_argument(
@@ -1305,6 +1374,33 @@ def _resolve_public_demo_evidence_receipt_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.public_demo_evidence_receipt = True
+    return resolved
+
+
+def _resolve_acceptance_receipt_index_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{ACCEPTANCE_RECEIPT_INDEX_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{ACCEPTANCE_RECEIPT_INDEX_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(f"{ACCEPTANCE_RECEIPT_INDEX_FLAG} writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{ACCEPTANCE_RECEIPT_INDEX_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or ACCEPTANCE_RECEIPT_INDEX_OUTPUT
+    resolved.json_output = args.json_output or ACCEPTANCE_RECEIPT_INDEX_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.acceptance_receipt_index = True
     return resolved
 
 
@@ -1998,6 +2094,12 @@ def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]
 def _run_public_demo_evidence_receipt() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_public_demo_evidence_receipt()
     report = render_public_demo_evidence_receipt(payload)
+    return report, payload, {}
+
+
+def _run_acceptance_receipt_index() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_acceptance_receipt_index()
+    report = render_acceptance_receipt_index(payload)
     return report, payload, {}
 
 

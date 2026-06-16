@@ -8,6 +8,10 @@ from pathlib import Path
 
 import pytest
 
+from market_signal_lab.acceptance_receipt_index import (
+    BOUNDARY_FLAGS as ACCEPTANCE_RECEIPT_INDEX_BOUNDARY_FLAGS,
+    INDEX_ARTIFACT_PATHS as ACCEPTANCE_RECEIPT_INDEX_ARTIFACT_PATHS,
+)
 from market_signal_lab.cli import _regime_generation_assumptions
 from market_signal_lab.beginner_prediction_checklist import (
     BEGINNER_PREDICTION_CHECKLIST_DEFAULT_OUTPUT_KEYS,
@@ -163,6 +167,162 @@ def test_cli_writes_public_demo_evidence_receipt_defaults(tmp_path: Path) -> Non
     assert integrity["artifact_count"] == len(EVIDENCE_ARTIFACT_PATHS)
     assert integrity["present_count"] == 0
     assert integrity["missing_count"] == len(EVIDENCE_ARTIFACT_PATHS)
+
+
+def test_cli_writes_acceptance_receipt_index_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--acceptance-receipt-index",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "acceptance-receipt-index.md"
+    json_path = tmp_path / "reports" / "acceptance-receipt-index.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Acceptance Receipt Index" in markdown
+    assert "reports/public-demo-evidence-receipt.md" in markdown
+    assert "reports/reviewer-rerun-receipt.md" in markdown
+    assert "reports/reviewer-evidence-bundle.md" in markdown
+    assert "examples/data/sample_tqqq_qld_like.csv.provenance.json" in markdown
+    assert payload["artifact_type"] == "acceptance_receipt_index"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/acceptance-receipt-index.md",
+        "json": "reports/acceptance-receipt-index.json",
+    }
+    for key in ACCEPTANCE_RECEIPT_INDEX_BOUNDARY_FLAGS:
+        assert payload[key] is True
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "WARN"
+    assert integrity["artifact_count"] == len(ACCEPTANCE_RECEIPT_INDEX_ARTIFACT_PATHS)
+    assert integrity["present_count"] == 0
+    assert integrity["missing_count"] == len(ACCEPTANCE_RECEIPT_INDEX_ARTIFACT_PATHS)
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--acceptance-receipt-index does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--acceptance-receipt-index cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--public-demo-evidence-receipt"],
+            "--public-demo-evidence-receipt cannot be combined with --acceptance-receipt-index",
+        ),
+        (
+            ["--reviewer-rerun-receipt"],
+            "--reviewer-rerun-receipt cannot be combined with --acceptance-receipt-index",
+        ),
+        (
+            ["--reviewer-evidence-bundle"],
+            "--acceptance-receipt-index cannot be combined with --reviewer-evidence-bundle",
+        ),
+        (
+            ["--html-output", "index.html"],
+            "--acceptance-receipt-index writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--acceptance-receipt-index does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_acceptance_receipt_index_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--acceptance-receipt-index",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_acceptance_receipt_index(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--acceptance-receipt-index",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        f"--acceptance-receipt-index cannot be combined with {flag}"
+        in result.stderr
+    )
+
+
+def test_cli_rejects_csv_for_acceptance_receipt_index() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--acceptance-receipt-index",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--acceptance-receipt-index does not take csv_path" in result.stderr
 
 
 @pytest.mark.parametrize(

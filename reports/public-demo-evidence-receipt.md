@@ -37,7 +37,7 @@ Give cold public reviewers one deterministic receipt for checking the static gal
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/index.html | present | 10299 | 1f71536d9c4db60df40a9a4448639f4a4a5e2ca2e4fa52c2f60212c0b92b4eb2 |
+| reports/index.html | present | 10545 | e2cd1fb57eb69428c58e2c35441732f13f89c5cb18bf311cbb49aa843b42c586 |
 | reports/sample-report.md | present | 3543 | 20ba4fb3f9b1bc739f2e4ccf039e478ac41ddf570a199b6e075b783b54a48ebc |
 | reports/sample-report.json | present | 3015 | 4b69d8391304c7642fce4394ce7b8648fdd664bc5f11762cb9c1d618ec24dd81 |
 | reports/sample-report.html | present | 5575 | bcd9cff8ebf339ff54e0cd43df183179288659c3e9b86957f7cb524ef4b663a6 |
@@ -56,7 +56,7 @@ Give cold public reviewers one deterministic receipt for checking the static gal
 | examples/data/sample_multi_regime.csv | present | 1984 | 448940642e8eac3a97ca4af9a10aa7272fb68fd31e69b6628bef0ab7ff31a015 |
 | examples/data/sample_multi_regime.csv.provenance.json | present | 2419 | df6c4da0c88250d340c378a076b3fbc35adf060ab6129851985d91e232844e32 |
 | docs/data-provenance.md | present | 3324 | 2f54077d55203210371f331269d1f51fc6faa95583eb407f9be89b1a19d7366b |
-| docs/artifact-gallery.md | present | 24708 | 39361020ba13cd2a77dc217a3b1fade617efa2025e4389e5a738abe1dfbb3d9e |
+| docs/artifact-gallery.md | present | 25258 | 6486b09be3991ce1632f7f56d58c829d7f73357c4225c863e7ad0d309bb187f7 |
 | docs/static-gallery-manifest.md | present | 14378 | 3587015ef4f4437c4352cc8d566861e73ecdf72f5062237d279a91d6a76b50c1 |
 
 ## Not Claimed

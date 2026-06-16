@@ -2185,6 +2185,14 @@ def _write_v131_landing_fixture(
         "# Reviewer Rerun Receipt\n",
         encoding="utf-8",
     )
+    (reports_dir / "acceptance-receipt-index.md").write_text(
+        "# Acceptance Receipt Index\n",
+        encoding="utf-8",
+    )
+    (reports_dir / "acceptance-receipt-index.json").write_text(
+        "{}\n",
+        encoding="utf-8",
+    )
     (reports_dir / "reviewer-acceptance-scorecard.md").write_text(
         "# Reviewer Acceptance Scorecard\n",
         encoding="utf-8",

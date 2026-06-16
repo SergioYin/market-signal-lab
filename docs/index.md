@@ -57,6 +57,8 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Public demo evidence receipt JSON](../reports/public-demo-evidence-receipt.json) - structured version of the same public demo receipt.
 - [Reviewer rerun receipt](../reports/reviewer-rerun-receipt.md) - deterministic stdlib-only receipt listing public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json) - structured version of the same rerun receipt.
+- [Acceptance receipt index](../reports/acceptance-receipt-index.md) - bounded public index linking the public demo evidence receipt, reviewer rerun receipt, reviewer evidence bundle, fixture provenance, artifact hashes, and no-live-data/no-advice boundaries.
+- [Acceptance receipt index JSON](../reports/acceptance-receipt-index.json) - structured version of the same receipt index.
 - [Reviewer acceptance scorecard guide](reviewer-acceptance-scorecard.md) - explains the generated scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.
 - [Reviewer acceptance scorecard](../reports/reviewer-acceptance-scorecard.md) - deterministic PASS/WARN public-review readiness, reproducibility evidence, risk-boundary, and next-action summary.
 - [Reviewer acceptance scorecard JSON](../reports/reviewer-acceptance-scorecard.json) - structured version of the same scorecard.

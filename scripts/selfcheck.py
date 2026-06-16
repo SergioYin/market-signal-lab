@@ -22,6 +22,12 @@ from market_signal_lab.beginner_prediction_checklist import (
     build_beginner_prediction_checklist,
     render_beginner_prediction_checklist,
 )
+from market_signal_lab.acceptance_receipt_index import (
+    ACCEPTANCE_RECEIPT_INDEX_JSON_PATH,
+    ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH,
+    build_acceptance_receipt_index,
+    render_acceptance_receipt_index,
+)
 from market_signal_lab.assumption_ledger_summary import (
     ASSUMPTION_ITEM_KEYS,
     ASSUMPTION_LEDGER_SUMMARY_COMMAND,
@@ -279,6 +285,8 @@ V131_ROOT_LANDING_LINKS = (
     "reports/reviewer-evidence-bundle.md",
     "reports/public-demo-evidence-receipt.md",
     "reports/reviewer-rerun-receipt.md",
+    "reports/acceptance-receipt-index.md",
+    "reports/acceptance-receipt-index.json",
     "reports/reviewer-acceptance-scorecard.md",
     "reports/stress-kit-quickstart-card.md",
     "reports/stress-kit-quickstart-card.json",
@@ -376,6 +384,8 @@ V130_STATIC_GALLERY_LINKS = (
     "public-demo-evidence-receipt.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
+    "acceptance-receipt-index.md",
+    "acceptance-receipt-index.json",
     "reviewer-acceptance-scorecard.md",
     "reviewer-acceptance-scorecard.json",
     "reviewer-decision-matrix.md",
@@ -473,6 +483,8 @@ PROMOTION_READINESS_CHECK_JSON = Path("reports/promotion-readiness-check.json")
 PROMOTION_READINESS_CHECK_MARKDOWN = Path("reports/promotion-readiness-check.md")
 REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
+ACCEPTANCE_RECEIPT_INDEX_JSON = Path(ACCEPTANCE_RECEIPT_INDEX_JSON_PATH)
+ACCEPTANCE_RECEIPT_INDEX_MARKDOWN = Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
     PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
@@ -579,6 +591,8 @@ SAMPLE_ARTIFACTS = (
     Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
+    Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH),
+    Path(ACCEPTANCE_RECEIPT_INDEX_JSON_PATH),
     Path("reports/reviewer-acceptance-scorecard.md"),
     Path("reports/reviewer-acceptance-scorecard.json"),
     Path("reports/reviewer-decision-matrix.md"),
@@ -682,6 +696,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
           <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
+          <li><a href="acceptance-receipt-index.md">Acceptance receipt index</a> and <a href="acceptance-receipt-index.json">JSON</a> - bounded index linking public receipts, fixture provenance, hashes, and no-live-data/no-advice boundaries</li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="reviewer-decision-matrix.md">Reviewer decision matrix</a> and <a href="reviewer-decision-matrix.json">JSON</a></li>
           <li><a href="promotion-readiness-check.md">Promotion-readiness check</a> and <a href="promotion-readiness-check.json">JSON</a> - release/promotion gate labels, evidence checks, PASS review notes, and WARN/FAIL next fixes</li>
@@ -980,6 +995,16 @@ def run_sample_artifact_generation() -> bool:
         encoding="utf-8",
     )
 
+    acceptance_receipt_index = build_acceptance_receipt_index(REPO_ROOT)
+    (REPORTS_DIR / "acceptance-receipt-index.md").write_text(
+        render_acceptance_receipt_index(acceptance_receipt_index),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "acceptance-receipt-index.json").write_text(
+        json.dumps(acceptance_receipt_index, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     for artifact in SAMPLE_ARTIFACTS:
         path = REPO_ROOT / artifact
         if not path.exists():
@@ -993,7 +1018,8 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "public demo evidence receipt, reviewer rerun receipt, reviewer "
+        "public demo evidence receipt, reviewer rerun receipt, acceptance "
+        "receipt index, reviewer "
         "decision matrix, beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "

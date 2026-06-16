@@ -67,6 +67,12 @@ from market_signal_lab.promotion_readiness_check import (
     build_promotion_readiness_check,
     render_promotion_readiness_check,
 )
+from market_signal_lab.public_demo_evidence_receipt import (
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH,
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH,
+    build_public_demo_evidence_receipt,
+    render_public_demo_evidence_receipt,
+)
 from market_signal_lab.reviewer_decision_matrix import (
     build_reviewer_decision_matrix,
     render_reviewer_decision_matrix,
@@ -137,6 +143,13 @@ THESIS_LEDGER_ACCEPTANCE_JSON_OUTPUT = Path(
 )
 REVIEWER_EVIDENCE_BUNDLE_OUTPUT = Path("reports/reviewer-evidence-bundle.md")
 REVIEWER_EVIDENCE_BUNDLE_JSON_OUTPUT = Path("reports/reviewer-evidence-bundle.json")
+PUBLIC_DEMO_EVIDENCE_RECEIPT_OUTPUT = Path(
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
+)
+PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_OUTPUT = Path(
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH
+)
+PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG = "--public-demo-evidence-receipt"
 REVIEWER_RERUN_RECEIPT_OUTPUT = Path("reports/reviewer-rerun-receipt.md")
 REVIEWER_RERUN_RECEIPT_JSON_OUTPUT = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_ACCEPTANCE_SCORECARD_OUTPUT = Path(
@@ -202,6 +215,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_cold_user_review_route_mode_conflicts(args, parser)
     _reject_prediction_readiness_audit_mode_conflicts(args, parser)
     _reject_beginner_prediction_checklist_mode_conflicts(args, parser)
+    _reject_public_demo_evidence_receipt_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_reviewer_decision_matrix_mode_conflicts(args, parser)
     _reject_promotion_readiness_check_mode_conflicts(args, parser)
@@ -241,6 +255,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.reviewer_evidence_bundle:
             args = _resolve_reviewer_evidence_bundle_args(args, parser)
             report, json_payload, manifest_payload = _run_reviewer_evidence_bundle()
+        elif args.public_demo_evidence_receipt:
+            args = _resolve_public_demo_evidence_receipt_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_public_demo_evidence_receipt()
+            )
         elif args.beginner_prediction_checklist:
             args = _resolve_beginner_prediction_checklist_args(args, parser)
             report, json_payload, manifest_payload = (
@@ -303,6 +322,30 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         args,
         parser,
         "--beginner-prediction-checklist",
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+    )
+
+
+def _reject_public_demo_evidence_receipt_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.public_demo_evidence_receipt:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG,
+        include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
         include_reviewer_rerun_receipt=True,
@@ -841,6 +884,20 @@ def _build_parser() -> ArgumentParser:
         ),
     )
     parser.add_argument(
+        PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic public demo evidence receipt covering "
+            "static gallery/backtest artifacts, source fixture boundaries, "
+            "artifact hashes, and no-live-data/no-advice claims. Defaults to "
+            f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_OUTPUT} and "
+            f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_OUTPUT}. Does not read live "
+            "market data, connect to brokers, inspect accounts, route orders, "
+            "size positions, forecast, recommend, or provide investment advice."
+        ),
+    )
+    parser.add_argument(
         "--reviewer-rerun-receipt",
         action="store_true",
         default=False,
@@ -1219,6 +1276,35 @@ def _resolve_reviewer_evidence_bundle_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.reviewer_evidence_bundle = True
+    return resolved
+
+
+def _resolve_public_demo_evidence_receipt_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or PUBLIC_DEMO_EVIDENCE_RECEIPT_OUTPUT
+    resolved.json_output = args.json_output or PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.public_demo_evidence_receipt = True
     return resolved
 
 
@@ -1906,6 +1992,12 @@ def _run_methodology_audit_template() -> tuple[str, dict[str, Any], dict[str, An
 def _run_reviewer_evidence_bundle() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_reviewer_evidence_bundle()
     report = render_reviewer_evidence_bundle(payload)
+    return report, payload, {}
+
+
+def _run_public_demo_evidence_receipt() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_public_demo_evidence_receipt()
+    report = render_public_demo_evidence_receipt(payload)
     return report, payload, {}
 
 

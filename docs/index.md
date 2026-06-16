@@ -53,6 +53,8 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Thesis-ledger 60-second walkthrough](thesis-ledger-60-second-walkthrough.md) - run `python -m market_signal_lab.cli --validate-thesis-ledger` from a fresh checkout, see the local files it reads and writes, and interpret PASS/WARN/FAIL acceptance fields without live data, broker, account, order, forecast, recommendation, or advice workflows.
 - [Reviewer evidence bundle](../reports/reviewer-evidence-bundle.md) - compact static handoff tying gallery, thesis-ledger acceptance, verification commands, methodology risks, no-advice boundaries, and the [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary) together.
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json) - structured version of the same public-safe handoff.
+- [Public demo evidence receipt](../reports/public-demo-evidence-receipt.md) - deterministic public demo receipt for gallery/backtest artifact hashes, fixture provenance paths, and no-live-data/no-advice claims.
+- [Public demo evidence receipt JSON](../reports/public-demo-evidence-receipt.json) - structured version of the same public demo receipt.
 - [Reviewer rerun receipt](../reports/reviewer-rerun-receipt.md) - deterministic stdlib-only receipt listing public rerun commands, expected artifacts, PASS/WARN checks, and no-live-data/no-advice boundaries.
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json) - structured version of the same rerun receipt.
 - [Reviewer acceptance scorecard guide](reviewer-acceptance-scorecard.md) - explains the generated scorecard purpose, inputs, outputs, boundaries, and reviewer acceptance criteria.

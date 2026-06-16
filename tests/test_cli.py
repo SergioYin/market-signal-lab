@@ -26,6 +26,9 @@ from market_signal_lab.report import (
     SCENARIO_RISK_INTERPRETATION_KEYS,
     SCENARIO_RISK_INTERPRETATION_NOTE,
 )
+from market_signal_lab.public_demo_evidence_receipt import (
+    EVIDENCE_ARTIFACT_PATHS,
+)
 from market_signal_lab.reviewer_rerun_receipt import (
     CHECKLIST_KEYS,
     EXPECTED_ARTIFACT_KEYS,
@@ -116,6 +119,165 @@ def test_cli_writes_reviewer_evidence_bundle_defaults(tmp_path: Path) -> None:
     assert "not financial validation" in markdown
     assert "reports/stress-kit-quickstart-card.md" in markdown
     assert "| reports/index.html | missing | 0 | missing |" in markdown
+
+
+def test_cli_writes_public_demo_evidence_receipt_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--public-demo-evidence-receipt",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "public-demo-evidence-receipt.md"
+    json_path = tmp_path / "reports" / "public-demo-evidence-receipt.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Public Demo Evidence Receipt" in markdown
+    assert "## Source Fixture Boundaries" in markdown
+    assert "No live market data was fetched by this receipt." in markdown
+    assert payload["artifact_type"] == "public_demo_evidence_receipt"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/public-demo-evidence-receipt.md",
+        "json": "reports/public-demo-evidence-receipt.json",
+    }
+    assert payload["fixture_or_static_data_only"] is True
+    assert payload["no_live_data"] is True
+    assert payload["not_investment_advice"] is True
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "WARN"
+    assert integrity["artifact_count"] == len(EVIDENCE_ARTIFACT_PATHS)
+    assert integrity["present_count"] == 0
+    assert integrity["missing_count"] == len(EVIDENCE_ARTIFACT_PATHS)
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--public-demo-evidence-receipt does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--public-demo-evidence-receipt cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--scenario-card"],
+            "--public-demo-evidence-receipt cannot be combined with --scenario-card",
+        ),
+        (
+            ["--validate-thesis-ledger"],
+            "--public-demo-evidence-receipt cannot be combined with --validate-thesis-ledger",
+        ),
+        (
+            ["--reviewer-evidence-bundle"],
+            "--public-demo-evidence-receipt cannot be combined with --reviewer-evidence-bundle",
+        ),
+        (
+            ["--reviewer-rerun-receipt"],
+            "--public-demo-evidence-receipt cannot be combined with --reviewer-rerun-receipt",
+        ),
+        (
+            ["--html-output", "receipt.html"],
+            "--public-demo-evidence-receipt writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--public-demo-evidence-receipt does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_public_demo_evidence_receipt_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--public-demo-evidence-receipt",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_public_demo_evidence_receipt(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--public-demo-evidence-receipt",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        f"--public-demo-evidence-receipt cannot be combined with {flag}"
+        in result.stderr
+    )
+
+
+def test_cli_rejects_csv_for_public_demo_evidence_receipt() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--public-demo-evidence-receipt",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--public-demo-evidence-receipt does not take csv_path" in result.stderr
 
 
 def test_cli_writes_reviewer_rerun_receipt_defaults(tmp_path: Path) -> None:

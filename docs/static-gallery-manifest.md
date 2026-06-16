@@ -24,6 +24,8 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Methodology audit review file schema](methodology-audit-review-schema.md)
 - [Evidence card walkthrough](evidence-card-walkthrough.svg)
 - [Static gallery entry page](../reports/index.html)
+- [Public demo evidence receipt Markdown](../reports/public-demo-evidence-receipt.md)
+- [Public demo evidence receipt JSON](../reports/public-demo-evidence-receipt.json)
 - [Reviewer rerun receipt Markdown](../reports/reviewer-rerun-receipt.md)
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json)
 - [Reviewer decision matrix Markdown](../reports/reviewer-decision-matrix.md)
@@ -59,6 +61,7 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Fee sensitivity: [Markdown](../reports/fee-sensitivity.md) and [JSON](../reports/fee-sensitivity.json).
 - Cross-asset thesis ledger: [Markdown](../reports/cross-asset-thesis-ledger.md) and [JSON](../reports/cross-asset-thesis-ledger.json).
 - Reviewer evidence bundle integrity summary: [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary), [Markdown](../reports/reviewer-evidence-bundle.md), and [JSON](../reports/reviewer-evidence-bundle.json).
+- Public demo evidence receipt: [Markdown](../reports/public-demo-evidence-receipt.md) and [JSON](../reports/public-demo-evidence-receipt.json) with deterministic hashes for gallery/backtest artifacts, fixture provenance paths, and no-live-data/no-advice claims.
 - Reviewer rerun receipt: [Markdown](../reports/reviewer-rerun-receipt.md) and [JSON](../reports/reviewer-rerun-receipt.json).
 - Reviewer decision matrix: [Markdown](../reports/reviewer-decision-matrix.md) and [JSON](../reports/reviewer-decision-matrix.json).
 - Promotion-readiness check: [Markdown](../reports/promotion-readiness-check.md) and [JSON](../reports/promotion-readiness-check.json) with release/promotion gate labels, PASS review notes, WARN/FAIL next fixes, and non-sensitive source-content SHA-256 provenance for public sharing review.
@@ -100,6 +103,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Thesis-ledger acceptance JSON](../reports/cross-asset-thesis-ledger-acceptance.json)
 - [Reviewer evidence bundle Markdown](../reports/reviewer-evidence-bundle.md)
 - [Reviewer evidence bundle JSON](../reports/reviewer-evidence-bundle.json)
+- [Public demo evidence receipt Markdown](../reports/public-demo-evidence-receipt.md)
+- [Public demo evidence receipt JSON](../reports/public-demo-evidence-receipt.json)
 - [Reviewer rerun receipt Markdown](../reports/reviewer-rerun-receipt.md)
 - [Reviewer rerun receipt JSON](../reports/reviewer-rerun-receipt.json)
 - [Reviewer decision matrix Markdown](../reports/reviewer-decision-matrix.md)

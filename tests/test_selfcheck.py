@@ -79,6 +79,11 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/methodology-audit-score.html") in selfcheck.HTML_LINK_SOURCES
     assert Path("reports/reviewer-rerun-receipt.md") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/reviewer-rerun-receipt.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert Path("reports/public-demo-evidence-receipt.md") in selfcheck.SAMPLE_ARTIFACTS
+    assert (
+        Path("reports/public-demo-evidence-receipt.json")
+        in selfcheck.SAMPLE_ARTIFACTS
+    )
     assert Path("reports/reviewer-acceptance-scorecard.md") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/reviewer-acceptance-scorecard.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/strategy-assumption-stress-kit.md") in selfcheck.SAMPLE_ARTIFACTS
@@ -113,6 +118,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert "not a guarantee of future returns" in gallery
     assert "Regime comparison" in gallery
     assert "Reviewer rerun receipt" in gallery
+    assert "Public demo evidence receipt" in gallery
     assert "Strategy assumption stress kit" in gallery
     assert "Stress Kit Quickstart Card" in gallery
     assert "Assumption Ledger Summary" in gallery
@@ -162,6 +168,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "cross-asset-thesis-ledger.json",
         "reviewer-evidence-bundle.md",
         "reviewer-evidence-bundle.json",
+        "public-demo-evidence-receipt.md",
+        "public-demo-evidence-receipt.json",
         "reviewer-rerun-receipt.md",
         "reviewer-rerun-receipt.json",
         "reviewer-acceptance-scorecard.md",
@@ -2167,6 +2175,10 @@ def _write_v131_landing_fixture(
     (reports_dir / "index.html").write_text("<h1>Gallery</h1>\n", encoding="utf-8")
     (reports_dir / "reviewer-evidence-bundle.md").write_text(
         "# Reviewer Evidence Bundle\n",
+        encoding="utf-8",
+    )
+    (reports_dir / "public-demo-evidence-receipt.md").write_text(
+        "# Public Demo Evidence Receipt\n",
         encoding="utf-8",
     )
     (reports_dir / "reviewer-rerun-receipt.md").write_text(

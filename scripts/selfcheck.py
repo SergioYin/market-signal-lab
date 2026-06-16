@@ -47,6 +47,12 @@ from market_signal_lab.promotion_readiness_check import (
     build_promotion_readiness_check,
     render_promotion_readiness_check,
 )
+from market_signal_lab.public_demo_evidence_receipt import (
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH,
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH,
+    build_public_demo_evidence_receipt,
+    render_public_demo_evidence_receipt,
+)
 from market_signal_lab.reviewer_acceptance_scorecard import (
     build_reviewer_acceptance_scorecard,
     render_reviewer_acceptance_scorecard,
@@ -271,6 +277,7 @@ V131_ROOT_LANDING_LINKS = (
     "docs/public-share-copy.md",
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
+    "reports/public-demo-evidence-receipt.md",
     "reports/reviewer-rerun-receipt.md",
     "reports/reviewer-acceptance-scorecard.md",
     "reports/stress-kit-quickstart-card.md",
@@ -365,6 +372,8 @@ V130_STATIC_GALLERY_LINKS = (
     "cross-asset-thesis-ledger.json",
     "reviewer-evidence-bundle.md",
     "reviewer-evidence-bundle.json",
+    "public-demo-evidence-receipt.md",
+    "public-demo-evidence-receipt.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
     "reviewer-acceptance-scorecard.md",
@@ -464,6 +473,10 @@ PROMOTION_READINESS_CHECK_JSON = Path("reports/promotion-readiness-check.json")
 PROMOTION_READINESS_CHECK_MARKDOWN = Path("reports/promotion-readiness-check.md")
 REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
+PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
+PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
+    PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
+)
 STRATEGY_ASSUMPTION_STRESS_KIT_JSON = Path(
     STRATEGY_ASSUMPTION_STRESS_KIT_JSON_PATH
 )
@@ -562,6 +575,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/cross-asset-thesis-ledger-acceptance.json"),
     Path("reports/reviewer-evidence-bundle.md"),
     Path("reports/reviewer-evidence-bundle.json"),
+    Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH),
+    Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
     Path("reports/reviewer-acceptance-scorecard.md"),
@@ -665,6 +680,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="reviewer-acceptance-scorecard.md">Reviewer acceptance scorecard</a> and <a href="reviewer-acceptance-scorecard.json">JSON</a></li>
           <li><a href="reviewer-decision-matrix.md">Reviewer decision matrix</a> and <a href="reviewer-decision-matrix.json">JSON</a></li>
@@ -944,6 +960,16 @@ def run_sample_artifact_generation() -> bool:
 
     (REPORTS_DIR / "index.html").write_text(GALLERY_HTML, encoding="utf-8")
 
+    public_demo_receipt = build_public_demo_evidence_receipt(REPO_ROOT)
+    (REPORTS_DIR / "public-demo-evidence-receipt.md").write_text(
+        render_public_demo_evidence_receipt(public_demo_receipt),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "public-demo-evidence-receipt.json").write_text(
+        json.dumps(public_demo_receipt, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     reviewer_bundle = build_reviewer_evidence_bundle(REPO_ROOT)
     (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
         render_reviewer_evidence_bundle(reviewer_bundle),
@@ -967,8 +993,8 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "reviewer rerun receipt, reviewer decision matrix, beginner "
-        "backtest-reading checklist, "
+        "public demo evidence receipt, reviewer rerun receipt, reviewer "
+        "decision matrix, beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "
         "thesis-ledger acceptance, regime comparison, and HTML artifacts."

@@ -35,6 +35,7 @@ or prediction app.
 Then use one of these static review routes:
 
 - [Static Sample Gallery](reports/index.html) - open the browser-readable artifact dashboard.
+- [Visual Walkthrough Evidence Receipt](reports/visual-walkthrough-evidence-receipt.md) - tie the static walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index into one cold-review route.
 - [Cold-User Review Route](reports/cold-user-review-route.md) - follow the compact first-time review path.
 - [Assumption Ledger Summary](reports/assumption-ledger-summary.md) - scan assumptions, risk boundaries, evidence paths, and non-claims.
 - [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md) - read the two-minute static/no-advice checklist before the full stress kit.
@@ -60,6 +61,7 @@ For the reviewer decision matrix, run `python -m market_signal_lab.cli --reviewe
 For the public-promotion readiness check, run `python -m market_signal_lab.cli --promotion-readiness-check`.
 For the public demo evidence receipt, run `python -m market_signal_lab.cli --public-demo-evidence-receipt`.
 For the acceptance receipt index, run `python -m market_signal_lab.cli --acceptance-receipt-index`.
+For the visual walkthrough evidence receipt, run `python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt`.
 
 For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
@@ -197,7 +199,13 @@ Open `reports/public-demo-evidence-receipt.md` for the focused public demo recei
 python -m market_signal_lab.cli --public-demo-evidence-receipt
 ```
 
-Open `reports/acceptance-receipt-index.md` for the bounded index linking the public demo evidence receipt, reviewer rerun receipt, reviewer evidence bundle, fixture provenance files, artifact hashes, and no-live-data/no-advice boundaries. Regenerate it with:
+Open `reports/visual-walkthrough-evidence-receipt.md` for the cold-review route tying `docs/static-gallery-walkthrough.svg`, `reports/index.html`, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index together. Regenerate it with:
+
+```bash
+python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt
+```
+
+Open `reports/acceptance-receipt-index.md` for the bounded index linking the visual walkthrough evidence receipt, public demo evidence receipt, reviewer rerun receipt, reviewer evidence bundle, fixture provenance files, artifact hashes, and no-live-data/no-advice boundaries. Regenerate it with:
 
 ```bash
 python -m market_signal_lab.cli --acceptance-receipt-index
@@ -553,6 +561,7 @@ Before using any findings, read:
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
 - [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md)
 - [Promotion-Readiness Check Guide](docs/promotion-readiness-check.md)
+- [v1.30.4 Release Notes](docs/release-v1.30.4.md)
 - [v1.30.3 Release Notes](docs/release-v1.30.3.md)
 - [v1.30.2 Release Notes](docs/release-v1.30.2.md)
 - [v1.30.1 Release Notes](docs/release-v1.30.1.md)

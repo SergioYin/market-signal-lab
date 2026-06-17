@@ -116,6 +116,7 @@ def test_acceptance_receipt_index_markdown_surfaces_boundaries() -> None:
 
     assert "# Acceptance Receipt Index" in markdown
     assert "## Indexed Receipts" in markdown
+    assert "reports/visual-walkthrough-evidence-receipt.md" in markdown
     assert "reports/public-demo-evidence-receipt.md" in markdown
     assert "reports/reviewer-rerun-receipt.md" in markdown
     assert "reports/reviewer-evidence-bundle.md" in markdown

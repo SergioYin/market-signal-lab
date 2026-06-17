@@ -48,19 +48,29 @@ def test_cold_user_review_route_schema_and_markdown_are_public_safe() -> None:
         "json": "reports/cold-user-review-route.json",
     }
     assert [step["path"] for step in payload["route"]] == [
+        "docs/static-gallery-walkthrough.svg",
         "reports/index.html",
-        "reports/sample-report.md",
+        "reports/visual-walkthrough-evidence-receipt.md",
+        "reports/public-demo-evidence-receipt.md",
         "reports/beginner-prediction-checklist.md",
         "reports/reviewer-evidence-bundle.md",
         "reports/reviewer-rerun-receipt.md",
+        "reports/acceptance-receipt-index.md",
         "docs/methodology-audit.md",
         "reports/reviewer-acceptance-scorecard.md",
     ]
     assert payload["route"][-1]["step"] == "review_acceptance_scorecard"
     assert "research-only handoff" in payload["route"][-1]["expected_public_signal"]
     assert "reports/reviewer-acceptance-scorecard.md" in markdown
+    assert "docs/static-gallery-walkthrough.svg" in markdown
+    assert "reports/visual-walkthrough-evidence-receipt.md" in markdown
+    assert "reports/public-demo-evidence-receipt.md" in markdown
     assert "reports/reviewer-rerun-receipt.md" in markdown
+    assert "reports/acceptance-receipt-index.md" in markdown
+    assert "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt" in markdown
+    assert "python -m market_signal_lab.cli --public-demo-evidence-receipt" in markdown
     assert "python -m market_signal_lab.cli --reviewer-rerun-receipt" in markdown
+    assert "python -m market_signal_lab.cli --acceptance-receipt-index" in markdown
     assert "python -m market_signal_lab.cli --reviewer-acceptance-scorecard" in markdown
     assert "# Cold-User Review Route" in markdown
     assert "reports/index.html" in markdown
@@ -121,13 +131,13 @@ def test_cold_user_review_route_marks_missing_integrity_artifacts(
     assert summary["missing_count"] == len(INTEGRITY_ARTIFACT_PATHS)
     assert summary["invalid_count"] == 0
     assert summary["artifacts"][0] == {
-        "path": "reports/index.html",
+        "path": "docs/static-gallery-walkthrough.svg",
         "status": "missing",
         "byte_count": 0,
         "sha256": None,
     }
     assert "- Integrity status: `WARN`" in markdown
-    assert "| reports/index.html | missing | 0 | missing |" in markdown
+    assert "| docs/static-gallery-walkthrough.svg | missing | 0 | missing |" in markdown
 
 
 def test_cold_user_artifact_integrity_summary_hashes_and_rejects_paths(
@@ -213,10 +223,10 @@ def test_cli_writes_cold_user_review_route_defaults(tmp_path: Path) -> None:
     )
     integrity = payload["artifact_integrity_summary"]
     assert integrity["integrity_status"] == "PASS"
-    assert integrity["artifact_count"] == 7
-    assert integrity["present_count"] == 7
+    assert integrity["artifact_count"] == 10
+    assert integrity["present_count"] == 10
     assert integrity["missing_count"] == 0
-    assert "| reports/index.html | present |" in markdown
+    assert "| docs/static-gallery-walkthrough.svg | present |" in markdown
 
 
 def test_cli_writes_cold_user_review_route_custom_paths(tmp_path: Path) -> None:

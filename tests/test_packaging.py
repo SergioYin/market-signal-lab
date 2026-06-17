@@ -24,24 +24,35 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
     "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.4.md",
     "docs/release-v1.30.3.md",
+    "docs/static-gallery-walkthrough.svg",
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
+    "reports/acceptance-receipt-index.md",
+    "reports/acceptance-receipt-index.json",
     "reports/beginner-prediction-checklist.md",
+    "reports/cold-user-review-route.md",
+    "reports/cold-user-review-route.json",
     "reports/cross-asset-thesis-ledger.json",
     "reports/index.html",
     "reports/promotion-readiness-check.md",
     "reports/promotion-readiness-check.json",
+    "reports/public-demo-evidence-receipt.md",
+    "reports/public-demo-evidence-receipt.json",
     "reports/reviewer-acceptance-scorecard.json",
     "reports/reviewer-acceptance-scorecard.md",
     "reports/reviewer-evidence-bundle.json",
     "reports/reviewer-evidence-bundle.md",
+    "reports/reviewer-rerun-receipt.json",
     "reports/reviewer-rerun-receipt.md",
     "reports/stress-kit-quickstart-card.md",
     "reports/stress-kit-quickstart-card.json",
     "reports/strategy-assumption-stress-kit.md",
     "reports/strategy-assumption-stress-kit.json",
     "reports/strategy-assumption-stress-kit.html",
+    "reports/visual-walkthrough-evidence-receipt.md",
+    "reports/visual-walkthrough-evidence-receipt.json",
     "reports/sample-report.md",
 )
 STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES = (
@@ -62,6 +73,12 @@ PROMOTION_READINESS_CHECK_RESOURCES = (
     "docs/release-v1.30.3.md",
     "reports/promotion-readiness-check.md",
     "reports/promotion-readiness-check.json",
+)
+VISUAL_WALKTHROUGH_EVIDENCE_RESOURCES = (
+    "docs/release-v1.30.4.md",
+    "docs/static-gallery-walkthrough.svg",
+    "reports/visual-walkthrough-evidence-receipt.md",
+    "reports/visual-walkthrough-evidence-receipt.json",
 )
 
 
@@ -108,6 +125,7 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
         "_resources/**/*.html",
         "_resources/**/*.json",
         "_resources/**/*.md",
+        "_resources/**/*.svg",
     ]
     for resource in INSTALLED_DEFAULT_COMMAND_RESOURCES:
         assert (PROJECT_ROOT / "market_signal_lab" / "_resources" / resource).is_file()
@@ -122,6 +140,7 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
         STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
         + PROMOTION_READINESS_CHECK_RESOURCES
+        + VISUAL_WALKTHROUGH_EVIDENCE_RESOURCES
     ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
@@ -220,6 +239,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     for flag in (
         "--reviewer-evidence-bundle",
         "--reviewer-rerun-receipt",
+        "--visual-walkthrough-evidence-receipt",
         "--beginner-prediction-checklist",
         "--cold-user-review-route",
         "--prediction-readiness-audit",
@@ -244,6 +264,9 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
 
     assert (empty_cwd / "reports" / "reviewer-evidence-bundle.md").is_file()
     assert (empty_cwd / "reports" / "reviewer-rerun-receipt.md").is_file()
+    assert (
+        empty_cwd / "reports" / "visual-walkthrough-evidence-receipt.md"
+    ).is_file()
     assert (empty_cwd / "reports" / "beginner-prediction-checklist.md").is_file()
     scorecard_payload = json.loads(
         (
@@ -328,7 +351,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.3"
+    assert __version__ == "1.30.4"
 
 
 def _venv_python(venv_path: Path) -> Path:

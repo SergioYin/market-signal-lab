@@ -45,6 +45,18 @@ VERIFICATION_COMMANDS = (
         ],
     },
     {
+        "command": "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
+        "purpose": (
+            "Regenerate the cold-review receipt tying the static walkthrough "
+            "SVG, gallery, public demo receipt, rerun receipt, and acceptance "
+            "index."
+        ),
+        "expected_artifacts": [
+            "reports/visual-walkthrough-evidence-receipt.md",
+            "reports/visual-walkthrough-evidence-receipt.json",
+        ],
+    },
+    {
         "command": "python -m market_signal_lab.cli --reviewer-evidence-bundle",
         "purpose": "Regenerate the cold-review evidence bundle and boundary flags.",
         "expected_artifacts": [
@@ -104,6 +116,16 @@ EXPECTED_ARTIFACTS = (
         "path": "reports/reviewer-rerun-receipt.json",
         "format": "json",
         "source_command": "python -m market_signal_lab.cli --reviewer-rerun-receipt",
+    },
+    {
+        "path": "reports/visual-walkthrough-evidence-receipt.md",
+        "format": "markdown",
+        "source_command": "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
+    },
+    {
+        "path": "reports/visual-walkthrough-evidence-receipt.json",
+        "format": "json",
+        "source_command": "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
     },
     {
         "path": "reports/reviewer-evidence-bundle.md",

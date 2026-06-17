@@ -26,6 +26,7 @@ BOUNDARY_FLAGS = {
 }
 
 EVIDENCE_ARTIFACT_PATHS = (
+    "docs/static-gallery-walkthrough.svg",
     "reports/index.html",
     "reports/sample-report.md",
     "reports/sample-report.json",
@@ -63,6 +64,15 @@ SOURCE_BOUNDARIES = (
 )
 
 GENERATED_ARTIFACT_GROUPS = (
+    {
+        "label": "Visual cold-review walkthrough",
+        "paths": [
+            "docs/static-gallery-walkthrough.svg",
+            "reports/visual-walkthrough-evidence-receipt.md",
+            "reports/visual-walkthrough-evidence-receipt.json",
+        ],
+        "verification": "Check the static SVG route and matching receipt before opening generated metrics.",
+    },
     {
         "label": "Static gallery",
         "paths": ["reports/index.html"],
@@ -102,6 +112,8 @@ GENERATED_ARTIFACT_GROUPS = (
 )
 
 REVIEWER_STEPS = (
+    "Open docs/static-gallery-walkthrough.svg.",
+    "Open reports/visual-walkthrough-evidence-receipt.md and compare it with reports/visual-walkthrough-evidence-receipt.json.",
     "Open reports/index.html.",
     "Open reports/public-demo-evidence-receipt.md and compare it with reports/public-demo-evidence-receipt.json.",
     "Check fixture provenance files next to examples/data/*.csv before reading reported metrics.",

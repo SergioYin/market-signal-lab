@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="720" viewBox="0 0 1120 720" role="img" aria-labelledby="title desc">
+  <title id="title">Market Signal Lab static gallery walkthrough</title>
+  <desc id="desc">Public-safe visual walkthrough showing the static gallery, scenario card, structured JSON, and research-only boundaries.</desc>
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .panel { fill: #f6f8fa; stroke: #d0d7de; stroke-width: 2; }
+      .panel-strong { fill: #eef5ff; stroke: #8cbbf0; stroke-width: 2; }
+      .panel-warn { fill: #fff8e5; stroke: #d4a72c; stroke-width: 2; }
+      .ink { fill: #1f2328; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .muted { fill: #57606a; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .mono { fill: #57606a; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+      .step { fill: #0969da; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; }
+      .label { fill: #1f2328; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-weight: 700; }
+      .arrow { stroke: #6e7781; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .chip { fill: #ffffff; stroke: #d0d7de; stroke-width: 1.5; }
+    </style>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6e7781"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1120" height="720"/>
+
+  <text class="ink" x="48" y="56" font-size="30" font-weight="700">Static Artifact Gallery Walkthrough</text>
+  <text class="muted" x="48" y="88" font-size="16">A public-safe reading path for the checked-in gallery and scenario-card artifacts.</text>
+
+  <rect class="panel-strong" x="48" y="128" width="300" height="152" rx="8"/>
+  <text class="step" x="72" y="164" font-size="18">1. Start with the gallery</text>
+  <text class="mono" x="72" y="196" font-size="15">reports/index.html</text>
+  <text class="muted" x="72" y="228" font-size="15">No JavaScript, no remote assets,</text>
+  <text class="muted" x="72" y="250" font-size="15">no broker connection, no live data.</text>
+
+  <rect class="panel" x="410" y="128" width="300" height="152" rx="8"/>
+  <text class="step" x="434" y="164" font-size="18">2. Open the scenario card</text>
+  <text class="mono" x="434" y="196" font-size="15">reports/scenario-card.md</text>
+  <text class="muted" x="434" y="228" font-size="15">Compact assumptions, key metrics,</text>
+  <text class="muted" x="434" y="250" font-size="15">diagnostics, and risk labels.</text>
+
+  <rect class="panel" x="772" y="128" width="300" height="152" rx="8"/>
+  <text class="step" x="796" y="164" font-size="18">3. Compare structured fields</text>
+  <text class="mono" x="796" y="196" font-size="15">reports/scenario-card.json</text>
+  <text class="muted" x="796" y="228" font-size="15">Machine-readable card_type, source,</text>
+  <text class="muted" x="796" y="250" font-size="15">key_metrics, diagnostics, labels.</text>
+
+  <path class="arrow" d="M 350 204 C 372 204, 386 204, 406 204"/>
+  <path class="arrow" d="M 712 204 C 734 204, 748 204, 768 204"/>
+
+  <rect class="panel" x="48" y="344" width="300" height="166" rx="8"/>
+  <text class="label" x="72" y="380" font-size="18">Gallery cards to inspect</text>
+  <rect class="chip" x="72" y="402" width="212" height="28" rx="6"/>
+  <text class="mono" x="86" y="421" font-size="13">sample-report.html</text>
+  <rect class="chip" x="72" y="438" width="212" height="28" rx="6"/>
+  <text class="mono" x="86" y="457" font-size="13">regime-comparison.html</text>
+  <rect class="chip" x="72" y="474" width="212" height="28" rx="6"/>
+  <text class="mono" x="86" y="493" font-size="13">sample-manifest.md</text>
+
+  <rect class="panel" x="410" y="344" width="300" height="166" rx="8"/>
+  <text class="label" x="434" y="380" font-size="18">Scenario-card checkpoints</text>
+  <text class="muted" x="434" y="414" font-size="15">- Source path and date range</text>
+  <text class="muted" x="434" y="440" font-size="15">- Historical return and drawdown</text>
+  <text class="muted" x="434" y="466" font-size="15">- Exposure, fee, and risk summaries</text>
+  <text class="muted" x="434" y="492" font-size="15">- Next-review checklist</text>
+
+  <rect class="panel-warn" x="772" y="344" width="300" height="166" rx="8"/>
+  <text class="label" x="796" y="380" font-size="18">Public-safe boundary</text>
+  <text class="muted" x="796" y="414" font-size="15">Research-only review artifacts.</text>
+  <text class="muted" x="796" y="440" font-size="15">Not investment advice.</text>
+  <text class="muted" x="796" y="466" font-size="15">Not recommendations or forecasts.</text>
+  <text class="muted" x="796" y="492" font-size="15">Not live data or execution signals.</text>
+
+  <path class="arrow" d="M 198 284 C 198 310, 198 322, 198 340"/>
+  <path class="arrow" d="M 560 284 C 560 310, 560 322, 560 340"/>
+  <path class="arrow" d="M 922 284 C 922 310, 922 322, 922 340"/>
+
+  <rect class="panel-strong" x="48" y="580" width="1024" height="76" rx="8"/>
+  <text class="ink" x="72" y="616" font-size="18" font-weight="700">Review loop:</text>
+  <text class="muted" x="178" y="616" font-size="16">open local artifacts, read caveats, compare Markdown with JSON, then rerun</text>
+  <text class="mono" x="770" y="616" font-size="15">python scripts/selfcheck.py</text>
+  <text class="muted" x="72" y="642" font-size="15">The workflow stays static and reproducible; it does not fetch market data, connect accounts, place orders, or size positions.</text>
+</svg>

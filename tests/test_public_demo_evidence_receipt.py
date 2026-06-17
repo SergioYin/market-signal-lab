@@ -106,6 +106,8 @@ def test_public_demo_evidence_receipt_markdown_surfaces_boundaries() -> None:
     assert "## Source Fixture Boundaries" in markdown
     assert "## Artifact Integrity Summary" in markdown
     assert "## Not Claimed" in markdown
+    assert "docs/static-gallery-walkthrough.svg" in markdown
+    assert "reports/visual-walkthrough-evidence-receipt.md" in markdown
     assert "reports/sample-manifest.md" in markdown
     assert "examples/data/sample_tqqq_qld_like.csv.provenance.json" in markdown
     assert "No live market data was fetched by this receipt." in markdown

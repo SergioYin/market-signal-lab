@@ -121,6 +121,12 @@ from market_signal_lab.thesis_ledger import (
     render_thesis_ledger_acceptance_summary,
     validate_cross_asset_thesis_ledger_packet,
 )
+from market_signal_lab.visual_walkthrough_evidence_receipt import (
+    VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH,
+    VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH,
+    build_visual_walkthrough_evidence_receipt,
+    render_visual_walkthrough_evidence_receipt,
+)
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -202,6 +208,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.4.md"),
     Path("docs/release-v1.30.3.md"),
     Path("docs/release-v1.30.2.md"),
     Path("docs/release-v1.30.1.md"),
@@ -283,6 +290,8 @@ V131_ROOT_LANDING_LINKS = (
     "docs/public-share-copy.md",
     "docs/reviewer-decision-tree.md",
     "reports/reviewer-evidence-bundle.md",
+    "reports/visual-walkthrough-evidence-receipt.md",
+    "reports/visual-walkthrough-evidence-receipt.json",
     "reports/public-demo-evidence-receipt.md",
     "reports/reviewer-rerun-receipt.md",
     "reports/acceptance-receipt-index.md",
@@ -293,6 +302,7 @@ V131_ROOT_LANDING_LINKS = (
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.4.md",
     "docs/release-v1.30.3.md",
     "docs/release-v1.30.2.md",
     "docs/release-v1.30.1.md",
@@ -382,6 +392,8 @@ V130_STATIC_GALLERY_LINKS = (
     "reviewer-evidence-bundle.json",
     "public-demo-evidence-receipt.md",
     "public-demo-evidence-receipt.json",
+    "visual-walkthrough-evidence-receipt.md",
+    "visual-walkthrough-evidence-receipt.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
     "acceptance-receipt-index.md",
@@ -485,6 +497,12 @@ REVIEWER_RERUN_RECEIPT_JSON = Path("reports/reviewer-rerun-receipt.json")
 REVIEWER_RERUN_RECEIPT_MARKDOWN = Path("reports/reviewer-rerun-receipt.md")
 ACCEPTANCE_RECEIPT_INDEX_JSON = Path(ACCEPTANCE_RECEIPT_INDEX_JSON_PATH)
 ACCEPTANCE_RECEIPT_INDEX_MARKDOWN = Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH)
+VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON = Path(
+    VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH
+)
+VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN = Path(
+    VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH
+)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
     PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
@@ -589,6 +607,8 @@ SAMPLE_ARTIFACTS = (
     Path("reports/reviewer-evidence-bundle.json"),
     Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH),
     Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH),
+    Path(VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH),
+    Path(VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
     Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH),
@@ -661,6 +681,7 @@ GALLERY_HTML = """<!doctype html>
       <a href="prediction-readiness-audit.md">Prediction-readiness audit</a>
       <a href="#verify">Run one verification command</a>
     </section>
+    <p>The <a href="visual-walkthrough-evidence-receipt.md">Visual Walkthrough Evidence Receipt</a> ties the static gallery walkthrough SVG, this gallery, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index into one cold-review route.</p>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
     <p>Cold reviewers can also open the <a href="assumption-ledger-summary.md">Assumption Ledger Summary</a> for one compact list of strategy assumptions, risk boundaries, generated evidence paths, and explicit non-claims.</p>
@@ -694,6 +715,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="visual-walkthrough-evidence-receipt.md">Visual walkthrough evidence receipt</a> and <a href="visual-walkthrough-evidence-receipt.json">JSON</a> - deterministic route linking the walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index</li>
           <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
           <li><a href="acceptance-receipt-index.md">Acceptance receipt index</a> and <a href="acceptance-receipt-index.json">JSON</a> - bounded index linking public receipts, fixture provenance, hashes, and no-live-data/no-advice boundaries</li>
@@ -719,6 +741,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.4.md">v1.30.4 release notes</a></li>
           <li><a href="../docs/release-v1.30.3.md">v1.30.3 release notes</a></li>
           <li><a href="../docs/release-v1.30.2.md">v1.30.2 release notes</a></li>
           <li><a href="../docs/release-v1.30.1.md">v1.30.1 release notes</a></li>
@@ -985,6 +1008,16 @@ def run_sample_artifact_generation() -> bool:
         encoding="utf-8",
     )
 
+    visual_walkthrough_receipt = build_visual_walkthrough_evidence_receipt(REPO_ROOT)
+    (REPORTS_DIR / "visual-walkthrough-evidence-receipt.md").write_text(
+        render_visual_walkthrough_evidence_receipt(visual_walkthrough_receipt),
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "visual-walkthrough-evidence-receipt.json").write_text(
+        json.dumps(visual_walkthrough_receipt, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     reviewer_bundle = build_reviewer_evidence_bundle(REPO_ROOT)
     (REPORTS_DIR / "reviewer-evidence-bundle.md").write_text(
         render_reviewer_evidence_bundle(reviewer_bundle),
@@ -1018,8 +1051,8 @@ def run_sample_artifact_generation() -> bool:
         "Created sample report gallery, report, pre-trade packet, scenario "
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
-        "public demo evidence receipt, reviewer rerun receipt, acceptance "
-        "receipt index, reviewer "
+        "public demo evidence receipt, visual walkthrough evidence receipt, "
+        "reviewer rerun receipt, acceptance receipt index, reviewer "
         "decision matrix, beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "
@@ -1645,6 +1678,7 @@ def find_reviewer_rerun_receipt_issues(
         "## PASS/WARN Checklist",
         "## No-Live-Data / No-Advice Boundaries",
         "python -m market_signal_lab.cli --reviewer-rerun-receipt",
+        "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
         "python -m market_signal_lab.cli --cold-user-review-route",
         "python -m market_signal_lab.cli --prediction-readiness-audit",
         "python scripts/selfcheck.py",
@@ -3547,6 +3581,12 @@ def _sample_artifact_commands() -> list[list[str]]:
             "-m",
             "market_signal_lab.cli",
             "--reviewer-rerun-receipt",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-walkthrough-evidence-receipt",
         ],
         [
             sys.executable,

@@ -42,6 +42,9 @@ from market_signal_lab.reviewer_rerun_receipt import (
     VERIFICATION_COMMANDS as REVIEWER_RERUN_RECEIPT_COMMANDS,
     build_reviewer_rerun_receipt,
 )
+from market_signal_lab.visual_walkthrough_evidence_receipt import (
+    VISUAL_WALKTHROUGH_ARTIFACT_PATHS,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -60,7 +63,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.30.3"
+    assert result.stdout.strip() == "market-signal-lab 1.30.4"
     assert result.stderr == ""
 
 
@@ -212,6 +215,168 @@ def test_cli_writes_acceptance_receipt_index_defaults(tmp_path: Path) -> None:
     assert integrity["artifact_count"] == len(ACCEPTANCE_RECEIPT_INDEX_ARTIFACT_PATHS)
     assert integrity["present_count"] == 0
     assert integrity["missing_count"] == len(ACCEPTANCE_RECEIPT_INDEX_ARTIFACT_PATHS)
+
+
+def test_cli_writes_visual_walkthrough_evidence_receipt_defaults(
+    tmp_path: Path,
+) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-walkthrough-evidence-receipt",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "visual-walkthrough-evidence-receipt.md"
+    json_path = tmp_path / "reports" / "visual-walkthrough-evidence-receipt.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Visual Walkthrough Evidence Receipt" in markdown
+    assert "docs/static-gallery-walkthrough.svg" in markdown
+    assert "reports/index.html" in markdown
+    assert "reports/public-demo-evidence-receipt.md" in markdown
+    assert "reports/reviewer-rerun-receipt.md" in markdown
+    assert "reports/acceptance-receipt-index.md" in markdown
+    assert payload["artifact_type"] == "visual_walkthrough_evidence_receipt"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/visual-walkthrough-evidence-receipt.md",
+        "json": "reports/visual-walkthrough-evidence-receipt.json",
+    }
+    assert payload["no_live_data"] is True
+    assert payload["not_investment_advice"] is True
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "WARN"
+    assert integrity["artifact_count"] == len(VISUAL_WALKTHROUGH_ARTIFACT_PATHS)
+    assert integrity["present_count"] == 0
+    assert integrity["missing_count"] == len(VISUAL_WALKTHROUGH_ARTIFACT_PATHS)
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--visual-walkthrough-evidence-receipt does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--visual-walkthrough-evidence-receipt cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--public-demo-evidence-receipt"],
+            "--public-demo-evidence-receipt cannot be combined with --visual-walkthrough-evidence-receipt",
+        ),
+        (
+            ["--acceptance-receipt-index"],
+            "--acceptance-receipt-index cannot be combined with --visual-walkthrough-evidence-receipt",
+        ),
+        (
+            ["--reviewer-rerun-receipt"],
+            "--reviewer-rerun-receipt cannot be combined with --visual-walkthrough-evidence-receipt",
+        ),
+        (
+            ["--html-output", "receipt.html"],
+            "--visual-walkthrough-evidence-receipt writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--visual-walkthrough-evidence-receipt does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_visual_walkthrough_evidence_receipt_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-walkthrough-evidence-receipt",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_visual_walkthrough_evidence_receipt(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-walkthrough-evidence-receipt",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        f"--visual-walkthrough-evidence-receipt cannot be combined with {flag}"
+        in result.stderr
+    )
+
+
+def test_cli_rejects_csv_for_visual_walkthrough_evidence_receipt() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-walkthrough-evidence-receipt",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert (
+        "--visual-walkthrough-evidence-receipt does not take csv_path"
+        in result.stderr
+    )
 
 
 @pytest.mark.parametrize(

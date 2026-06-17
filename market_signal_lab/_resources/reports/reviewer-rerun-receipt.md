@@ -15,6 +15,9 @@ Give public reviewers a compact deterministic receipt containing the exact rerun
 - `python -m market_signal_lab.cli --reviewer-rerun-receipt`
   - Purpose: Regenerate this reviewer rerun receipt from stdlib-only code.
   - Expected artifacts: `reports/reviewer-rerun-receipt.md`, `reports/reviewer-rerun-receipt.json`
+- `python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt`
+  - Purpose: Regenerate the cold-review receipt tying the static walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index.
+  - Expected artifacts: `reports/visual-walkthrough-evidence-receipt.md`, `reports/visual-walkthrough-evidence-receipt.json`
 - `python -m market_signal_lab.cli --reviewer-evidence-bundle`
   - Purpose: Regenerate the cold-review evidence bundle and boundary flags.
   - Expected artifacts: `reports/reviewer-evidence-bundle.md`, `reports/reviewer-evidence-bundle.json`
@@ -38,6 +41,8 @@ Give public reviewers a compact deterministic receipt containing the exact rerun
 
 - `reports/reviewer-rerun-receipt.md` (markdown), from `python -m market_signal_lab.cli --reviewer-rerun-receipt`
 - `reports/reviewer-rerun-receipt.json` (json), from `python -m market_signal_lab.cli --reviewer-rerun-receipt`
+- `reports/visual-walkthrough-evidence-receipt.md` (markdown), from `python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt`
+- `reports/visual-walkthrough-evidence-receipt.json` (json), from `python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt`
 - `reports/reviewer-evidence-bundle.md` (markdown), from `python -m market_signal_lab.cli --reviewer-evidence-bundle`
 - `reports/reviewer-evidence-bundle.json` (json), from `python -m market_signal_lab.cli --reviewer-evidence-bundle`
 - `reports/cold-user-review-route.md` (markdown), from `python -m market_signal_lab.cli --cold-user-review-route`

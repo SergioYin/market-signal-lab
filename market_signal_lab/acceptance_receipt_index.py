@@ -27,6 +27,17 @@ BOUNDARY_FLAGS = {
 
 INDEXED_RECEIPTS = (
     {
+        "label": "Visual walkthrough evidence receipt",
+        "markdown_path": "reports/visual-walkthrough-evidence-receipt.md",
+        "json_path": "reports/visual-walkthrough-evidence-receipt.json",
+        "source_command": "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
+        "evidence_role": (
+            "Ties the static gallery walkthrough SVG, gallery first screen, "
+            "public demo receipt, rerun receipt, and acceptance index into one "
+            "cold-review route."
+        ),
+    },
+    {
         "label": "Public demo evidence receipt",
         "markdown_path": "reports/public-demo-evidence-receipt.md",
         "json_path": "reports/public-demo-evidence-receipt.json",
@@ -79,6 +90,7 @@ FIXTURE_PROVENANCE = (
 
 REVIEWER_RERUN_COMMANDS = (
     ACCEPTANCE_RECEIPT_INDEX_COMMAND,
+    "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
     "python -m market_signal_lab.cli --public-demo-evidence-receipt",
     "python -m market_signal_lab.cli --reviewer-rerun-receipt",
     "python -m market_signal_lab.cli --reviewer-evidence-bundle",
@@ -114,9 +126,10 @@ def build_acceptance_receipt_index(
         **BOUNDARY_FLAGS,
         "purpose": (
             "Give public reviewers one bounded deterministic index linking the "
-            "existing public demo evidence receipt, reviewer rerun receipt, "
-            "reviewer evidence bundle, artifact hashes, fixture provenance, "
-            "and no-live-data/no-advice boundaries."
+            "visual walkthrough evidence receipt, public demo evidence "
+            "receipt, reviewer rerun receipt, reviewer evidence bundle, "
+            "artifact hashes, fixture provenance, and no-live-data/no-advice "
+            "boundaries."
         ),
         "default_outputs": {
             "markdown": ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH,

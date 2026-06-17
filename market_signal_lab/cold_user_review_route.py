@@ -63,6 +63,13 @@ DEFAULT_OUTPUTS = {
 
 ROUTE_STEPS = (
     {
+        "step": "open_visual_walkthrough",
+        "label": "Open the static gallery visual walkthrough",
+        "path": "docs/static-gallery-walkthrough.svg",
+        "review_question": "Can a first-time reviewer see the static gallery path before opening reports?",
+        "expected_public_signal": "The visual walkthrough is a checked-in static SVG, not a live product flow.",
+    },
+    {
         "step": "open_gallery",
         "label": "Open the checked-in artifact gallery",
         "path": "reports/index.html",
@@ -70,11 +77,27 @@ ROUTE_STEPS = (
         "expected_public_signal": "The first screen is a local static artifact, not a live service.",
     },
     {
-        "step": "read_sample_report",
-        "label": "Read the sample Markdown report",
-        "path": "reports/sample-report.md",
-        "review_question": "Are metrics framed as historical diagnostics rather than forecasts?",
-        "expected_public_signal": "The report describes a fixed historical sample and its assumptions.",
+        "step": "review_visual_walkthrough_receipt",
+        "label": "Review the visual walkthrough evidence receipt",
+        "path": "reports/visual-walkthrough-evidence-receipt.md",
+        "review_question": (
+            "Does one receipt tie the walkthrough SVG, gallery, public demo "
+            "receipt, rerun receipt, and acceptance index together?"
+        ),
+        "expected_public_signal": (
+            "The receipt records repo-relative links, hashes, and no-live-data/"
+            "no-advice boundaries."
+        ),
+    },
+    {
+        "step": "review_public_demo_receipt",
+        "label": "Review the public demo evidence receipt",
+        "path": "reports/public-demo-evidence-receipt.md",
+        "review_question": "Are gallery artifacts and fixture boundaries tied to hashes?",
+        "expected_public_signal": (
+            "The receipt links checked-in public artifacts without private "
+            "context or live data."
+        ),
     },
     {
         "step": "check_beginner_boundary",
@@ -101,6 +124,16 @@ ROUTE_STEPS = (
         "expected_public_signal": (
             "The receipt lists deterministic commands, PASS/WARN checks, and "
             "no-live-data/no-advice boundaries."
+        ),
+    },
+    {
+        "step": "review_acceptance_receipt_index",
+        "label": "Review the acceptance receipt index",
+        "path": "reports/acceptance-receipt-index.md",
+        "review_question": "Does the index connect public receipts, fixture provenance, hashes, and boundaries?",
+        "expected_public_signal": (
+            "The acceptance index gives one bounded map of public receipt "
+            "evidence without approving trading use."
         ),
     },
     {
@@ -168,7 +201,10 @@ DO_NOT_USE_FOR = (
 )
 VERIFICATION_COMMANDS = (
     "python -m market_signal_lab.cli --cold-user-review-route",
+    "python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt",
+    "python -m market_signal_lab.cli --public-demo-evidence-receipt",
     "python -m market_signal_lab.cli --reviewer-rerun-receipt",
+    "python -m market_signal_lab.cli --acceptance-receipt-index",
     "python -m market_signal_lab.cli --reviewer-acceptance-scorecard",
     "python -m market_signal_lab.cli --reviewer-evidence-bundle",
     "python -m market_signal_lab.cli --beginner-prediction-checklist",

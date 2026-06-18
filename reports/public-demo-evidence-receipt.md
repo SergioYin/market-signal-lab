@@ -42,7 +42,7 @@ Give cold public reviewers one deterministic receipt for checking the static gal
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
 | docs/static-gallery-walkthrough.svg | present | 5721 | 5ecbd181bd380ee4afba13f866615b942e79b6700d891549cee361a9557bed63 |
-| reports/index.html | present | 11190 | e547d42cd450cc0969778394e3f487df9758ea5edf57c70b9090bf228d8a2147 |
+| reports/index.html | present | 11855 | f16a40b51a361613816dfbebb7d290e162c0dc0fea7112248451b5151b887d31 |
 | reports/sample-report.md | present | 3543 | 20ba4fb3f9b1bc739f2e4ccf039e478ac41ddf570a199b6e075b783b54a48ebc |
 | reports/sample-report.json | present | 3015 | 4b69d8391304c7642fce4394ce7b8648fdd664bc5f11762cb9c1d618ec24dd81 |
 | reports/sample-report.html | present | 5575 | bcd9cff8ebf339ff54e0cd43df183179288659c3e9b86957f7cb524ef4b663a6 |

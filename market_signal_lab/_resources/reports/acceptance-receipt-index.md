@@ -50,14 +50,14 @@ Give public reviewers one bounded deterministic index linking the visual walkthr
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 94b29df99f54886dfd02a5c18d2bac9e5e51978d80d96105c5a3a0428413ba67 |
-| reports/visual-walkthrough-evidence-receipt.json | present | 4393 | d98d16d4cf02c1b8db48dbf2f04af3f9cd7cf349d14b8a6f0011051764150269 |
-| reports/public-demo-evidence-receipt.md | present | 6312 | 83d7e55a76dd0e2d3029da2a0e92625fcfadb65f19746895e300d16c6c618f2c |
-| reports/public-demo-evidence-receipt.json | present | 7497 | f256f6e8f92913f06e4aa029fb3c381b0b2c910e7fc88b91fcf3c0797324fd5e |
+| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 9cc7c81ceb49f130915ae02970dbaa7476f5ca33b8c63d54eb655a408b9441f3 |
+| reports/visual-walkthrough-evidence-receipt.json | present | 4393 | ae8c06a1e4c2184f8c0a46050cea14e4bb9d749b163856c881102fa8ad6b6cd1 |
+| reports/public-demo-evidence-receipt.md | present | 6312 | 9f857d64aa2d98943f68e518ba4ac35946007cd6bdf8434d206833fc95d2f0e7 |
+| reports/public-demo-evidence-receipt.json | present | 7497 | 20df1a742a834fa3b770e28cdc3c8f2fb8350aeac68aefbbf1a9d61e7f5befb7 |
 | reports/reviewer-rerun-receipt.md | present | 5868 | 3b1135d1ed5441e5ad35cbbdb1eec11aa9424aeb8a552d1eeaeb14d5c93310c5 |
 | reports/reviewer-rerun-receipt.json | present | 5866 | b9832c88346f88f2ca73ac7b41fb314c54d93baaa09e5f0643d4a775922326e6 |
-| reports/reviewer-evidence-bundle.md | present | 3350 | ca4820596e5279919cc6ed9af7d53678b34b8f837fbc4e47b65345847a64419f |
-| reports/reviewer-evidence-bundle.json | present | 4025 | 40cea2414e1f8da75196cb584b1b82cae219a4945463bf6b64b7c14fd5f31bc4 |
+| reports/reviewer-evidence-bundle.md | present | 3350 | 3fee6a9d28f44cdfde88224b7892aa238af0795f25d92bbde173d344cde651ba |
+| reports/reviewer-evidence-bundle.json | present | 4025 | 79de6a439adfa54ea236501128f8ce6897859f12c75f22403c2b2a12800437ac |
 | examples/data/sample_tqqq_qld_like.csv | present | 1125 | 4ca9451f8a391a90530d8199375387bfa233282aa1845e5a64074142c62c1e90 |
 | examples/data/sample_tqqq_qld_like.csv.provenance.json | present | 798 | c7bfe5cc08727e8ba19445c47103f380975be648cc6c74b595060649abd38a68 |
 | examples/data/sample_multi_regime.csv | present | 1984 | 448940642e8eac3a97ca4af9a10aa7272fb68fd31e69b6628bef0ab7ff31a015 |

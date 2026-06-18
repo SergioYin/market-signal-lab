@@ -45,6 +45,9 @@ from market_signal_lab.reviewer_rerun_receipt import (
 from market_signal_lab.visual_walkthrough_evidence_receipt import (
     VISUAL_WALKTHROUGH_ARTIFACT_PATHS,
 )
+from market_signal_lab.visual_acceptance_bundle import (
+    VISUAL_ACCEPTANCE_ARTIFACT_PATHS,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -63,7 +66,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.30.4"
+    assert result.stdout.strip() == "market-signal-lab 1.30.5"
     assert result.stderr == ""
 
 
@@ -263,6 +266,160 @@ def test_cli_writes_visual_walkthrough_evidence_receipt_defaults(
     assert integrity["artifact_count"] == len(VISUAL_WALKTHROUGH_ARTIFACT_PATHS)
     assert integrity["present_count"] == 0
     assert integrity["missing_count"] == len(VISUAL_WALKTHROUGH_ARTIFACT_PATHS)
+
+
+def test_cli_writes_visual_acceptance_bundle_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-acceptance-bundle",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "visual-acceptance-bundle.md"
+    json_path = tmp_path / "reports" / "visual-acceptance-bundle.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Visual Acceptance Bundle" in markdown
+    assert "docs/static-gallery-walkthrough.svg" in markdown
+    assert "reports/visual-walkthrough-evidence-receipt.md" in markdown
+    assert "reports/acceptance-receipt-index.md" in markdown
+    assert "reports/reviewer-acceptance-scorecard.md" in markdown
+    assert "reports/cold-user-review-route.md" in markdown
+    assert payload["artifact_type"] == "visual_acceptance_bundle"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/visual-acceptance-bundle.md",
+        "json": "reports/visual-acceptance-bundle.json",
+    }
+    assert payload["no_live_data"] is True
+    assert payload["not_investment_advice"] is True
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "WARN"
+    assert integrity["artifact_count"] == len(VISUAL_ACCEPTANCE_ARTIFACT_PATHS)
+    assert integrity["present_count"] == 0
+    assert integrity["missing_count"] == len(VISUAL_ACCEPTANCE_ARTIFACT_PATHS)
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--visual-acceptance-bundle does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--visual-acceptance-bundle cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--visual-walkthrough-evidence-receipt"],
+            "--visual-walkthrough-evidence-receipt cannot be combined with --visual-acceptance-bundle",
+        ),
+        (
+            ["--acceptance-receipt-index"],
+            "--acceptance-receipt-index cannot be combined with --visual-acceptance-bundle",
+        ),
+        (
+            ["--reviewer-acceptance-scorecard"],
+            "--visual-acceptance-bundle cannot be combined with --reviewer-acceptance-scorecard",
+        ),
+        (
+            ["--html-output", "bundle.html"],
+            "--visual-acceptance-bundle writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--visual-acceptance-bundle does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_visual_acceptance_bundle_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-acceptance-bundle",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("flag", "value"),
+    [
+        ("--symbol", "QQQ_LIKE"),
+        ("--short-window", "10"),
+        ("--long-window", "50"),
+        ("--fee-bps", "5"),
+        ("--short-windows", "10,20"),
+        ("--long-windows", "50,100"),
+        ("--top-n", "3"),
+        ("--split-ratio", "0.7"),
+        ("--split-cutoff", "2024-01-05"),
+    ],
+)
+def test_cli_rejects_data_flags_for_visual_acceptance_bundle(
+    flag: str,
+    value: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-acceptance-bundle",
+            flag,
+            value,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert f"--visual-acceptance-bundle cannot be combined with {flag}" in result.stderr
+
+
+def test_cli_rejects_csv_for_visual_acceptance_bundle() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--visual-acceptance-bundle",
+            str(SAMPLE_DATA),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert "--visual-acceptance-bundle does not take csv_path" in result.stderr
 
 
 @pytest.mark.parametrize(

@@ -121,6 +121,12 @@ from market_signal_lab.thesis_ledger import (
     render_thesis_ledger_acceptance_summary,
     validate_cross_asset_thesis_ledger_packet,
 )
+from market_signal_lab.visual_acceptance_bundle import (
+    VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH,
+    VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH,
+    build_visual_acceptance_bundle,
+    render_visual_acceptance_bundle,
+)
 from market_signal_lab.visual_walkthrough_evidence_receipt import (
     VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH,
     VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH,
@@ -503,6 +509,8 @@ VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON = Path(
 VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN = Path(
     VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH
 )
+VISUAL_ACCEPTANCE_BUNDLE_JSON = Path(VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH)
+VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN = Path(VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
     PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
@@ -609,6 +617,8 @@ SAMPLE_ARTIFACTS = (
     Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH),
     Path(VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH),
     Path(VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH),
+    Path(VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH),
+    Path(VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
     Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH),
@@ -681,6 +691,7 @@ GALLERY_HTML = """<!doctype html>
       <a href="prediction-readiness-audit.md">Prediction-readiness audit</a>
       <a href="#verify">Run one verification command</a>
     </section>
+    <p>The <a href="visual-acceptance-bundle.md">Visual Acceptance Bundle</a> ties the static walkthrough, this gallery, visual receipt, acceptance receipt index, reviewer acceptance scorecard, cold-user route, artifact hashes, and no-live-data/no-advice boundaries into one bounded review handoff.</p>
     <p>The <a href="visual-walkthrough-evidence-receipt.md">Visual Walkthrough Evidence Receipt</a> ties the static gallery walkthrough SVG, this gallery, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index into one cold-review route.</p>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
@@ -715,6 +726,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="fee-sensitivity.md">Fee sensitivity</a> and <a href="fee-sensitivity.json">JSON</a></li>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
+          <li><a href="visual-acceptance-bundle.md">Visual acceptance bundle</a> and <a href="visual-acceptance-bundle.json">JSON</a> - bounded visual acceptance handoff linking the walkthrough, gallery, receipts, scorecard, cold-user route, hashes, and no-advice boundaries</li>
           <li><a href="visual-walkthrough-evidence-receipt.md">Visual walkthrough evidence receipt</a> and <a href="visual-walkthrough-evidence-receipt.json">JSON</a> - deterministic route linking the walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index</li>
           <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
@@ -741,6 +753,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.5.md">v1.30.5 release notes</a></li>
           <li><a href="../docs/release-v1.30.4.md">v1.30.4 release notes</a></li>
           <li><a href="../docs/release-v1.30.3.md">v1.30.3 release notes</a></li>
           <li><a href="../docs/release-v1.30.2.md">v1.30.2 release notes</a></li>
@@ -1038,6 +1051,16 @@ def run_sample_artifact_generation() -> bool:
         encoding="utf-8",
     )
 
+    visual_acceptance_bundle = build_visual_acceptance_bundle(REPO_ROOT)
+    (REPO_ROOT / VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN).write_text(
+        render_visual_acceptance_bundle(visual_acceptance_bundle),
+        encoding="utf-8",
+    )
+    (REPO_ROOT / VISUAL_ACCEPTANCE_BUNDLE_JSON).write_text(
+        json.dumps(visual_acceptance_bundle, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     for artifact in SAMPLE_ARTIFACTS:
         path = REPO_ROOT / artifact
         if not path.exists():
@@ -1052,7 +1075,7 @@ def run_sample_artifact_generation() -> bool:
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "public demo evidence receipt, visual walkthrough evidence receipt, "
-        "reviewer rerun receipt, acceptance receipt index, reviewer "
+        "visual acceptance bundle, reviewer rerun receipt, acceptance receipt index, reviewer "
         "decision matrix, beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "

@@ -128,6 +128,12 @@ from market_signal_lab.thesis_ledger import (
     render_thesis_ledger_acceptance_summary,
     validate_cross_asset_thesis_ledger_packet,
 )
+from market_signal_lab.visual_acceptance_bundle import (
+    VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH,
+    VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH,
+    build_visual_acceptance_bundle,
+    render_visual_acceptance_bundle,
+)
 from market_signal_lab.visual_walkthrough_evidence_receipt import (
     VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH,
     VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN_PATH,
@@ -176,6 +182,9 @@ VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_OUTPUT = Path(
 VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_FLAG = (
     "--visual-walkthrough-evidence-receipt"
 )
+VISUAL_ACCEPTANCE_BUNDLE_OUTPUT = Path(VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH)
+VISUAL_ACCEPTANCE_BUNDLE_JSON_OUTPUT = Path(VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH)
+VISUAL_ACCEPTANCE_BUNDLE_FLAG = "--visual-acceptance-bundle"
 REVIEWER_ACCEPTANCE_SCORECARD_OUTPUT = Path(
     "reports/reviewer-acceptance-scorecard.md"
 )
@@ -242,6 +251,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_public_demo_evidence_receipt_mode_conflicts(args, parser)
     _reject_acceptance_receipt_index_mode_conflicts(args, parser)
     _reject_visual_walkthrough_evidence_receipt_mode_conflicts(args, parser)
+    _reject_visual_acceptance_bundle_mode_conflicts(args, parser)
     _reject_reviewer_acceptance_scorecard_mode_conflicts(args, parser)
     _reject_reviewer_decision_matrix_mode_conflicts(args, parser)
     _reject_promotion_readiness_check_mode_conflicts(args, parser)
@@ -294,6 +304,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             report, json_payload, manifest_payload = (
                 _run_visual_walkthrough_evidence_receipt()
             )
+        elif args.visual_acceptance_bundle:
+            args = _resolve_visual_acceptance_bundle_args(args, parser)
+            report, json_payload, manifest_payload = _run_visual_acceptance_bundle()
         elif args.beginner_prediction_checklist:
             args = _resolve_beginner_prediction_checklist_args(args, parser)
             report, json_payload, manifest_payload = (
@@ -367,6 +380,7 @@ def _reject_beginner_prediction_checklist_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -393,6 +407,7 @@ def _reject_public_demo_evidence_receipt_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -418,6 +433,7 @@ def _reject_acceptance_receipt_index_mode_conflicts(
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -443,6 +459,33 @@ def _reject_visual_walkthrough_evidence_receipt_mode_conflicts(
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
+        include_visual_acceptance_bundle=True,
+    )
+
+
+def _reject_visual_acceptance_bundle_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.visual_acceptance_bundle:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        VISUAL_ACCEPTANCE_BUNDLE_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
+        include_visual_walkthrough_evidence_receipt=True,
     )
 
 
@@ -468,6 +511,7 @@ def _reject_reviewer_rerun_receipt_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -493,6 +537,7 @@ def _reject_cold_user_review_route_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -518,6 +563,7 @@ def _reject_prediction_readiness_audit_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -543,6 +589,7 @@ def _reject_reviewer_acceptance_scorecard_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -568,6 +615,7 @@ def _reject_reviewer_decision_matrix_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -593,6 +641,7 @@ def _reject_promotion_readiness_check_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -617,6 +666,8 @@ def _reject_strategy_assumption_stress_kit_mode_conflicts(
         include_stress_kit_quickstart_card=True,
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
+        include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -642,6 +693,7 @@ def _reject_stress_kit_quickstart_card_mode_conflicts(
         include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -667,6 +719,7 @@ def _reject_assumption_ledger_summary_mode_conflicts(
         include_stress_kit_quickstart_card=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
     )
 
 
@@ -687,6 +740,7 @@ def _reject_mode_conflicts(
     include_assumption_ledger_summary: bool = False,
     include_acceptance_receipt_index: bool = False,
     include_visual_walkthrough_evidence_receipt: bool = False,
+    include_visual_acceptance_bundle: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -721,6 +775,10 @@ def _reject_mode_conflicts(
             VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_FLAG,
             include_visual_walkthrough_evidence_receipt
             and args.visual_walkthrough_evidence_receipt,
+        ),
+        (
+            VISUAL_ACCEPTANCE_BUNDLE_FLAG,
+            include_visual_acceptance_bundle and args.visual_acceptance_bundle,
         ),
         (
             PREDICTION_READINESS_AUDIT_FLAG,
@@ -1056,6 +1114,23 @@ def _build_parser() -> ArgumentParser:
             f"{VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_OUTPUT}. Does not read "
             "CSV data, fetch live data, connect to brokers, inspect accounts, "
             "route orders, size positions, forecast, recommend, or provide "
+            "investment advice."
+        ),
+    )
+    parser.add_argument(
+        VISUAL_ACCEPTANCE_BUNDLE_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic bounded visual acceptance bundle tying the "
+            "static visual walkthrough, gallery first screen, visual receipt, "
+            "acceptance receipt index, reviewer acceptance scorecard, "
+            "cold-user route, artifact hashes, and no-live-data/no-advice "
+            "boundaries together. Defaults to "
+            f"{VISUAL_ACCEPTANCE_BUNDLE_OUTPUT} and "
+            f"{VISUAL_ACCEPTANCE_BUNDLE_JSON_OUTPUT}. Does not read CSV data, "
+            "fetch live data, connect to brokers, inspect accounts, route "
+            "orders, size positions, forecast, recommend, or provide "
             "investment advice."
         ),
     )
@@ -1515,6 +1590,33 @@ def _resolve_visual_walkthrough_evidence_receipt_args(
     resolved.html_output = None
     resolved.manifest_output = None
     resolved.visual_walkthrough_evidence_receipt = True
+    return resolved
+
+
+def _resolve_visual_acceptance_bundle_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{VISUAL_ACCEPTANCE_BUNDLE_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{VISUAL_ACCEPTANCE_BUNDLE_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(f"{VISUAL_ACCEPTANCE_BUNDLE_FLAG} writes Markdown/JSON, not HTML")
+    if args.manifest_output is not None:
+        parser.error(
+            f"{VISUAL_ACCEPTANCE_BUNDLE_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or VISUAL_ACCEPTANCE_BUNDLE_OUTPUT
+    resolved.json_output = args.json_output or VISUAL_ACCEPTANCE_BUNDLE_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.visual_acceptance_bundle = True
     return resolved
 
 
@@ -2222,6 +2324,12 @@ def _run_visual_walkthrough_evidence_receipt() -> tuple[
 ]:
     payload = build_visual_walkthrough_evidence_receipt()
     report = render_visual_walkthrough_evidence_receipt(payload)
+    return report, payload, {}
+
+
+def _run_visual_acceptance_bundle() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    payload = build_visual_acceptance_bundle()
+    report = render_visual_acceptance_bundle(payload)
     return report, payload, {}
 
 

@@ -24,6 +24,7 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
     "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.5.md",
     "docs/release-v1.30.4.md",
     "docs/release-v1.30.3.md",
     "docs/static-gallery-walkthrough.svg",
@@ -51,6 +52,8 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/strategy-assumption-stress-kit.md",
     "reports/strategy-assumption-stress-kit.json",
     "reports/strategy-assumption-stress-kit.html",
+    "reports/visual-acceptance-bundle.md",
+    "reports/visual-acceptance-bundle.json",
     "reports/visual-walkthrough-evidence-receipt.md",
     "reports/visual-walkthrough-evidence-receipt.json",
     "reports/sample-report.md",
@@ -79,6 +82,11 @@ VISUAL_WALKTHROUGH_EVIDENCE_RESOURCES = (
     "docs/static-gallery-walkthrough.svg",
     "reports/visual-walkthrough-evidence-receipt.md",
     "reports/visual-walkthrough-evidence-receipt.json",
+)
+VISUAL_ACCEPTANCE_BUNDLE_RESOURCES = (
+    "docs/release-v1.30.5.md",
+    "reports/visual-acceptance-bundle.md",
+    "reports/visual-acceptance-bundle.json",
 )
 
 
@@ -136,11 +144,14 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     assert 'href="stress-kit-quickstart-card.json"' in resource_gallery
     assert 'href="promotion-readiness-check.md"' in resource_gallery
     assert 'href="promotion-readiness-check.json"' in resource_gallery
+    assert 'href="visual-acceptance-bundle.md"' in resource_gallery
+    assert 'href="visual-acceptance-bundle.json"' in resource_gallery
     for resource in (
         STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
         + PROMOTION_READINESS_CHECK_RESOURCES
         + VISUAL_WALKTHROUGH_EVIDENCE_RESOURCES
+        + VISUAL_ACCEPTANCE_BUNDLE_RESOURCES
     ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
@@ -199,7 +210,8 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         STRATEGY_ASSUMPTION_STRESS_KIT_RESOURCES
         + STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
-        + PROMOTION_READINESS_CHECK_RESOURCES,
+        + PROMOTION_READINESS_CHECK_RESOURCES
+        + VISUAL_ACCEPTANCE_BUNDLE_RESOURCES,
     )
 
     install_venv = tmp_path / "install-venv"
@@ -239,6 +251,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     for flag in (
         "--reviewer-evidence-bundle",
         "--reviewer-rerun-receipt",
+        "--visual-acceptance-bundle",
         "--visual-walkthrough-evidence-receipt",
         "--beginner-prediction-checklist",
         "--cold-user-review-route",
@@ -351,7 +364,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.4"
+    assert __version__ == "1.30.5"
 
 
 def _venv_python(venv_path: Path) -> Path:

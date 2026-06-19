@@ -535,7 +535,10 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "reports/reviewer-acceptance-scorecard.md",
         "reports/stress-kit-quickstart-card.md",
         "reports/stress-kit-quickstart-card.json",
+        "reports/static-visual-capture-checklist.md",
+        "reports/static-visual-capture-checklist.json",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.30.6.md",
         "docs/release-v1.30.4.md",
         "docs/release-v1.30.3.md",
         "docs/release-v1.30.2.md",
@@ -2305,6 +2308,13 @@ def _write_v131_landing_fixture(
         doc_path = docs_dir / doc_name
         doc_path.parent.mkdir(parents=True, exist_ok=True)
         doc_path.write_text(f"# {doc_name}\n", encoding="utf-8")
+
+    for target in selfcheck.V131_ROOT_LANDING_LINKS:
+        target_path = tmp_path / target
+        if target_path.exists():
+            continue
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        target_path.write_text(f"# {target_path.name}\n", encoding="utf-8")
 
     links = [
         target

@@ -40,9 +40,9 @@ Give cold public reviewers one deterministic receipt tying the static gallery wa
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
 | docs/static-gallery-walkthrough.svg | present | 5721 | 5ecbd181bd380ee4afba13f866615b942e79b6700d891549cee361a9557bed63 |
-| reports/index.html | present | 11855 | f16a40b51a361613816dfbebb7d290e162c0dc0fea7112248451b5151b887d31 |
-| reports/public-demo-evidence-receipt.md | present | 6312 | 9f857d64aa2d98943f68e518ba4ac35946007cd6bdf8434d206833fc95d2f0e7 |
-| reports/public-demo-evidence-receipt.json | present | 7497 | 20df1a742a834fa3b770e28cdc3c8f2fb8350aeac68aefbbf1a9d61e7f5befb7 |
+| reports/index.html | present | 12486 | cb67ee1ec8acaefc1def87369a398c005889f6dd05e5bcbb5885616552748504 |
+| reports/public-demo-evidence-receipt.md | present | 6312 | a33b449439d1e22387ec22f9a22e6fc71cd05e94229a50731abc29785f451586 |
+| reports/public-demo-evidence-receipt.json | present | 7497 | ec15e663ea2ccda547cd1c813d7d03fca7b70038fcd88e6e394a60c6775570aa |
 | reports/reviewer-rerun-receipt.md | present | 5868 | 3b1135d1ed5441e5ad35cbbdb1eec11aa9424aeb8a552d1eeaeb14d5c93310c5 |
 | reports/reviewer-rerun-receipt.json | present | 5866 | b9832c88346f88f2ca73ac7b41fb314c54d93baaa09e5f0643d4a775922326e6 |
 

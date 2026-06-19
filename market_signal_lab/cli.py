@@ -103,6 +103,14 @@ from market_signal_lab.reviewer_rerun_receipt import (
 )
 from market_signal_lab.scenario_card import build_scenario_card, render_scenario_card
 from market_signal_lab.split import TrainTestSplit, split_train_test
+from market_signal_lab.static_visual_capture_checklist import (
+    CAPTURE_SOURCE_PATHS,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN_PATH,
+    build_static_visual_capture_checklist,
+    render_static_visual_capture_checklist,
+)
 from market_signal_lab.strategy_assumption_stress_kit import (
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
@@ -239,6 +247,15 @@ STRESS_KIT_QUICKSTART_CARD_JSON_OUTPUT = Path(
 ASSUMPTION_LEDGER_SUMMARY_OUTPUT = Path(ASSUMPTION_LEDGER_SUMMARY_MARKDOWN_PATH)
 ASSUMPTION_LEDGER_SUMMARY_JSON_OUTPUT = Path(ASSUMPTION_LEDGER_SUMMARY_JSON_PATH)
 ASSUMPTION_LEDGER_SUMMARY_FLAG = "--assumption-ledger-summary"
+STATIC_VISUAL_CAPTURE_CHECKLIST_OUTPUT = Path(
+    STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN_PATH
+)
+STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_OUTPUT = Path(
+    STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH
+)
+STATIC_VISUAL_CAPTURE_CHECKLIST_STATIC_RESOURCES = tuple(
+    Path(path) for path in CAPTURE_SOURCE_PATHS
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -258,6 +275,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_strategy_assumption_stress_kit_mode_conflicts(args, parser)
     _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
     _reject_assumption_ledger_summary_mode_conflicts(args, parser)
+    _reject_static_visual_capture_checklist_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -339,6 +357,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             args = _resolve_assumption_ledger_summary_args(args, parser)
             report, json_payload, manifest_payload = (
                 _run_assumption_ledger_summary()
+            )
+        elif args.static_visual_capture_checklist:
+            args = _resolve_static_visual_capture_checklist_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_static_visual_capture_checklist()
             )
         else:
             args = _resolve_args(args, parser)
@@ -717,6 +740,39 @@ def _reject_assumption_ledger_summary_mode_conflicts(
         include_promotion_readiness_check=True,
         include_strategy_assumption_stress_kit=True,
         include_stress_kit_quickstart_card=True,
+        include_acceptance_receipt_index=True,
+        include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
+    )
+
+
+def _reject_static_visual_capture_checklist_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.static_visual_capture_checklist:
+        return
+
+    if args.public_demo_evidence_receipt:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG} cannot be combined with "
+            f"{PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG}"
+        )
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
         include_acceptance_receipt_index=True,
         include_visual_walkthrough_evidence_receipt=True,
         include_visual_acceptance_bundle=True,
@@ -1274,6 +1330,23 @@ def _build_parser() -> ArgumentParser:
             f"{ASSUMPTION_LEDGER_SUMMARY_JSON_OUTPUT}. Does not read CSV "
             "data, fetch live data, connect to brokers, create orders, size "
             "positions, forecast, recommend, or provide investment advice."
+        ),
+    )
+    parser.add_argument(
+        STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic static visual capture checklist for cold "
+            "reviewers who need to capture a local static gallery screenshot "
+            "or GIF while preserving public-safe no-live-data, no-broker, "
+            "no-order, no-position-sizing, no-forecast, no-recommendation, "
+            "and no-advice boundaries. Defaults to "
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_OUTPUT} and "
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_OUTPUT}. Does not capture "
+            "images, read CSV data, fetch live data, connect to brokers, "
+            "create orders, size positions, forecast, recommend, or provide "
+            "investment advice."
         ),
     )
     parser.add_argument(
@@ -1930,6 +2003,37 @@ def _resolve_assumption_ledger_summary_args(
     return resolved
 
 
+def _resolve_static_visual_capture_checklist_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or STATIC_VISUAL_CAPTURE_CHECKLIST_OUTPUT
+    resolved.json_output = (
+        args.json_output or STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_OUTPUT
+    )
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.static_visual_capture_checklist = True
+    return resolved
+
+
 def _resolve_methodology_audit_template_args(
     args: Namespace,
     parser: ArgumentParser,
@@ -2426,6 +2530,17 @@ def _run_stress_kit_quickstart_card() -> tuple[
 def _run_assumption_ledger_summary() -> tuple[str, dict[str, Any], dict[str, Any]]:
     payload = build_assumption_ledger_summary()
     report = render_assumption_ledger_summary(payload)
+    return report, payload, {}
+
+
+def _run_static_visual_capture_checklist() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    with _bundled_resource_worktree(
+        STATIC_VISUAL_CAPTURE_CHECKLIST_STATIC_RESOURCES
+    ) as root:
+        payload = build_static_visual_capture_checklist(root)
+    report = render_static_visual_capture_checklist(payload)
     return report, payload, {}
 
 

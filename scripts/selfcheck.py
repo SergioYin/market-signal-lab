@@ -114,6 +114,16 @@ from market_signal_lab.stress_kit_quickstart_card import (
     build_stress_kit_quickstart_card,
     render_stress_kit_quickstart_card,
 )
+from market_signal_lab.static_visual_capture_checklist import (
+    CAPTURE_CHECKLIST_ITEM_KEYS,
+    CAPTURE_OPTION_KEYS,
+    CAPTURE_SOURCE_PATHS,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN_PATH,
+    STATIC_VISUAL_CAPTURE_CHECKLIST_TOP_LEVEL_KEYS,
+    build_static_visual_capture_checklist,
+    render_static_visual_capture_checklist,
+)
 from market_signal_lab.html import render_html_report
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
@@ -214,6 +224,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.6.md"),
     Path("docs/release-v1.30.4.md"),
     Path("docs/release-v1.30.3.md"),
     Path("docs/release-v1.30.2.md"),
@@ -307,7 +318,10 @@ V131_ROOT_LANDING_LINKS = (
     "reports/stress-kit-quickstart-card.json",
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
+    "reports/static-visual-capture-checklist.md",
+    "reports/static-visual-capture-checklist.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.6.md",
     "docs/release-v1.30.4.md",
     "docs/release-v1.30.3.md",
     "docs/release-v1.30.2.md",
@@ -400,6 +414,8 @@ V130_STATIC_GALLERY_LINKS = (
     "public-demo-evidence-receipt.json",
     "visual-walkthrough-evidence-receipt.md",
     "visual-walkthrough-evidence-receipt.json",
+    "static-visual-capture-checklist.md",
+    "static-visual-capture-checklist.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
     "acceptance-receipt-index.md",
@@ -511,6 +527,12 @@ VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_MARKDOWN = Path(
 )
 VISUAL_ACCEPTANCE_BUNDLE_JSON = Path(VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH)
 VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN = Path(VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH)
+STATIC_VISUAL_CAPTURE_CHECKLIST_JSON = Path(
+    STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH
+)
+STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN = Path(
+    STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN_PATH
+)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
     PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
@@ -619,6 +641,8 @@ SAMPLE_ARTIFACTS = (
     Path(VISUAL_WALKTHROUGH_EVIDENCE_RECEIPT_JSON_PATH),
     Path(VISUAL_ACCEPTANCE_BUNDLE_MARKDOWN_PATH),
     Path(VISUAL_ACCEPTANCE_BUNDLE_JSON_PATH),
+    Path(STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN_PATH),
+    Path(STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
     Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH),
@@ -692,6 +716,7 @@ GALLERY_HTML = """<!doctype html>
       <a href="#verify">Run one verification command</a>
     </section>
     <p>The <a href="visual-acceptance-bundle.md">Visual Acceptance Bundle</a> ties the static walkthrough, this gallery, visual receipt, acceptance receipt index, reviewer acceptance scorecard, cold-user route, artifact hashes, and no-live-data/no-advice boundaries into one bounded review handoff.</p>
+    <p>The <a href="static-visual-capture-checklist.md">Static Visual Capture Checklist</a> tells cold reviewers how to capture a local static gallery screenshot or GIF while preserving public-safe no-live-data, no-broker, no-order, no-position-sizing, no-forecast, no-recommendation, and no-advice boundaries.</p>
     <p>The <a href="visual-walkthrough-evidence-receipt.md">Visual Walkthrough Evidence Receipt</a> ties the static gallery walkthrough SVG, this gallery, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index into one cold-review route.</p>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
@@ -727,6 +752,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="cross-asset-thesis-ledger.md">Cross-asset thesis ledger</a> for QQQ_LIKE, QLD_LIKE, and TQQQ_LIKE, plus <a href="cross-asset-thesis-ledger.json">JSON</a></li>
           <li><a href="reviewer-evidence-bundle.md">Reviewer evidence bundle</a> and <a href="reviewer-evidence-bundle.json">JSON</a></li>
           <li><a href="visual-acceptance-bundle.md">Visual acceptance bundle</a> and <a href="visual-acceptance-bundle.json">JSON</a> - bounded visual acceptance handoff linking the walkthrough, gallery, receipts, scorecard, cold-user route, hashes, and no-advice boundaries</li>
+          <li><a href="static-visual-capture-checklist.md">Static visual capture checklist</a> and <a href="static-visual-capture-checklist.json">JSON</a> - public-safe local screenshot/GIF checklist for the static gallery route</li>
           <li><a href="visual-walkthrough-evidence-receipt.md">Visual walkthrough evidence receipt</a> and <a href="visual-walkthrough-evidence-receipt.json">JSON</a> - deterministic route linking the walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index</li>
           <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
@@ -753,6 +779,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.6.md">v1.30.6 release notes</a></li>
           <li><a href="../docs/release-v1.30.5.md">v1.30.5 release notes</a></li>
           <li><a href="../docs/release-v1.30.4.md">v1.30.4 release notes</a></li>
           <li><a href="../docs/release-v1.30.3.md">v1.30.3 release notes</a></li>
@@ -851,6 +878,7 @@ def run_demo_acceptance_check() -> bool:
         *find_strategy_assumption_stress_kit_issues(REPO_ROOT),
         *find_stress_kit_quickstart_card_issues(REPO_ROOT),
         *find_assumption_ledger_summary_issues(REPO_ROOT),
+        *find_static_visual_capture_checklist_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -1061,6 +1089,16 @@ def run_sample_artifact_generation() -> bool:
         encoding="utf-8",
     )
 
+    static_capture_checklist = build_static_visual_capture_checklist(REPO_ROOT)
+    (REPO_ROOT / STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN).write_text(
+        render_static_visual_capture_checklist(static_capture_checklist),
+        encoding="utf-8",
+    )
+    (REPO_ROOT / STATIC_VISUAL_CAPTURE_CHECKLIST_JSON).write_text(
+        json.dumps(static_capture_checklist, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     for artifact in SAMPLE_ARTIFACTS:
         path = REPO_ROOT / artifact
         if not path.exists():
@@ -1075,8 +1113,9 @@ def run_sample_artifact_generation() -> bool:
         "card, methodology audit artifacts, manifest, sweep, split sweep, "
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "public demo evidence receipt, visual walkthrough evidence receipt, "
-        "visual acceptance bundle, reviewer rerun receipt, acceptance receipt index, reviewer "
-        "decision matrix, beginner backtest-reading checklist, "
+        "visual acceptance bundle, static visual capture checklist, reviewer "
+        "rerun receipt, acceptance receipt index, reviewer decision matrix, "
+        "beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
         "assumption ledger summary, prediction-readiness audit, "
         "thesis-ledger acceptance, regime comparison, and HTML artifacts."
@@ -3214,6 +3253,165 @@ def find_assumption_ledger_summary_issues(
     if markdown and markdown != expected_markdown:
         issues.append(
             f"{ASSUMPTION_LEDGER_SUMMARY_MARKDOWN}: does not match deterministic assumption ledger summary output; run {ASSUMPTION_LEDGER_SUMMARY_COMMAND}"
+        )
+
+    return issues
+
+
+def find_static_visual_capture_checklist_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / STATIC_VISUAL_CAPTURE_CHECKLIST_JSON
+    markdown_path = repo_root / STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: checklist JSON is missing"
+        )
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: checklist must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != STATIC_VISUAL_CAPTURE_CHECKLIST_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: top-level keys must match "
+            "the static visual capture checklist schema order"
+        )
+    if payload.get("artifact_type") != "static_visual_capture_checklist":
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: artifact_type must be static_visual_capture_checklist"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: schema_version must be 1.0"
+        )
+    for key in (
+        "research_only",
+        "static_only",
+        "public_safe",
+        "fixture_or_static_data_only",
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+        "not_investment_advice",
+    ):
+        if payload.get(key) is not True:
+            issues.append(f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: {key} must be true")
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN):
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: default_outputs.markdown must be {STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN}"
+        )
+    if defaults.get("json") != str(STATIC_VISUAL_CAPTURE_CHECKLIST_JSON):
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: default_outputs.json must be {STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}"
+        )
+
+    capture_scope = _dict_value(payload.get("capture_scope"))
+    if capture_scope.get("allowed_sources") != list(CAPTURE_SOURCE_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: capture_scope.allowed_sources must match the static capture source paths"
+        )
+
+    capture_options = payload.get("capture_options")
+    if not isinstance(capture_options, list) or len(capture_options) != 2:
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: capture_options must include screenshot and GIF options"
+        )
+        capture_options = []
+    _extend_row_shape_issues(
+        issues,
+        STATIC_VISUAL_CAPTURE_CHECKLIST_JSON,
+        capture_options,
+        CAPTURE_OPTION_KEYS,
+        "capture_options",
+    )
+
+    checklist = payload.get("checklist")
+    if not isinstance(checklist, list) or len(checklist) != 5:
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: checklist must include the five static capture checks"
+        )
+        checklist = []
+    _extend_row_shape_issues(
+        issues,
+        STATIC_VISUAL_CAPTURE_CHECKLIST_JSON,
+        checklist,
+        CAPTURE_CHECKLIST_ITEM_KEYS,
+        "checklist",
+    )
+
+    integrity = _dict_value(payload.get("artifact_integrity_summary"))
+    if integrity.get("algorithm") != "sha256":
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: artifact_integrity_summary.algorithm must be sha256"
+        )
+    if integrity.get("artifact_count") != len(CAPTURE_SOURCE_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: artifact_integrity_summary.artifact_count must match capture sources"
+        )
+    if integrity.get("integrity_status") != "PASS":
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: artifact_integrity_summary.integrity_status must be PASS for checked-in artifacts"
+        )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN}: checklist Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN}: checklist Markdown is empty"
+            )
+
+    for required_text in (
+        "# Static Visual Capture Checklist",
+        "## Capture Scope",
+        "## Capture Options",
+        "## Checklist",
+        "## Do Not Capture",
+        "reports/index.html",
+        "docs/static-gallery-walkthrough.svg",
+        "screenshot",
+        "GIF",
+        "no live data",
+        "broker/account",
+        "position sizing",
+        "investment advice",
+        "private names",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN}: missing checklist text {required_text}"
+            )
+
+    expected_payload = build_static_visual_capture_checklist(REPO_ROOT)
+    if payload != expected_payload:
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_JSON}: does not match deterministic static visual capture checklist output; run python -m market_signal_lab.cli --static-visual-capture-checklist"
+        )
+    expected_markdown = render_static_visual_capture_checklist(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_MARKDOWN}: does not match deterministic static visual capture checklist output; run python -m market_signal_lab.cli --static-visual-capture-checklist"
         )
 
     return issues

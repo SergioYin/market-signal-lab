@@ -10,6 +10,7 @@ Use these first if you are opening the project cold:
 - [Static Sample Gallery](../reports/index.html) - browser-openable dashboard for the checked-in artifacts.
 - [Visual Acceptance Bundle](../reports/visual-acceptance-bundle.md) - bounded visual acceptance handoff tying the static walkthrough, gallery, visual receipt, acceptance index, scorecard, cold-user route, hashes, and no-live-data/no-advice boundaries together.
 - [Static Visual Capture Checklist](../reports/static-visual-capture-checklist.md) - public-safe local screenshot/GIF checklist for the static gallery route.
+- [Static Visual Capture Receipt](../reports/static-visual-capture-receipt.md) - deterministic scan of static visual capture evidence paths, hashes, roles, routes, commands, and public evidence notes.
 - [Visual Walkthrough Evidence Receipt](../reports/visual-walkthrough-evidence-receipt.md) - deterministic cold-review route tying the static walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index together.
 - [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts.
 
@@ -119,6 +120,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.30.7 Release Notes](release-v1.30.7.md)
 - [v1.30.6 Release Notes](release-v1.30.6.md)
 - [v1.30.5 Release Notes](release-v1.30.5.md)
 - [v1.30.4 Release Notes](release-v1.30.4.md)

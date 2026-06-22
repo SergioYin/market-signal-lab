@@ -58,12 +58,12 @@ Open `reports/index.html` locally, capture the first screen or a short static na
 
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
-| reports/index.html | present | 12486 | cb67ee1ec8acaefc1def87369a398c005889f6dd05e5bcbb5885616552748504 |
+| reports/index.html | present | 13121 | 370cc9c2ca7b865f2c4332cc880163858afb4dac3a60acce852bc613f33b9c25 |
 | docs/static-gallery-walkthrough.svg | present | 5721 | 5ecbd181bd380ee4afba13f866615b942e79b6700d891549cee361a9557bed63 |
-| reports/visual-acceptance-bundle.md | present | 5503 | 2fa45ea6302565915a192d17890b49c72609004ba69e0e6e4d758d6570f8dc0f |
-| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 10188f9fb1234e6e39ddd518e6c1cbf04a0596a537b6b5a70610b78988568834 |
+| reports/visual-acceptance-bundle.md | present | 5503 | 3dfbe1b0f1d6e3c55094b14170e32d9e4b8c67d1a931e2be28cc290b9f6ecb6d |
+| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 5b2180f4ca63b592fce85dea6ba8673a25d84e0dfa1aa175f18f18260105d530 |
 | reports/cold-user-review-route.md | present | 6628 | 90410a2f88d75afacb3d3291c969379cbdb1a44e93680960669ae048e23b20f5 |
-| reports/public-demo-evidence-receipt.md | present | 6312 | a33b449439d1e22387ec22f9a22e6fc71cd05e94229a50731abc29785f451586 |
+| reports/public-demo-evidence-receipt.md | present | 6312 | b57b1f3e862e8f525fbc510c00426d34f1a5b897bc83b0539b18da42974cd7c0 |
 
 ## Do Not Capture
 

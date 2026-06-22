@@ -59,17 +59,17 @@ Give public reviewers one bounded deterministic bundle tying the static visual w
 | Path | Status | Bytes | SHA-256 |
 | --- | --- | ---: | --- |
 | docs/static-gallery-walkthrough.svg | present | 5721 | 5ecbd181bd380ee4afba13f866615b942e79b6700d891549cee361a9557bed63 |
-| reports/index.html | present | 12486 | cb67ee1ec8acaefc1def87369a398c005889f6dd05e5bcbb5885616552748504 |
-| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 10188f9fb1234e6e39ddd518e6c1cbf04a0596a537b6b5a70610b78988568834 |
-| reports/acceptance-receipt-index.md | present | 5487 | 631f492e42fdf131f8d3f340042d1419bed83d85a8470320bf1ff162504541d2 |
+| reports/index.html | present | 13121 | 370cc9c2ca7b865f2c4332cc880163858afb4dac3a60acce852bc613f33b9c25 |
+| reports/visual-walkthrough-evidence-receipt.md | present | 3854 | 5b2180f4ca63b592fce85dea6ba8673a25d84e0dfa1aa175f18f18260105d530 |
+| reports/acceptance-receipt-index.md | present | 5487 | d169b862346f1013af5e04c6fd38d882816fbc9ffd035a73b85e4914cf5ba439 |
 | reports/reviewer-acceptance-scorecard.md | present | 5717 | 9ecd43909f25cd05c68c3b6fcf66918105184d05abb912171e7547e597ebc9db |
 | reports/cold-user-review-route.md | present | 6628 | 90410a2f88d75afacb3d3291c969379cbdb1a44e93680960669ae048e23b20f5 |
-| reports/visual-walkthrough-evidence-receipt.json | present | 4393 | b0379111686ae2a0d754c9c1975b40b0021e5bd9b848bbdfd26018c844d15945 |
-| reports/acceptance-receipt-index.json | present | 6319 | 19854a084c0486922cf4a367f144299eb8205f661c8d6d73694da78b8e5e5790 |
+| reports/visual-walkthrough-evidence-receipt.json | present | 4393 | 7af91623b705aed3aba758fc8eacadd7be018a232937ae9124ef346f36fdbd8f |
+| reports/acceptance-receipt-index.json | present | 6319 | cef36aa8a57c61b2a624dd3a1d211dd06c91f6ba4cf0cbfb09f8ca8b3d15e300 |
 | reports/reviewer-acceptance-scorecard.json | present | 6667 | 779e78d4dace3460976af5e8a66f38c93f22daecf334f4f8f9aceb10d33e8828 |
 | reports/cold-user-review-route.json | present | 7601 | 879fb92d5ac08720184fedb84b480cce86218928dcf73a3adc6d57b50adae3ce |
-| reports/public-demo-evidence-receipt.md | present | 6312 | a33b449439d1e22387ec22f9a22e6fc71cd05e94229a50731abc29785f451586 |
-| reports/public-demo-evidence-receipt.json | present | 7497 | ec15e663ea2ccda547cd1c813d7d03fca7b70038fcd88e6e394a60c6775570aa |
+| reports/public-demo-evidence-receipt.md | present | 6312 | b57b1f3e862e8f525fbc510c00426d34f1a5b897bc83b0539b18da42974cd7c0 |
+| reports/public-demo-evidence-receipt.json | present | 7497 | a2d34d24316645c290cb5c95347d6748d211aa201c7e5200f800d18e1a75814e |
 
 ## Not Claimed
 

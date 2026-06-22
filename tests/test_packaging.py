@@ -24,10 +24,12 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
     "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.7.md",
     "docs/release-v1.30.6.md",
     "docs/release-v1.30.5.md",
     "docs/release-v1.30.4.md",
     "docs/release-v1.30.3.md",
+    "docs/static-gallery-manifest.md",
     "docs/static-gallery-walkthrough.svg",
     "reports/assumption-ledger-summary.md",
     "reports/assumption-ledger-summary.json",
@@ -53,6 +55,10 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/strategy-assumption-stress-kit.md",
     "reports/strategy-assumption-stress-kit.json",
     "reports/strategy-assumption-stress-kit.html",
+    "reports/static-visual-capture-checklist.md",
+    "reports/static-visual-capture-checklist.json",
+    "reports/static-visual-capture-receipt.md",
+    "reports/static-visual-capture-receipt.json",
     "reports/visual-acceptance-bundle.md",
     "reports/visual-acceptance-bundle.json",
     "reports/visual-walkthrough-evidence-receipt.md",
@@ -93,6 +99,12 @@ STATIC_VISUAL_CAPTURE_CHECKLIST_RESOURCES = (
     "docs/release-v1.30.6.md",
     "reports/static-visual-capture-checklist.md",
     "reports/static-visual-capture-checklist.json",
+)
+STATIC_VISUAL_CAPTURE_RECEIPT_RESOURCES = (
+    "docs/release-v1.30.7.md",
+    "docs/static-gallery-manifest.md",
+    "reports/static-visual-capture-receipt.md",
+    "reports/static-visual-capture-receipt.json",
 )
 
 
@@ -154,6 +166,8 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     assert 'href="visual-acceptance-bundle.json"' in resource_gallery
     assert 'href="static-visual-capture-checklist.md"' in resource_gallery
     assert 'href="static-visual-capture-checklist.json"' in resource_gallery
+    assert 'href="static-visual-capture-receipt.md"' in resource_gallery
+    assert 'href="static-visual-capture-receipt.json"' in resource_gallery
     for resource in (
         STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
@@ -161,6 +175,7 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
         + VISUAL_WALKTHROUGH_EVIDENCE_RESOURCES
         + VISUAL_ACCEPTANCE_BUNDLE_RESOURCES
         + STATIC_VISUAL_CAPTURE_CHECKLIST_RESOURCES
+        + STATIC_VISUAL_CAPTURE_RECEIPT_RESOURCES
     ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
@@ -269,6 +284,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--promotion-readiness-check",
         "--reviewer-acceptance-scorecard",
         "--static-visual-capture-checklist",
+        "--static-visual-capture-receipt",
         "--strategy-assumption-stress-kit",
         "--stress-kit-quickstart-card",
         "--assumption-ledger-summary",
@@ -338,6 +354,19 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (
         empty_cwd / "reports" / "static-visual-capture-checklist.md"
     ).is_file()
+    static_capture_receipt_payload = json.loads(
+        (empty_cwd / "reports" / "static-visual-capture-receipt.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert static_capture_receipt_payload["artifact_type"] == (
+        "static_visual_capture_receipt"
+    )
+    assert static_capture_receipt_payload["no_live_data"] is True
+    assert static_capture_receipt_payload["not_investment_advice"] is True
+    assert (
+        empty_cwd / "reports" / "static-visual-capture-receipt.md"
+    ).is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -386,7 +415,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.6"
+    assert __version__ == "1.30.7"
 
 
 def _venv_python(venv_path: Path) -> Path:

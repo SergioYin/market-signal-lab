@@ -36,6 +36,7 @@ Then use one of these static review routes:
 
 - [Static Sample Gallery](reports/index.html) - open the browser-readable artifact dashboard.
 - [Static Visual Capture Checklist](reports/static-visual-capture-checklist.md) - capture a local static gallery screenshot or GIF without live data, broker/account, order, sizing, forecast, recommendation, or advice surfaces.
+- [Static Visual Capture Receipt](reports/static-visual-capture-receipt.md) - scan static visual capture evidence paths, hashes, roles, routes, commands, and public evidence notes.
 - [Visual Walkthrough Evidence Receipt](reports/visual-walkthrough-evidence-receipt.md) - tie the static walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index into one cold-review route.
 - [Cold-User Review Route](reports/cold-user-review-route.md) - follow the compact first-time review path.
 - [Assumption Ledger Summary](reports/assumption-ledger-summary.md) - scan assumptions, risk boundaries, evidence paths, and non-claims.
@@ -64,6 +65,7 @@ For the public demo evidence receipt, run `python -m market_signal_lab.cli --pub
 For the acceptance receipt index, run `python -m market_signal_lab.cli --acceptance-receipt-index`.
 For the visual walkthrough evidence receipt, run `python -m market_signal_lab.cli --visual-walkthrough-evidence-receipt`.
 For the static visual capture checklist, run `python -m market_signal_lab.cli --static-visual-capture-checklist`.
+For the static visual capture receipt, run `python -m market_signal_lab.cli --static-visual-capture-receipt`.
 
 For the deterministic public rerun receipt, run `python -m market_signal_lab.cli --reviewer-rerun-receipt`. It writes `reports/reviewer-rerun-receipt.md` and `reports/reviewer-rerun-receipt.json` without reading market data, fetching live data, connecting to brokers, inspecting accounts, routing orders, sizing positions, forecasting, recommending, or providing investment advice.
 
@@ -263,7 +265,7 @@ These summaries help check reproducibility, assumptions, and caveats only. They 
 - Comparisons: [Regime Comparison](reports/regime-comparison.md), [HTML](reports/regime-comparison.html), [JSON](reports/regime-comparison.json), and [Fee Sensitivity Comparison](reports/fee-sensitivity.md).
 - Reading and validation: [Beginner Checklist](reports/beginner-prediction-checklist.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Cross-Asset Thesis Ledger](reports/cross-asset-thesis-ledger.md), and [Thesis-Ledger Acceptance Summary](reports/cross-asset-thesis-ledger-acceptance.md).
 - Review guides: [Methodology Audit](docs/methodology-audit.md), [Assumption Ledger Summary Guide](docs/assumption-ledger-summary.md), [Strategy Assumption Stress Kit Guide](docs/strategy-assumption-stress-kit.md), [Quick-Tour Preview](docs/quick-tour-preview.md), [Three-Minute Review Route](docs/three-minute-review.md), [Cold User Evidence Card](docs/cold-user-evidence-card.md), [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix Guide](docs/reviewer-decision-matrix.md), [Promotion-Readiness Check Guide](docs/promotion-readiness-check.md), [Evidence Card Walkthrough](docs/evidence-card-walkthrough.svg), [Public Share Summary](docs/public-share-summary.md), [Reviewer FAQ](docs/reviewer-faq.md), and [Promotion Checklist](docs/promotion-checklist.md).
-- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Visual Acceptance Bundle](reports/visual-acceptance-bundle.md), [Static Visual Capture Checklist](reports/static-visual-capture-checklist.md), [Public Demo Evidence Receipt](reports/public-demo-evidence-receipt.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Acceptance Receipt Index](reports/acceptance-receipt-index.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Promotion-Readiness Check](reports/promotion-readiness-check.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
+- Reviewer handoff: [Reviewer Evidence Bundle](reports/reviewer-evidence-bundle.md), [Visual Acceptance Bundle](reports/visual-acceptance-bundle.md), [Static Visual Capture Checklist](reports/static-visual-capture-checklist.md), [Static Visual Capture Receipt](reports/static-visual-capture-receipt.md), [Public Demo Evidence Receipt](reports/public-demo-evidence-receipt.md), [Reviewer Rerun Receipt](reports/reviewer-rerun-receipt.md), [Acceptance Receipt Index](reports/acceptance-receipt-index.md), [Reviewer Acceptance Scorecard](reports/reviewer-acceptance-scorecard.md), [Reviewer Decision Matrix](reports/reviewer-decision-matrix.md), [Promotion-Readiness Check](reports/promotion-readiness-check.md), [Assumption Ledger Summary](reports/assumption-ledger-summary.md), [Strategy Assumption Stress Kit](reports/strategy-assumption-stress-kit.html), [Stress Kit Quickstart Card](reports/stress-kit-quickstart-card.md), [Cold-User Review Route](reports/cold-user-review-route.md), and [Prediction-Readiness Audit](reports/prediction-readiness-audit.md).
 
 For maintainer context, read [Architecture](docs/architecture.md) and [ADR 0001: Static Research Artifacts](docs/adr/0001-static-research-artifacts.md) before changing artifact generation or public scope.
 
@@ -575,6 +577,7 @@ Before using any findings, read:
 - [Reviewer Decision Tree](docs/reviewer-decision-tree.md)
 - [Reviewer Acceptance Scorecard Guide](docs/reviewer-acceptance-scorecard.md)
 - [Promotion-Readiness Check Guide](docs/promotion-readiness-check.md)
+- [v1.30.7 Release Notes](docs/release-v1.30.7.md)
 - [v1.30.6 Release Notes](docs/release-v1.30.6.md)
 - [v1.30.5 Release Notes](docs/release-v1.30.5.md)
 - [v1.30.4 Release Notes](docs/release-v1.30.4.md)

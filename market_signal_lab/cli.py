@@ -111,6 +111,14 @@ from market_signal_lab.static_visual_capture_checklist import (
     build_static_visual_capture_checklist,
     render_static_visual_capture_checklist,
 )
+from market_signal_lab.static_visual_capture_receipt import (
+    STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS,
+    STATIC_VISUAL_CAPTURE_RECEIPT_FLAG,
+    STATIC_VISUAL_CAPTURE_RECEIPT_JSON_PATH,
+    STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN_PATH,
+    build_static_visual_capture_receipt,
+    render_static_visual_capture_receipt,
+)
 from market_signal_lab.strategy_assumption_stress_kit import (
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
@@ -256,6 +264,15 @@ STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_OUTPUT = Path(
 STATIC_VISUAL_CAPTURE_CHECKLIST_STATIC_RESOURCES = tuple(
     Path(path) for path in CAPTURE_SOURCE_PATHS
 )
+STATIC_VISUAL_CAPTURE_RECEIPT_OUTPUT = Path(
+    STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN_PATH
+)
+STATIC_VISUAL_CAPTURE_RECEIPT_JSON_OUTPUT = Path(
+    STATIC_VISUAL_CAPTURE_RECEIPT_JSON_PATH
+)
+STATIC_VISUAL_CAPTURE_RECEIPT_STATIC_RESOURCES = tuple(
+    Path(path) for path in STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -276,6 +293,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_stress_kit_quickstart_card_mode_conflicts(args, parser)
     _reject_assumption_ledger_summary_mode_conflicts(args, parser)
     _reject_static_visual_capture_checklist_mode_conflicts(args, parser)
+    _reject_static_visual_capture_receipt_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -362,6 +380,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             args = _resolve_static_visual_capture_checklist_args(args, parser)
             report, json_payload, manifest_payload = (
                 _run_static_visual_capture_checklist()
+            )
+        elif args.static_visual_capture_receipt:
+            args = _resolve_static_visual_capture_receipt_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_static_visual_capture_receipt()
             )
         else:
             args = _resolve_args(args, parser)
@@ -763,6 +786,39 @@ def _reject_static_visual_capture_checklist_mode_conflicts(
         args,
         parser,
         STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
+        include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
+    )
+
+
+def _reject_static_visual_capture_receipt_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.static_visual_capture_receipt:
+        return
+
+    if args.static_visual_capture_checklist:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_RECEIPT_FLAG} cannot be combined with "
+            f"{STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG}"
+        )
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        STATIC_VISUAL_CAPTURE_RECEIPT_FLAG,
         include_beginner_prediction_checklist=True,
         include_prediction_readiness_audit=True,
         include_cold_user_review_route=True,
@@ -1347,6 +1403,23 @@ def _build_parser() -> ArgumentParser:
             "images, read CSV data, fetch live data, connect to brokers, "
             "create orders, size positions, forecast, recommend, or provide "
             "investment advice."
+        ),
+    )
+    parser.add_argument(
+        STATIC_VISUAL_CAPTURE_RECEIPT_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic static visual capture receipt that scans "
+            "existing static visual, gallery, walkthrough, route, and checklist "
+            "artifacts, recording relative paths, present/missing status, "
+            "bytes, SHA-256, roles, routes, known regeneration commands, and "
+            "public evidence notes. Defaults to "
+            f"{STATIC_VISUAL_CAPTURE_RECEIPT_OUTPUT} and "
+            f"{STATIC_VISUAL_CAPTURE_RECEIPT_JSON_OUTPUT}. Does not capture "
+            "images, read CSV data, fetch live data, connect to brokers, "
+            "inspect accounts, create orders, size positions, forecast, "
+            "recommend, or provide investment advice."
         ),
     )
     parser.add_argument(
@@ -2034,6 +2107,35 @@ def _resolve_static_visual_capture_checklist_args(
     return resolved
 
 
+def _resolve_static_visual_capture_receipt_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{STATIC_VISUAL_CAPTURE_RECEIPT_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{STATIC_VISUAL_CAPTURE_RECEIPT_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_RECEIPT_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_CAPTURE_RECEIPT_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or STATIC_VISUAL_CAPTURE_RECEIPT_OUTPUT
+    resolved.json_output = args.json_output or STATIC_VISUAL_CAPTURE_RECEIPT_JSON_OUTPUT
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.static_visual_capture_receipt = True
+    return resolved
+
+
 def _resolve_methodology_audit_template_args(
     args: Namespace,
     parser: ArgumentParser,
@@ -2541,6 +2643,13 @@ def _run_static_visual_capture_checklist() -> tuple[
     ) as root:
         payload = build_static_visual_capture_checklist(root)
     report = render_static_visual_capture_checklist(payload)
+    return report, payload, {}
+
+
+def _run_static_visual_capture_receipt() -> tuple[str, dict[str, Any], dict[str, Any]]:
+    with _bundled_resource_worktree(STATIC_VISUAL_CAPTURE_RECEIPT_STATIC_RESOURCES) as root:
+        payload = build_static_visual_capture_receipt(root)
+    report = render_static_visual_capture_receipt(payload)
     return report, payload, {}
 
 

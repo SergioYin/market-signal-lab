@@ -48,6 +48,9 @@ from market_signal_lab.visual_walkthrough_evidence_receipt import (
 from market_signal_lab.visual_acceptance_bundle import (
     VISUAL_ACCEPTANCE_ARTIFACT_PATHS,
 )
+from market_signal_lab.static_visual_capture_receipt import (
+    STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -66,7 +69,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.30.6"
+    assert result.stdout.strip() == "market-signal-lab 1.30.7"
     assert result.stderr == ""
 
 
@@ -312,6 +315,50 @@ def test_cli_writes_visual_acceptance_bundle_defaults(tmp_path: Path) -> None:
     assert integrity["artifact_count"] == len(VISUAL_ACCEPTANCE_ARTIFACT_PATHS)
     assert integrity["present_count"] == 0
     assert integrity["missing_count"] == len(VISUAL_ACCEPTANCE_ARTIFACT_PATHS)
+
+
+def test_cli_writes_static_visual_capture_receipt_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--static-visual-capture-receipt",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "static-visual-capture-receipt.md"
+    json_path = tmp_path / "reports" / "static-visual-capture-receipt.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Static Visual Capture Receipt" in markdown
+    assert "reports/index.html" in markdown
+    assert "docs/static-gallery-walkthrough.svg" in markdown
+    assert "reports/static-visual-capture-checklist.md" in markdown
+    assert "docs/static-gallery-manifest.md" in markdown
+    assert payload["artifact_type"] == "static_visual_capture_receipt"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/static-visual-capture-receipt.md",
+        "json": "reports/static-visual-capture-receipt.json",
+    }
+    assert payload["no_live_data"] is True
+    assert payload["not_investment_advice"] is True
+    integrity = payload["artifact_integrity_summary"]
+    assert integrity["algorithm"] == "sha256"
+    assert integrity["integrity_status"] == "PASS"
+    assert integrity["artifact_count"] == len(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS)
+    assert integrity["present_count"] == len(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS)
 
 
 @pytest.mark.parametrize(

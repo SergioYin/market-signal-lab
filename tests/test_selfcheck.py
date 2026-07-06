@@ -94,6 +94,14 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("reports/stress-kit-quickstart-card.json") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/assumption-ledger-summary.md") in selfcheck.SAMPLE_ARTIFACTS
     assert Path("reports/assumption-ledger-summary.json") in selfcheck.SAMPLE_ARTIFACTS
+    assert (
+        Path("reports/static-visual-release-comparison.md")
+        in selfcheck.SAMPLE_ARTIFACTS
+    )
+    assert (
+        Path("reports/static-visual-release-comparison.json")
+        in selfcheck.SAMPLE_ARTIFACTS
+    )
     assert Path("docs/strategy-assumption-stress-kit.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-notes-v1.26.0.md") in selfcheck.DOC_LINK_SOURCES
@@ -101,6 +109,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     assert Path("docs/release-notes-v1.27.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.28.0.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.29.0.md") in selfcheck.DOC_LINK_SOURCES
+    assert Path("docs/release-v1.30.8.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.4.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.3.md") in selfcheck.DOC_LINK_SOURCES
     assert Path("docs/release-v1.30.2.md") in selfcheck.DOC_LINK_SOURCES
@@ -148,6 +157,7 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
     expected_links = {
         "../docs/split-sweep-walkthrough.md",
         "../docs/local-audit-commands.md",
+        "../docs/release-v1.30.8.md",
         "../docs/release-v1.30.4.md",
         "../docs/release-v1.30.3.md",
         "../docs/release-v1.30.2.md",
@@ -170,6 +180,8 @@ def test_selfcheck_regenerates_static_gallery_contract() -> None:
         "cross-asset-thesis-ledger.json",
         "reviewer-evidence-bundle.md",
         "reviewer-evidence-bundle.json",
+        "static-visual-release-comparison.md",
+        "static-visual-release-comparison.json",
         "public-demo-evidence-receipt.md",
         "public-demo-evidence-receipt.json",
         "reviewer-rerun-receipt.md",
@@ -214,6 +226,10 @@ def test_selfcheck_validates_promotion_readiness_check_contract() -> None:
 
 def test_selfcheck_validates_assumption_ledger_summary_contract() -> None:
     assert selfcheck.find_assumption_ledger_summary_issues(selfcheck.REPO_ROOT) == []
+
+
+def test_selfcheck_validates_static_visual_release_comparison_contract() -> None:
+    assert selfcheck.find_static_visual_release_comparison_issues(selfcheck.REPO_ROOT) == []
 
 
 def test_v129_release_note_links_v128_stress_kit_context() -> None:
@@ -537,7 +553,10 @@ def test_v131_root_landing_contract_covers_evidence_card_and_release_docs() -> N
         "reports/stress-kit-quickstart-card.json",
         "reports/static-visual-capture-checklist.md",
         "reports/static-visual-capture-checklist.json",
+        "reports/static-visual-release-comparison.md",
+        "reports/static-visual-release-comparison.json",
         "reports/beginner-prediction-checklist.md",
+        "docs/release-v1.30.8.md",
         "docs/release-v1.30.6.md",
         "docs/release-v1.30.4.md",
         "docs/release-v1.30.3.md",

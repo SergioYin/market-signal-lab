@@ -38,6 +38,8 @@ Start at the [Root Landing](../index.html), then open the [Static Sample Gallery
 - [Static visual capture checklist JSON](../reports/static-visual-capture-checklist.json)
 - [Static visual capture receipt Markdown](../reports/static-visual-capture-receipt.md)
 - [Static visual capture receipt JSON](../reports/static-visual-capture-receipt.json)
+- [Static visual release comparison Markdown](../reports/static-visual-release-comparison.md)
+- [Static visual release comparison JSON](../reports/static-visual-release-comparison.json)
 - [Static gallery walkthrough](static-gallery-walkthrough.svg)
 - [Static demo manifest](static-gallery-manifest.md)
 - [Artifact gallery notes](artifact-gallery.md)
@@ -67,6 +69,7 @@ The same page then exposes repository-local secondary links grouped under Core A
 - Reviewer evidence bundle integrity summary: [artifact hash summary](../reports/reviewer-evidence-bundle.md#artifact-hash-summary), [Markdown](../reports/reviewer-evidence-bundle.md), and [JSON](../reports/reviewer-evidence-bundle.json).
 - Static visual capture checklist: [Markdown](../reports/static-visual-capture-checklist.md) and [JSON](../reports/static-visual-capture-checklist.json) with public-safe screenshot/GIF guidance for the local static gallery route.
 - Static visual capture receipt: [Markdown](../reports/static-visual-capture-receipt.md) and [JSON](../reports/static-visual-capture-receipt.json) with deterministic static visual evidence paths, hashes, roles, routes, commands, and public evidence notes.
+- Static visual release comparison: [Markdown](../reports/static-visual-release-comparison.md) and [JSON](../reports/static-visual-release-comparison.json) with a release-to-release comparison of the v1.30.7 static visual receipt baseline against the current static receipt scan and reviewer checklist.
 - Public demo evidence receipt: [Markdown](../reports/public-demo-evidence-receipt.md) and [JSON](../reports/public-demo-evidence-receipt.json) with deterministic hashes for gallery/backtest artifacts, fixture provenance paths, and no-live-data/no-advice claims.
 - Reviewer rerun receipt: [Markdown](../reports/reviewer-rerun-receipt.md) and [JSON](../reports/reviewer-rerun-receipt.json).
 - Reviewer decision matrix: [Markdown](../reports/reviewer-decision-matrix.md) and [JSON](../reports/reviewer-decision-matrix.json).
@@ -121,6 +124,8 @@ The Pages-safe artifact inventory uses repository-relative links only. The check
 - [Cold-user review route JSON](../reports/cold-user-review-route.json)
 - [Static visual capture checklist Markdown](../reports/static-visual-capture-checklist.md)
 - [Static visual capture checklist JSON](../reports/static-visual-capture-checklist.json)
+- [Static visual release comparison Markdown](../reports/static-visual-release-comparison.md)
+- [Static visual release comparison JSON](../reports/static-visual-release-comparison.json)
 - [Prediction-readiness audit Markdown](../reports/prediction-readiness-audit.md)
 - [Prediction-readiness audit JSON](../reports/prediction-readiness-audit.json)
 - [Beginner backtest-reading checklist Markdown](../reports/beginner-prediction-checklist.md)

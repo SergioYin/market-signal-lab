@@ -24,6 +24,7 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "examples/data/sample_multi_regime.csv.provenance.json",
     "docs/methodology-audit.md",
     "docs/promotion-readiness-check.md",
+    "docs/release-v1.30.8.md",
     "docs/release-v1.30.7.md",
     "docs/release-v1.30.6.md",
     "docs/release-v1.30.5.md",
@@ -59,6 +60,8 @@ INSTALLED_DEFAULT_COMMAND_RESOURCES = (
     "reports/static-visual-capture-checklist.json",
     "reports/static-visual-capture-receipt.md",
     "reports/static-visual-capture-receipt.json",
+    "reports/static-visual-release-comparison.md",
+    "reports/static-visual-release-comparison.json",
     "reports/visual-acceptance-bundle.md",
     "reports/visual-acceptance-bundle.json",
     "reports/visual-walkthrough-evidence-receipt.md",
@@ -105,6 +108,11 @@ STATIC_VISUAL_CAPTURE_RECEIPT_RESOURCES = (
     "docs/static-gallery-manifest.md",
     "reports/static-visual-capture-receipt.md",
     "reports/static-visual-capture-receipt.json",
+)
+STATIC_VISUAL_RELEASE_COMPARISON_RESOURCES = (
+    "docs/release-v1.30.8.md",
+    "reports/static-visual-release-comparison.md",
+    "reports/static-visual-release-comparison.json",
 )
 
 
@@ -168,6 +176,8 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
     assert 'href="static-visual-capture-checklist.json"' in resource_gallery
     assert 'href="static-visual-capture-receipt.md"' in resource_gallery
     assert 'href="static-visual-capture-receipt.json"' in resource_gallery
+    assert 'href="static-visual-release-comparison.md"' in resource_gallery
+    assert 'href="static-visual-release-comparison.json"' in resource_gallery
     for resource in (
         STRESS_KIT_QUICKSTART_CARD_RESOURCES
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
@@ -176,6 +186,7 @@ def test_project_metadata_includes_bundled_cli_resources() -> None:
         + VISUAL_ACCEPTANCE_BUNDLE_RESOURCES
         + STATIC_VISUAL_CAPTURE_CHECKLIST_RESOURCES
         + STATIC_VISUAL_CAPTURE_RECEIPT_RESOURCES
+        + STATIC_VISUAL_RELEASE_COMPARISON_RESOURCES
     ):
         packaged_resource = PROJECT_ROOT / "market_signal_lab" / "_resources" / resource
         checked_in_report = PROJECT_ROOT / resource
@@ -236,7 +247,9 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         + ASSUMPTION_LEDGER_SUMMARY_RESOURCES
         + PROMOTION_READINESS_CHECK_RESOURCES
         + VISUAL_ACCEPTANCE_BUNDLE_RESOURCES
-        + STATIC_VISUAL_CAPTURE_CHECKLIST_RESOURCES,
+        + STATIC_VISUAL_CAPTURE_CHECKLIST_RESOURCES
+        + STATIC_VISUAL_CAPTURE_RECEIPT_RESOURCES
+        + STATIC_VISUAL_RELEASE_COMPARISON_RESOURCES,
     )
 
     install_venv = tmp_path / "install-venv"
@@ -285,6 +298,7 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
         "--reviewer-acceptance-scorecard",
         "--static-visual-capture-checklist",
         "--static-visual-capture-receipt",
+        "--static-visual-release-comparison",
         "--strategy-assumption-stress-kit",
         "--stress-kit-quickstart-card",
         "--assumption-ledger-summary",
@@ -367,6 +381,19 @@ def test_wheel_console_script_smoke_from_empty_directory(tmp_path: Path) -> None
     assert (
         empty_cwd / "reports" / "static-visual-capture-receipt.md"
     ).is_file()
+    static_release_comparison_payload = json.loads(
+        (
+            empty_cwd / "reports" / "static-visual-release-comparison.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert static_release_comparison_payload["artifact_type"] == (
+        "static_visual_release_comparison"
+    )
+    assert static_release_comparison_payload["no_live_data"] is True
+    assert static_release_comparison_payload["not_investment_advice"] is True
+    assert (
+        empty_cwd / "reports" / "static-visual-release-comparison.md"
+    ).is_file()
     assert (
         empty_cwd / "reports" / "cross-asset-thesis-ledger-acceptance.json"
     ).is_file()
@@ -415,7 +442,7 @@ def test_package_version_matches_project_metadata() -> None:
 
 
 def test_package_version_tracks_current_release() -> None:
-    assert __version__ == "1.30.7"
+    assert __version__ == "1.30.8"
 
 
 def _venv_python(venv_path: Path) -> Path:

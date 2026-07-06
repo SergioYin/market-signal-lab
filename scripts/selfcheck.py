@@ -135,6 +135,19 @@ from market_signal_lab.static_visual_capture_receipt import (
     build_static_visual_capture_receipt,
     render_static_visual_capture_receipt,
 )
+from market_signal_lab.static_visual_release_comparison import (
+    SOURCE_RECEIPT_ARTIFACT_PATHS,
+    STATIC_VISUAL_RELEASE_COMPARISON_CHECK_KEYS,
+    STATIC_VISUAL_RELEASE_COMPARISON_COMMAND,
+    STATIC_VISUAL_RELEASE_COMPARISON_JSON_PATH,
+    STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN_PATH,
+    STATIC_VISUAL_RELEASE_COMPARISON_ROW_KEYS,
+    STATIC_VISUAL_RELEASE_COMPARISON_SCOPE_KEYS,
+    STATIC_VISUAL_RELEASE_COMPARISON_SOURCE_ARTIFACT_KEYS,
+    STATIC_VISUAL_RELEASE_COMPARISON_TOP_LEVEL_KEYS,
+    build_static_visual_release_comparison,
+    render_static_visual_release_comparison,
+)
 from market_signal_lab.html import render_html_report
 from market_signal_lab.thesis_ledger import (
     build_cross_asset_thesis_ledger,
@@ -235,6 +248,7 @@ DOC_LINK_SOURCES = (
     Path("docs/release-v1.27.0.md"),
     Path("docs/release-v1.28.0.md"),
     Path("docs/release-v1.29.0.md"),
+    Path("docs/release-v1.30.8.md"),
     Path("docs/release-v1.30.6.md"),
     Path("docs/release-v1.30.7.md"),
     Path("docs/release-v1.30.4.md"),
@@ -334,7 +348,10 @@ V131_ROOT_LANDING_LINKS = (
     "reports/static-visual-capture-checklist.json",
     "reports/static-visual-capture-receipt.md",
     "reports/static-visual-capture-receipt.json",
+    "reports/static-visual-release-comparison.md",
+    "reports/static-visual-release-comparison.json",
     "reports/beginner-prediction-checklist.md",
+    "docs/release-v1.30.8.md",
     "docs/release-v1.30.7.md",
     "docs/release-v1.30.6.md",
     "docs/release-v1.30.4.md",
@@ -433,6 +450,8 @@ V130_STATIC_GALLERY_LINKS = (
     "static-visual-capture-checklist.json",
     "static-visual-capture-receipt.md",
     "static-visual-capture-receipt.json",
+    "static-visual-release-comparison.md",
+    "static-visual-release-comparison.json",
     "reviewer-rerun-receipt.md",
     "reviewer-rerun-receipt.json",
     "acceptance-receipt-index.md",
@@ -554,6 +573,12 @@ STATIC_VISUAL_CAPTURE_RECEIPT_JSON = Path(STATIC_VISUAL_CAPTURE_RECEIPT_JSON_PAT
 STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN = Path(
     STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN_PATH
 )
+STATIC_VISUAL_RELEASE_COMPARISON_JSON = Path(
+    STATIC_VISUAL_RELEASE_COMPARISON_JSON_PATH
+)
+STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN = Path(
+    STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN_PATH
+)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON = Path(PUBLIC_DEMO_EVIDENCE_RECEIPT_JSON_PATH)
 PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN = Path(
     PUBLIC_DEMO_EVIDENCE_RECEIPT_MARKDOWN_PATH
@@ -666,6 +691,8 @@ SAMPLE_ARTIFACTS = (
     Path(STATIC_VISUAL_CAPTURE_CHECKLIST_JSON_PATH),
     Path(STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN_PATH),
     Path(STATIC_VISUAL_CAPTURE_RECEIPT_JSON_PATH),
+    Path(STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN_PATH),
+    Path(STATIC_VISUAL_RELEASE_COMPARISON_JSON_PATH),
     Path("reports/reviewer-rerun-receipt.md"),
     Path("reports/reviewer-rerun-receipt.json"),
     Path(ACCEPTANCE_RECEIPT_INDEX_MARKDOWN_PATH),
@@ -741,6 +768,7 @@ GALLERY_HTML = """<!doctype html>
     <p>The <a href="visual-acceptance-bundle.md">Visual Acceptance Bundle</a> ties the static walkthrough, this gallery, visual receipt, acceptance receipt index, reviewer acceptance scorecard, cold-user route, artifact hashes, and no-live-data/no-advice boundaries into one bounded review handoff.</p>
     <p>The <a href="static-visual-capture-checklist.md">Static Visual Capture Checklist</a> tells cold reviewers how to capture a local static gallery screenshot or GIF while preserving public-safe no-live-data, no-broker, no-order, no-position-sizing, no-forecast, no-recommendation, and no-advice boundaries.</p>
     <p>The <a href="static-visual-capture-receipt.md">Static Visual Capture Receipt</a> scans the existing static visual, gallery, walkthrough, route, and checklist artifacts with repo-relative paths, hashes, roles, routes, regeneration commands, and public evidence notes.</p>
+    <p>The <a href="static-visual-release-comparison.md">Static Visual Release Comparison</a> compares the v1.30.7 static visual receipt baseline with the current static receipt scan and reviewer checklist for release-to-release public review continuity.</p>
     <p>The <a href="visual-walkthrough-evidence-receipt.md">Visual Walkthrough Evidence Receipt</a> ties the static gallery walkthrough SVG, this gallery, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index into one cold-review route.</p>
     <p>First-time public reviewers can follow the compact <a href="cold-user-review-route.md">Cold-user review route</a> before running code; it is an orientation path only, not advice, a forecast, or a recommendation.</p>
     <p>For stress-kit review, open the <a href="stress-kit-quickstart-card.md">Stress Kit Quickstart Card</a> first as a two-minute static/no-advice route before the full <a href="strategy-assumption-stress-kit.html">Strategy assumption stress kit</a>.</p>
@@ -778,6 +806,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="visual-acceptance-bundle.md">Visual acceptance bundle</a> and <a href="visual-acceptance-bundle.json">JSON</a> - bounded visual acceptance handoff linking the walkthrough, gallery, receipts, scorecard, cold-user route, hashes, and no-advice boundaries</li>
           <li><a href="static-visual-capture-checklist.md">Static visual capture checklist</a> and <a href="static-visual-capture-checklist.json">JSON</a> - public-safe local screenshot/GIF checklist for the static gallery route</li>
           <li><a href="static-visual-capture-receipt.md">Static visual capture receipt</a> and <a href="static-visual-capture-receipt.json">JSON</a> - deterministic scan of static visual capture evidence paths, hashes, roles, routes, commands, and public evidence notes</li>
+          <li><a href="static-visual-release-comparison.md">Static visual release comparison</a> and <a href="static-visual-release-comparison.json">JSON</a> - release-to-release comparison of the v1.30.7 static visual receipt baseline against the current static receipt scan and reviewer checklist</li>
           <li><a href="visual-walkthrough-evidence-receipt.md">Visual walkthrough evidence receipt</a> and <a href="visual-walkthrough-evidence-receipt.json">JSON</a> - deterministic route linking the walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index</li>
           <li><a href="public-demo-evidence-receipt.md">Public demo evidence receipt</a> and <a href="public-demo-evidence-receipt.json">JSON</a> - deterministic artifact hashes, fixture boundaries, and no-live-data/no-advice claims</li>
           <li><a href="reviewer-rerun-receipt.md">Reviewer rerun receipt</a> and <a href="reviewer-rerun-receipt.json">JSON</a></li>
@@ -804,6 +833,7 @@ GALLERY_HTML = """<!doctype html>
           <li><a href="../docs/static-gallery-walkthrough.svg">Static gallery walkthrough</a></li>
           <li><a href="../docs/split-sweep-walkthrough.md">Split-sweep walkthrough</a></li>
           <li><a href="../docs/local-audit-commands.md">Local audit commands</a></li>
+          <li><a href="../docs/release-v1.30.8.md">v1.30.8 release notes</a></li>
           <li><a href="../docs/release-v1.30.7.md">v1.30.7 release notes</a></li>
           <li><a href="../docs/release-v1.30.6.md">v1.30.6 release notes</a></li>
           <li><a href="../docs/release-v1.30.5.md">v1.30.5 release notes</a></li>
@@ -906,6 +936,7 @@ def run_demo_acceptance_check() -> bool:
         *find_assumption_ledger_summary_issues(REPO_ROOT),
         *find_static_visual_capture_checklist_issues(REPO_ROOT),
         *find_static_visual_capture_receipt_issues(REPO_ROOT),
+        *find_static_visual_release_comparison_issues(REPO_ROOT),
     ]
     if issues:
         print("Static demo acceptance check failed")
@@ -1136,6 +1167,16 @@ def run_sample_artifact_generation() -> bool:
         encoding="utf-8",
     )
 
+    static_release_comparison = build_static_visual_release_comparison(REPO_ROOT)
+    (REPO_ROOT / STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN).write_text(
+        render_static_visual_release_comparison(static_release_comparison),
+        encoding="utf-8",
+    )
+    (REPO_ROOT / STATIC_VISUAL_RELEASE_COMPARISON_JSON).write_text(
+        json.dumps(static_release_comparison, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
     for artifact in SAMPLE_ARTIFACTS:
         path = REPO_ROOT / artifact
         if not path.exists():
@@ -1151,7 +1192,8 @@ def run_sample_artifact_generation() -> bool:
         "fee sensitivity, cross-asset thesis ledger, reviewer evidence bundle, "
         "public demo evidence receipt, visual walkthrough evidence receipt, "
         "visual acceptance bundle, static visual capture checklist, static "
-        "visual capture receipt, reviewer rerun receipt, acceptance receipt index, "
+        "visual capture receipt, static visual release comparison, "
+        "reviewer rerun receipt, acceptance receipt index, "
         "reviewer decision matrix, "
         "beginner backtest-reading checklist, "
         "strategy assumption stress kit, stress kit quickstart card, "
@@ -3618,6 +3660,224 @@ def find_static_visual_capture_receipt_issues(
     if markdown and markdown != expected_markdown:
         issues.append(
             f"{STATIC_VISUAL_CAPTURE_RECEIPT_MARKDOWN}: does not match deterministic static visual capture receipt output; run {STATIC_VISUAL_CAPTURE_RECEIPT_COMMAND}"
+        )
+
+    return issues
+
+
+def find_static_visual_release_comparison_issues(
+    repo_root: Path = REPO_ROOT,
+) -> list[str]:
+    issues: list[str] = []
+    json_path = repo_root / STATIC_VISUAL_RELEASE_COMPARISON_JSON
+    markdown_path = repo_root / STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN
+
+    if not json_path.exists():
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: comparison JSON is missing"
+        )
+        payload: object = {}
+    else:
+        try:
+            payload = json.loads(json_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: invalid JSON: {exc.msg}"
+            )
+            payload = {}
+
+    if not isinstance(payload, dict):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: comparison must be a JSON object"
+        )
+        payload = {}
+
+    if tuple(payload) != STATIC_VISUAL_RELEASE_COMPARISON_TOP_LEVEL_KEYS:
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: top-level keys must match "
+            "the static visual release comparison schema order"
+        )
+    if payload.get("artifact_type") != "static_visual_release_comparison":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: artifact_type must be static_visual_release_comparison"
+        )
+    if payload.get("schema_version") != "1.0":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: schema_version must be 1.0"
+        )
+    for key in (
+        "research_only",
+        "static_only",
+        "public_safe",
+        "fixture_or_static_data_only",
+        "no_live_data",
+        "no_broker_or_account",
+        "no_orders_or_position_sizing",
+        "no_recommendations_or_forecasts",
+        "not_investment_advice",
+        "no_private_data",
+    ):
+        if payload.get(key) is not True:
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: {key} must be true"
+            )
+
+    defaults = _dict_value(payload.get("default_outputs"))
+    if defaults.get("markdown") != str(STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: default_outputs.markdown must be {STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN}"
+        )
+    if defaults.get("json") != str(STATIC_VISUAL_RELEASE_COMPARISON_JSON):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: default_outputs.json must be {STATIC_VISUAL_RELEASE_COMPARISON_JSON}"
+        )
+
+    scope = _dict_value(payload.get("comparison_scope"))
+    if tuple(scope) != STATIC_VISUAL_RELEASE_COMPARISON_SCOPE_KEYS:
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: comparison_scope keys must match comparison schema"
+        )
+
+    source_artifacts = payload.get("source_receipt_artifacts")
+    if not isinstance(source_artifacts, list):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts must be a list"
+        )
+        source_artifacts = []
+    elif [
+        artifact.get("path") for artifact in source_artifacts if isinstance(artifact, dict)
+    ] != list(SOURCE_RECEIPT_ARTIFACT_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts paths must match source receipt paths"
+        )
+    for index, artifact in enumerate(source_artifacts):
+        if not isinstance(artifact, dict):
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts[{index}] must be an object"
+            )
+            continue
+        if tuple(artifact) != STATIC_VISUAL_RELEASE_COMPARISON_SOURCE_ARTIFACT_KEYS:
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts[{index}] keys must be "
+                f"{', '.join(STATIC_VISUAL_RELEASE_COMPARISON_SOURCE_ARTIFACT_KEYS)}"
+            )
+        for key in ("path", "role"):
+            if not isinstance(artifact.get(key), str) or not artifact[key].strip():
+                issues.append(
+                    f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts[{index}].{key} must be a non-empty string"
+                )
+        if artifact.get("required") is not True:
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_artifacts[{index}].required must be true"
+            )
+
+    comparison_rows = payload.get("release_comparison")
+    if not isinstance(comparison_rows, list):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: release_comparison must be a list"
+        )
+        comparison_rows = []
+    elif [
+        row.get("path") for row in comparison_rows if isinstance(row, dict)
+    ] != list(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: release_comparison paths must match static visual capture artifact paths"
+        )
+    _extend_row_shape_issues(
+        issues,
+        STATIC_VISUAL_RELEASE_COMPARISON_JSON,
+        comparison_rows,
+        STATIC_VISUAL_RELEASE_COMPARISON_ROW_KEYS,
+        "release_comparison",
+    )
+
+    checklist = payload.get("reviewer_checklist")
+    if not isinstance(checklist, list) or len(checklist) != 6:
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: reviewer_checklist must include the six release comparison checks"
+        )
+        checklist = []
+    _extend_row_shape_issues(
+        issues,
+        STATIC_VISUAL_RELEASE_COMPARISON_JSON,
+        checklist,
+        STATIC_VISUAL_RELEASE_COMPARISON_CHECK_KEYS,
+        "reviewer_checklist",
+    )
+
+    source_integrity = _dict_value(payload.get("source_receipt_integrity_summary"))
+    if source_integrity.get("algorithm") != "sha256":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_integrity_summary.algorithm must be sha256"
+        )
+    if source_integrity.get("artifact_count") != len(SOURCE_RECEIPT_ARTIFACT_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_integrity_summary.artifact_count must match source receipt artifacts"
+        )
+    if source_integrity.get("integrity_status") != "PASS":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: source_receipt_integrity_summary.integrity_status must be PASS for checked-in artifacts"
+        )
+
+    current_integrity = _dict_value(
+        payload.get("current_receipt_artifact_integrity_summary")
+    )
+    if current_integrity.get("algorithm") != "sha256":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: current_receipt_artifact_integrity_summary.algorithm must be sha256"
+        )
+    if current_integrity.get("artifact_count") != len(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS):
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: current_receipt_artifact_integrity_summary.artifact_count must match compared artifacts"
+        )
+    if current_integrity.get("integrity_status") != "PASS":
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: current_receipt_artifact_integrity_summary.integrity_status must be PASS for checked-in artifacts"
+        )
+
+    if not markdown_path.exists():
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN}: comparison Markdown is missing"
+        )
+        markdown = ""
+    else:
+        markdown = markdown_path.read_text(encoding="utf-8")
+        if not markdown.strip():
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN}: comparison Markdown is empty"
+            )
+
+    for required_text in (
+        "# Static Visual Release Comparison",
+        "## Scope",
+        "## Source Receipt Artifacts",
+        "## Release Comparison",
+        "## Reviewer Checklist",
+        "v1.30.7 static visual capture receipt baseline",
+        "reports/static-visual-capture-receipt.md",
+        "reports/static-visual-capture-receipt.json",
+        "reports/static-visual-capture-checklist.md",
+        "reports/index.html",
+        "SHA-256",
+        "no live data",
+        "broker/account",
+        "position sizing",
+        "investment advice",
+    ):
+        if required_text not in markdown:
+            issues.append(
+                f"{STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN}: missing comparison text {required_text}"
+            )
+
+    expected_payload = build_static_visual_release_comparison(REPO_ROOT)
+    if payload != expected_payload:
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON}: does not match deterministic static visual release comparison output; run {STATIC_VISUAL_RELEASE_COMPARISON_COMMAND}"
+        )
+    expected_markdown = render_static_visual_release_comparison(expected_payload)
+    if markdown and markdown != expected_markdown:
+        issues.append(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN}: does not match deterministic static visual release comparison output; run {STATIC_VISUAL_RELEASE_COMPARISON_COMMAND}"
         )
 
     return issues

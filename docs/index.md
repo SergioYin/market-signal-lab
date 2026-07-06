@@ -11,10 +11,11 @@ Use these first if you are opening the project cold:
 - [Visual Acceptance Bundle](../reports/visual-acceptance-bundle.md) - bounded visual acceptance handoff tying the static walkthrough, gallery, visual receipt, acceptance index, scorecard, cold-user route, hashes, and no-live-data/no-advice boundaries together.
 - [Static Visual Capture Checklist](../reports/static-visual-capture-checklist.md) - public-safe local screenshot/GIF checklist for the static gallery route.
 - [Static Visual Capture Receipt](../reports/static-visual-capture-receipt.md) - deterministic scan of static visual capture evidence paths, hashes, roles, routes, commands, and public evidence notes.
+- [Static Visual Release Comparison](../reports/static-visual-release-comparison.md) - deterministic release-to-release comparison of the v1.30.7 static visual receipt baseline against the current static receipt scan and reviewer checklist.
 - [Visual Walkthrough Evidence Receipt](../reports/visual-walkthrough-evidence-receipt.md) - deterministic cold-review route tying the static walkthrough SVG, gallery, public demo receipt, rerun receipt, and acceptance index together.
 - [Cold-user review route](../reports/cold-user-review-route.md) - first-time public-review route through checked-in static artifacts.
 
-All three routes are static research-review surfaces only. They do not provide investment advice, trading recommendations, forecasts, broker workflows, live data, account access, order routing, or execution signals.
+These routes are static research-review surfaces only. They do not provide investment advice, trading recommendations, forecasts, broker workflows, live data, account access, order routing, or execution signals.
 
 ## Start Here
 
@@ -61,6 +62,8 @@ All three routes are static research-review surfaces only. They do not provide i
 - [Visual acceptance bundle JSON](../reports/visual-acceptance-bundle.json) - structured version of the same visual acceptance bundle.
 - [Static visual capture checklist](../reports/static-visual-capture-checklist.md) - deterministic public-safe checklist for capturing a local static gallery screenshot or GIF without private context, live data, broker/account surfaces, orders, position sizing, forecasts, recommendations, or advice.
 - [Static visual capture checklist JSON](../reports/static-visual-capture-checklist.json) - structured version of the same capture checklist.
+- [Static visual release comparison](../reports/static-visual-release-comparison.md) - deterministic release-to-release comparison of the v1.30.7 static visual capture receipt baseline against the current static receipt scan, source receipt artifacts, hashes, and reviewer checklist.
+- [Static visual release comparison JSON](../reports/static-visual-release-comparison.json) - structured version of the same release comparison.
 - [Visual walkthrough evidence receipt](../reports/visual-walkthrough-evidence-receipt.md) - deterministic public visual walkthrough receipt tying `docs/static-gallery-walkthrough.svg`, `reports/index.html`, the public demo evidence receipt, reviewer rerun receipt, and acceptance receipt index into a cold-review route.
 - [Visual walkthrough evidence receipt JSON](../reports/visual-walkthrough-evidence-receipt.json) - structured version of the same visual walkthrough receipt.
 - [Public demo evidence receipt](../reports/public-demo-evidence-receipt.md) - deterministic public demo receipt for gallery/backtest artifact hashes, fixture provenance paths, and no-live-data/no-advice claims.
@@ -120,6 +123,7 @@ The regime-comparison artifacts use deterministic synthetic sample data and plac
 
 ## Release Notes
 
+- [v1.30.8 Release Notes](release-v1.30.8.md)
 - [v1.30.7 Release Notes](release-v1.30.7.md)
 - [v1.30.6 Release Notes](release-v1.30.6.md)
 - [v1.30.5 Release Notes](release-v1.30.5.md)

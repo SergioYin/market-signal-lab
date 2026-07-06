@@ -119,6 +119,14 @@ from market_signal_lab.static_visual_capture_receipt import (
     build_static_visual_capture_receipt,
     render_static_visual_capture_receipt,
 )
+from market_signal_lab.static_visual_release_comparison import (
+    SOURCE_RECEIPT_ARTIFACT_PATHS,
+    STATIC_VISUAL_RELEASE_COMPARISON_FLAG,
+    STATIC_VISUAL_RELEASE_COMPARISON_JSON_PATH,
+    STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN_PATH,
+    build_static_visual_release_comparison,
+    render_static_visual_release_comparison,
+)
 from market_signal_lab.strategy_assumption_stress_kit import (
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_PATH,
     STRATEGY_ASSUMPTION_STRESS_KIT_HTML_TITLE,
@@ -273,6 +281,19 @@ STATIC_VISUAL_CAPTURE_RECEIPT_JSON_OUTPUT = Path(
 STATIC_VISUAL_CAPTURE_RECEIPT_STATIC_RESOURCES = tuple(
     Path(path) for path in STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS
 )
+STATIC_VISUAL_RELEASE_COMPARISON_OUTPUT = Path(
+    STATIC_VISUAL_RELEASE_COMPARISON_MARKDOWN_PATH
+)
+STATIC_VISUAL_RELEASE_COMPARISON_JSON_OUTPUT = Path(
+    STATIC_VISUAL_RELEASE_COMPARISON_JSON_PATH
+)
+STATIC_VISUAL_RELEASE_COMPARISON_STATIC_RESOURCES = tuple(
+    Path(path)
+    for path in (
+        *SOURCE_RECEIPT_ARTIFACT_PATHS,
+        *STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS,
+    )
+)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -294,6 +315,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     _reject_assumption_ledger_summary_mode_conflicts(args, parser)
     _reject_static_visual_capture_checklist_mode_conflicts(args, parser)
     _reject_static_visual_capture_receipt_mode_conflicts(args, parser)
+    _reject_static_visual_release_comparison_mode_conflicts(args, parser)
 
     try:
         if args.reviewer_rerun_receipt:
@@ -385,6 +407,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             args = _resolve_static_visual_capture_receipt_args(args, parser)
             report, json_payload, manifest_payload = (
                 _run_static_visual_capture_receipt()
+            )
+        elif args.static_visual_release_comparison:
+            args = _resolve_static_visual_release_comparison_args(args, parser)
+            report, json_payload, manifest_payload = (
+                _run_static_visual_release_comparison()
             )
         else:
             args = _resolve_args(args, parser)
@@ -835,6 +862,36 @@ def _reject_static_visual_capture_receipt_mode_conflicts(
     )
 
 
+def _reject_static_visual_release_comparison_mode_conflicts(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> None:
+    if not args.static_visual_release_comparison:
+        return
+
+    _reject_mode_conflicts(
+        args,
+        parser,
+        STATIC_VISUAL_RELEASE_COMPARISON_FLAG,
+        include_beginner_prediction_checklist=True,
+        include_prediction_readiness_audit=True,
+        include_cold_user_review_route=True,
+        include_reviewer_rerun_receipt=True,
+        include_reviewer_acceptance_scorecard=True,
+        include_reviewer_decision_matrix=True,
+        include_promotion_readiness_check=True,
+        include_strategy_assumption_stress_kit=True,
+        include_stress_kit_quickstart_card=True,
+        include_assumption_ledger_summary=True,
+        include_acceptance_receipt_index=True,
+        include_visual_walkthrough_evidence_receipt=True,
+        include_visual_acceptance_bundle=True,
+        include_public_demo_evidence_receipt=True,
+        include_static_visual_capture_checklist=True,
+        include_static_visual_capture_receipt=True,
+    )
+
+
 def _reject_mode_conflicts(
     args: Namespace,
     parser: ArgumentParser,
@@ -853,6 +910,9 @@ def _reject_mode_conflicts(
     include_acceptance_receipt_index: bool = False,
     include_visual_walkthrough_evidence_receipt: bool = False,
     include_visual_acceptance_bundle: bool = False,
+    include_public_demo_evidence_receipt: bool = False,
+    include_static_visual_capture_checklist: bool = False,
+    include_static_visual_capture_receipt: bool = False,
 ) -> None:
     for flag, selected in (
         ("--pretrade-packet", args.pretrade_packet),
@@ -891,6 +951,21 @@ def _reject_mode_conflicts(
         (
             VISUAL_ACCEPTANCE_BUNDLE_FLAG,
             include_visual_acceptance_bundle and args.visual_acceptance_bundle,
+        ),
+        (
+            PUBLIC_DEMO_EVIDENCE_RECEIPT_FLAG,
+            include_public_demo_evidence_receipt
+            and args.public_demo_evidence_receipt,
+        ),
+        (
+            STATIC_VISUAL_CAPTURE_CHECKLIST_FLAG,
+            include_static_visual_capture_checklist
+            and args.static_visual_capture_checklist,
+        ),
+        (
+            STATIC_VISUAL_CAPTURE_RECEIPT_FLAG,
+            include_static_visual_capture_receipt
+            and args.static_visual_capture_receipt,
         ),
         (
             PREDICTION_READINESS_AUDIT_FLAG,
@@ -1420,6 +1495,22 @@ def _build_parser() -> ArgumentParser:
             "images, read CSV data, fetch live data, connect to brokers, "
             "inspect accounts, create orders, size positions, forecast, "
             "recommend, or provide investment advice."
+        ),
+    )
+    parser.add_argument(
+        STATIC_VISUAL_RELEASE_COMPARISON_FLAG,
+        action="store_true",
+        default=False,
+        help=(
+            "Write a deterministic release-to-release static visual receipt "
+            "comparison using existing static visual capture receipt artifacts, "
+            "the v1.30.7 receipt baseline, current repo-relative artifact "
+            "presence, SHA-256 hashes, and a reviewer checklist. Defaults to "
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_OUTPUT} and "
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_JSON_OUTPUT}. Does not fetch "
+            "release tags, capture images, read CSV data, fetch live data, "
+            "connect to brokers, inspect accounts, create orders, size "
+            "positions, forecast, recommend, or provide investment advice."
         ),
     )
     parser.add_argument(
@@ -2136,6 +2227,37 @@ def _resolve_static_visual_capture_receipt_args(
     return resolved
 
 
+def _resolve_static_visual_release_comparison_args(
+    args: Namespace,
+    parser: ArgumentParser,
+) -> Namespace:
+    if args.csv_path is not None:
+        parser.error(f"{STATIC_VISUAL_RELEASE_COMPARISON_FLAG} does not take csv_path")
+    if args.config is not None:
+        parser.error(f"{STATIC_VISUAL_RELEASE_COMPARISON_FLAG} does not take --config")
+    if args.html_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_FLAG} writes Markdown/JSON, not HTML"
+        )
+    if args.manifest_output is not None:
+        parser.error(
+            f"{STATIC_VISUAL_RELEASE_COMPARISON_FLAG} does not write experiment manifests"
+        )
+
+    resolved = Namespace()
+    for key, default in _default_args().items():
+        setattr(resolved, key, getattr(args, key, default))
+    resolved.csv_path = None
+    resolved.output = args.output or STATIC_VISUAL_RELEASE_COMPARISON_OUTPUT
+    resolved.json_output = (
+        args.json_output or STATIC_VISUAL_RELEASE_COMPARISON_JSON_OUTPUT
+    )
+    resolved.html_output = None
+    resolved.manifest_output = None
+    resolved.static_visual_release_comparison = True
+    return resolved
+
+
 def _resolve_methodology_audit_template_args(
     args: Namespace,
     parser: ArgumentParser,
@@ -2650,6 +2772,17 @@ def _run_static_visual_capture_receipt() -> tuple[str, dict[str, Any], dict[str,
     with _bundled_resource_worktree(STATIC_VISUAL_CAPTURE_RECEIPT_STATIC_RESOURCES) as root:
         payload = build_static_visual_capture_receipt(root)
     report = render_static_visual_capture_receipt(payload)
+    return report, payload, {}
+
+
+def _run_static_visual_release_comparison() -> tuple[
+    str, dict[str, Any], dict[str, Any]
+]:
+    with _bundled_resource_worktree(
+        STATIC_VISUAL_RELEASE_COMPARISON_STATIC_RESOURCES
+    ) as root:
+        payload = build_static_visual_release_comparison(root)
+    report = render_static_visual_release_comparison(payload)
     return report, payload, {}
 
 

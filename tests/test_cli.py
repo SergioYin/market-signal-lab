@@ -51,6 +51,9 @@ from market_signal_lab.visual_acceptance_bundle import (
 from market_signal_lab.static_visual_capture_receipt import (
     STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS,
 )
+from market_signal_lab.static_visual_release_comparison import (
+    SOURCE_RECEIPT_ARTIFACT_PATHS,
+)
 
 
 SAMPLE_DATA = Path("examples/data/sample_tqqq_qld_like.csv")
@@ -69,7 +72,7 @@ def test_cli_prints_version_without_requiring_csv_path() -> None:
     )
 
     assert result.returncode == 0
-    assert result.stdout.strip() == "market-signal-lab 1.30.7"
+    assert result.stdout.strip() == "market-signal-lab 1.30.8"
     assert result.stderr == ""
 
 
@@ -359,6 +362,102 @@ def test_cli_writes_static_visual_capture_receipt_defaults(tmp_path: Path) -> No
     assert integrity["integrity_status"] == "PASS"
     assert integrity["artifact_count"] == len(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS)
     assert integrity["present_count"] == len(STATIC_VISUAL_CAPTURE_ARTIFACT_PATHS)
+
+
+def test_cli_writes_static_visual_release_comparison_defaults(tmp_path: Path) -> None:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--static-visual-release-comparison",
+        ],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == ""
+    assert result.stderr == ""
+    markdown_path = tmp_path / "reports" / "static-visual-release-comparison.md"
+    json_path = tmp_path / "reports" / "static-visual-release-comparison.json"
+    markdown = markdown_path.read_text(encoding="utf-8")
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    assert "# Static Visual Release Comparison" in markdown
+    assert "v1.30.7 static visual capture receipt baseline" in markdown
+    assert "reports/static-visual-capture-receipt.md" in markdown
+    assert "reports/static-visual-capture-checklist.md" in markdown
+    assert payload["artifact_type"] == "static_visual_release_comparison"
+    assert payload["schema_version"] == "1.0"
+    assert payload["default_outputs"] == {
+        "markdown": "reports/static-visual-release-comparison.md",
+        "json": "reports/static-visual-release-comparison.json",
+    }
+    assert payload["no_live_data"] is True
+    assert payload["not_investment_advice"] is True
+    source_integrity = payload["source_receipt_integrity_summary"]
+    assert source_integrity["algorithm"] == "sha256"
+    assert source_integrity["integrity_status"] == "PASS"
+    assert source_integrity["artifact_count"] == len(SOURCE_RECEIPT_ARTIFACT_PATHS)
+
+
+@pytest.mark.parametrize(
+    ("extra_args", "message"),
+    [
+        (
+            ["--config", "examples/configs/single-backtest-report.json"],
+            "--static-visual-release-comparison does not take --config",
+        ),
+        (
+            ["--pretrade-packet"],
+            "--static-visual-release-comparison cannot be combined with --pretrade-packet",
+        ),
+        (
+            ["--static-visual-capture-receipt"],
+            "--static-visual-release-comparison cannot be combined with --static-visual-capture-receipt",
+        ),
+        (
+            ["--static-visual-capture-checklist"],
+            "--static-visual-release-comparison cannot be combined with --static-visual-capture-checklist",
+        ),
+        (
+            ["--public-demo-evidence-receipt"],
+            "--static-visual-release-comparison cannot be combined with --public-demo-evidence-receipt",
+        ),
+        (
+            ["--html-output", "comparison.html"],
+            "--static-visual-release-comparison writes Markdown/JSON, not HTML",
+        ),
+        (
+            ["--manifest-output", "manifest.md"],
+            "--static-visual-release-comparison does not write experiment manifests",
+        ),
+    ],
+)
+def test_cli_rejects_incompatible_static_visual_release_comparison_combinations(
+    extra_args: list[str],
+    message: str,
+) -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "market_signal_lab.cli",
+            "--static-visual-release-comparison",
+            *extra_args,
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 2
+    assert message in result.stderr
 
 
 @pytest.mark.parametrize(
